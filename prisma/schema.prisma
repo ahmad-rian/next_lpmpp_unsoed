@@ -1,0 +1,286 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  password      String?
+  role          Role      @default(USER)
+  accounts      Account[]
+  sessions      Session[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model SiteConfig {
+  id              String   @id @default(cuid())
+  logoUnsoed      String?  @db.Text // Path/URL logo UNSOED
+  logoApp         String?  @db.Text // Path/URL logo aplikasi
+  logoDescription String?  @db.Text // Detail penjelasan tentang logo
+  siteName        String   @default("LPMPP UNSOED")
+  visi            String?  @db.Text
+  misi            String?  @db.Text
+  tugas           String?  @db.Text
+  fungsi          String?  @db.Text
+  alamat          String?  @db.Text
+  email           String?
+  instagramUrl    String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+enum LeadershipPosition {
+  HEAD       // Kepala Lembaga
+  SECRETARY  // Sekretaris Lembaga
+}
+
+model Leadership {
+  id        String             @id @default(cuid())
+  position  LeadershipPosition
+  name      String
+  title     String?            @db.Text // Gelar akademik
+  photo     String?            @db.Text // Path/URL foto
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+
+  @@unique([position]) // Hanya boleh ada 1 kepala dan 1 sekretaris
+}
+
+enum StaffPosition {
+  SUB_COORDINATOR          // Sub Koordinator
+  GENERAL_STAFF           // Staff Umum
+  PROGRAM_DATA_INFO_STAFF // Staff Program, Data & Informasi
+  DRIVER                  // Pengemudi
+  OFFICE_ASSISTANT        // Pramu Bakti
+}
+
+model Staff {
+  id        String        @id @default(cuid())
+  position  StaffPosition
+  name      String
+  title     String?       @db.Text // Gelar akademik
+  photo     String?       @db.Text // Path/URL foto
+  order     Int           @default(0) // Untuk ordering staff
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  @@index([position, order])
+}
+
+// Model untuk Pusat & Unit di LPMPP
+model Center {
+  id          String         @id @default(cuid())
+  name        String         // Nama pusat (misal: "Pusat Penjaminan Mutu Internal")
+  slug        String         @unique // URL-friendly name
+  description String?        @db.Text // Tugas dan fungsi pusat
+  order       Int            @default(0) // Untuk ordering pusat
+  isActive    Boolean        @default(true) // Untuk show/hide
+  members     CenterMember[] // Relasi ke anggota
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  @@index([order])
+}
+
+enum CenterMemberRole {
+  COORDINATOR // Koordinator Pusat
+  MEMBER      // Anggota/Staff
+}
+
+model CenterMember {
+  id        String           @id @default(cuid())
+  centerId  String
+  center    Center           @relation(fields: [centerId], references: [id], onDelete: Cascade)
+  role      CenterMemberRole
+  name      String
+  title     String?          @db.Text // Gelar akademik
+  photo     String?          @db.Text // Path/URL foto
+  order     Int              @default(0) // Untuk ordering anggota dalam pusat
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+
+  @@index([centerId, role, order])
+}
+
+// Model untuk konten SPMI
+model SpmiContent {
+  id          String   @id @default(cuid())
+  section     String   // "tujuan" atau "fungsi"
+  content     String   @db.Text
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([section])
+}
+
+enum DocumentType {
+  SPMI       // Dokumen SPMI
+  AUDIT      // Dokumen Audit
+  REGULATION // Peraturan
+}
+
+// Model untuk dokumen (PDF/DOCS)
+model Document {
+  id          String       @id @default(cuid())
+  type        DocumentType
+  title       String
+  description String?      @db.Text
+  fileUrl     String       @db.Text // Path ke file
+  fileName    String       // Nama file original
+  fileSize    Int?         // Ukuran file dalam bytes
+  order       Int          @default(0)
+  isActive    Boolean      @default(true)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  @@index([type, order])
+}
+
+// Model untuk Master Fakultas
+model Faculty {
+  id                      String                    @id @default(cuid())
+  name                    String                    @unique // Nama lengkap fakultas
+  shortName               String?                   // Singkatan fakultas
+  code                    String?                   @unique // Kode fakultas
+  order                   Int                       @default(0)
+  isActive                Boolean                   @default(true)
+  qualityAssuranceGroups  QualityAssuranceGroup[]   // Relasi ke GPM
+  createdAt               DateTime                  @default(now())
+  updatedAt               DateTime                  @updatedAt
+
+  @@index([order])
+}
+
+// Model untuk Gugus Penjamin Mutu
+model QualityAssuranceGroup {
+  id          String                    @id @default(cuid())
+  facultyId   String                    // Foreign key ke Faculty
+  faculty     Faculty                   @relation(fields: [facultyId], references: [id], onDelete: Cascade)
+  description String?                   @db.Text
+  contactInfo String?                   @db.Text
+  order       Int                       @default(0)
+  isActive    Boolean                   @default(true)
+  documents   QualityAssuranceDocument[] // Relasi ke dokumen GPM
+  createdAt   DateTime                  @default(now())
+  updatedAt   DateTime                  @updatedAt
+
+  @@index([facultyId])
+  @@index([order])
+}
+
+// Model untuk dokumen GPM
+model QualityAssuranceDocument {
+  id        String                 @id @default(cuid())
+  groupId   String
+  group     QualityAssuranceGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  title     String
+  fileUrl   String                 @db.Text // Path ke file
+  fileName  String                 // Nama file original
+  fileSize  Int?                   // Ukuran file dalam bytes
+  order     Int                    @default(0)
+  createdAt DateTime               @default(now())
+  updatedAt DateTime               @updatedAt
+
+  @@index([groupId, order])
+}
+
+// Model untuk Akreditasi Internasional
+model InternationalAccreditation {
+  id            String   @id @default(cuid())
+  facultyName   String
+  programName   String
+  agency        String   @db.Text // Lembaga akreditasi
+  order         Int      @default(0)
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([order])
+}
+
+// Model untuk Akreditasi Program Studi
+model StudyProgramAccreditation {
+  id            String   @id @default(cuid())
+  programName   String
+  level         String   // D-III, S1, S2, S3, Profesi, Spesialis
+  skNumber      String?  // Nomor SK
+  skYear        Int?     // Tahun SK
+  rating        String   // UNGGUL, BAIK SEKALI, BAIK, A, B, C, Terakreditasi Sementara
+  order         Int      @default(0)
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([level, order])
+  @@index([rating])
+}
+
+// Model untuk Akreditasi Perguruan Tinggi
+model UniversityAccreditation {
+  id            String   @id @default(cuid())
+  title         String
+  description   String?  @db.Text
+  documentUrl   String?  @db.Text // PDF/DOC file
+  documentName  String?
+  imageUrl      String?  @db.Text // Image banner
+  order         Int      @default(0)
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([order])
+}
+
