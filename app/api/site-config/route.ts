@@ -72,6 +72,7 @@ export async function PUT(request: NextRequest) {
           alamat: data.alamat,
           email: data.email,
           instagramUrl: data.instagramUrl,
+          carouselImages: data.carouselImages,
         },
       });
     } else {
@@ -89,6 +90,7 @@ export async function PUT(request: NextRequest) {
           alamat: data.alamat,
           email: data.email,
           instagramUrl: data.instagramUrl,
+          carouselImages: data.carouselImages,
         },
       });
     }

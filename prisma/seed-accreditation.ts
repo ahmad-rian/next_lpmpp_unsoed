@@ -89,38 +89,63 @@ async function seedAccreditations() {
   }
   console.log(`✅ Created ${studyProgramData.length} study program accreditations`);
 
-  // Seed University Accreditations
-  console.log("📝 Seeding University Accreditations...");
-  const universityData = [
-    {
-      title: "Sertifikat Akreditasi Perguruan Tinggi UNSOED 2024",
-      description: "Universitas Jenderal Soedirman telah memperoleh akreditasi UNGGUL berdasarkan Surat Keputusan BAN-PT No. 123/SK/BAN-PT/Akred-PT/I/2024. Akreditasi ini berlaku untuk periode 2024-2029.",
-      documentUrl: null,
-      documentName: null,
+  // Seed University Accreditation (Single Entry with Multiple Documents)
+  console.log("📝 Seeding University Accreditation...");
+  
+  const universityAccreditation = await prisma.universityAccreditation.upsert({
+    where: { id: "univ-main" },
+    update: {
+      title: "Akreditasi Institusi Perguruan Tinggi UNSOED",
+      description: "Universitas Jenderal Soedirman telah memperoleh akreditasi UNGGUL berdasarkan Surat Keputusan BAN-PT. Akreditasi ini menunjukkan komitmen universitas dalam memberikan pendidikan berkualitas tinggi dan terakreditasi internasional.\n\nAkreditasi ini berlaku untuk periode 2024-2029 dan mencakup seluruh aspek penyelenggaraan pendidikan tinggi di UNSOED.",
       imageUrl: null,
+    },
+    create: {
+      id: "univ-main",
+      title: "Akreditasi Institusi Perguruan Tinggi UNSOED",
+      description: "Universitas Jenderal Soedirman telah memperoleh akreditasi UNGGUL berdasarkan Surat Keputusan BAN-PT. Akreditasi ini menunjukkan komitmen universitas dalam memberikan pendidikan berkualitas tinggi dan terakreditasi internasional.\n\nAkreditasi ini berlaku untuk periode 2024-2029 dan mencakup seluruh aspek penyelenggaraan pendidikan tinggi di UNSOED.",
+      imageUrl: null,
+    },
+  });
+  console.log(`✅ Created university accreditation`);
+
+  // Seed University Accreditation Documents
+  console.log("📝 Seeding University Accreditation Documents...");
+  const documentsData = [
+    {
+      id: "doc-1",
+      title: "SK Akreditasi Institusi UNSOED 2024",
       order: 1,
     },
     {
-      title: "Akreditasi Institusi Perguruan Tinggi",
-      description: "UNSOED telah meraih peringkat UNGGUL dalam Akreditasi Institusi Perguruan Tinggi yang menunjukkan komitmen universitas dalam memberikan pendidikan berkualitas tinggi dan terakreditasi internasional.",
-      documentUrl: null,
-      documentName: null,
-      imageUrl: null,
+      id: "doc-2",
+      title: "Sertifikat Akreditasi Perguruan Tinggi",
       order: 2,
+    },
+    {
+      id: "doc-3",
+      title: "Laporan Evaluasi Diri UNSOED",
+      order: 3,
     },
   ];
 
-  for (const data of universityData) {
-    await prisma.universityAccreditation.upsert({
-      where: { id: `univ-${data.order}` },
-      update: data,
+  for (const data of documentsData) {
+    await prisma.universityAccreditationDocument.upsert({
+      where: { id: data.id },
+      update: {
+        title: data.title,
+        order: data.order,
+      },
       create: {
-        id: `univ-${data.order}`,
-        ...data,
+        id: data.id,
+        accreditationId: universityAccreditation.id,
+        title: data.title,
+        documentUrl: "/documents/placeholder.pdf", // Placeholder URL
+        documentName: `${data.title}.pdf`,
+        order: data.order,
       },
     });
   }
-  console.log(`✅ Created ${universityData.length} university accreditations`);
+  console.log(`✅ Created ${documentsData.length} university accreditation documents`);
 
   console.log("✨ Accreditation seeding completed!");
 }

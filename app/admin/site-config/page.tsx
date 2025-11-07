@@ -20,6 +20,7 @@ interface SiteConfig {
   alamat: string | null;
   email: string | null;
   instagramUrl: string | null;
+  carouselImages: string | null; // JSON string array
 }
 
 const CogIcon = () => (
@@ -34,6 +35,7 @@ export default function SiteConfigPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
+  const [carouselImages, setCarouselImages] = useState<string[]>([]);
 
   useEffect(() => {
     fetchConfig();
@@ -44,6 +46,15 @@ export default function SiteConfigPage() {
       const response = await fetch("/api/site-config");
       const data = await response.json();
       setConfig(data);
+      // Parse carousel images
+      if (data.carouselImages) {
+        try {
+          const parsed = JSON.parse(data.carouselImages);
+          setCarouselImages(Array.isArray(parsed) ? parsed : []);
+        } catch {
+          setCarouselImages([]);
+        }
+      }
     } catch (error) {
       console.error("Error fetching config:", error);
       setMessage({ type: 'error', text: 'Gagal memuat konfigurasi' });
@@ -58,10 +69,16 @@ export default function SiteConfigPage() {
     setMessage(null);
 
     try {
+      // Prepare config with carousel images
+      const configToSave = {
+        ...config,
+        carouselImages: JSON.stringify(carouselImages),
+      };
+
       const response = await fetch("/api/site-config", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(config),
+        body: JSON.stringify(configToSave),
       });
 
       const result = await response.json();
@@ -82,6 +99,16 @@ export default function SiteConfigPage() {
 
   const handleChange = (field: keyof SiteConfig, value: string) => {
     setConfig(prev => prev ? { ...prev, [field]: value } : null);
+  };
+
+  const addCarouselImage = (url: string) => {
+    if (carouselImages.length < 5) {
+      setCarouselImages([...carouselImages, url]);
+    }
+  };
+
+  const removeCarouselImage = (index: number) => {
+    setCarouselImages(carouselImages.filter((_, i) => i !== index));
   };
 
   if (loading) {
@@ -153,6 +180,62 @@ export default function SiteConfigPage() {
               variant="bordered"
               size="lg"
             />
+          </CardBody>
+        </Card>
+
+        {/* Carousel Images Section */}
+        <Card>
+          <CardBody className="gap-6 p-6">
+            <div>
+              <h2 className="text-xl font-semibold mb-2">Carousel Banner Homepage</h2>
+              <p className="text-sm text-default-500">
+                Upload gambar untuk carousel di halaman beranda (maksimal 5 gambar)
+              </p>
+            </div>
+
+            {/* Display existing images */}
+            {carouselImages.length > 0 && (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {carouselImages.map((imageUrl, index) => (
+                  <div key={index} className="relative group">
+                    <img
+                      src={imageUrl}
+                      alt={`Carousel ${index + 1}`}
+                      className="w-full h-48 object-cover rounded-lg border-2 border-default-200"
+                    />
+                    <Button
+                      color="danger"
+                      size="sm"
+                      className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                      onClick={() => removeCarouselImage(index)}
+                    >
+                      Hapus
+                    </Button>
+                    <div className="absolute bottom-2 left-2 bg-black/70 text-white px-2 py-1 rounded text-xs">
+                      Gambar {index + 1}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Upload new image */}
+            {carouselImages.length < 5 && (
+              <ImageUpload
+                label={`Tambah Gambar Carousel (${carouselImages.length}/5)`}
+                value={null}
+                onChange={(url) => {
+                  addCarouselImage(url);
+                }}
+                description="Gambar akan ditampilkan sebagai banner carousel di homepage"
+              />
+            )}
+
+            {carouselImages.length >= 5 && (
+              <div className="p-4 bg-warning/10 border border-warning/20 rounded-lg text-warning text-sm">
+                Maksimal 5 gambar carousel telah tercapai. Hapus gambar yang ada untuk menambah yang baru.
+              </div>
+            )}
           </CardBody>
         </Card>
 

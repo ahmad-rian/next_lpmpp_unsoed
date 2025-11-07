@@ -57,4 +57,69 @@
       transform: rotate(360deg);
     }
   }
+
+  /* Rich Text Viewer - untuk menampilkan konten HTML */
+  .rich-text-viewer h1 {
+    @apply text-3xl font-bold mb-4 mt-6;
+  }
+
+  .rich-text-viewer h2 {
+    @apply text-2xl font-bold mb-3 mt-5;
+  }
+
+  .rich-text-viewer h3 {
+    @apply text-xl font-bold mb-2 mt-4;
+  }
+
+  .rich-text-viewer h4 {
+    @apply text-lg font-bold mb-2 mt-3;
+  }
+
+  .rich-text-viewer p {
+    @apply mb-4 leading-relaxed;
+  }
+
+  .rich-text-viewer ul {
+    @apply list-disc list-inside mb-4 ml-4;
+  }
+
+  .rich-text-viewer ol {
+    @apply list-decimal list-inside mb-4 ml-4;
+  }
+
+  .rich-text-viewer li {
+    @apply mb-2;
+  }
+
+  .rich-text-viewer blockquote {
+    @apply border-l-4 border-primary pl-4 italic my-4;
+  }
+
+  .rich-text-viewer code {
+    @apply bg-default-100 px-2 py-1 rounded text-sm font-mono;
+  }
+
+  .rich-text-viewer pre {
+    @apply bg-default-100 p-4 rounded-lg overflow-x-auto mb-4;
+  }
+
+  .rich-text-viewer img {
+    @apply max-w-full h-auto rounded-lg my-4;
+  }
+
+  .rich-text-viewer a {
+    @apply text-primary underline hover:text-primary-600;
+  }
+
+  .rich-text-viewer strong {
+    @apply font-bold;
+  }
+
+  .rich-text-viewer em {
+    @apply italic;
+  }
+
+  .rich-text-viewer hr {
+    @apply my-6 border-t border-divider;
+  }
 }

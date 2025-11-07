@@ -2,33 +2,26 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 
-// GET - Fetch all university accreditations with documents
+// GET - Fetch all featured programs
 export async function GET() {
   try {
-    const accreditations = await prisma.universityAccreditation.findMany({
-      include: {
-        documents: {
-          orderBy: {
-            order: 'asc'
-          }
-        }
-      },
+    const programs = await prisma.featuredProgram.findMany({
       orderBy: {
-        createdAt: 'desc'
+        order: 'asc'
       }
     });
 
-    return NextResponse.json(accreditations);
+    return NextResponse.json(programs);
   } catch (error) {
-    console.error("Error fetching university accreditations:", error);
+    console.error("Error fetching featured programs:", error);
     return NextResponse.json(
-      { error: "Failed to fetch university accreditations" },
+      { error: "Failed to fetch featured programs" },
       { status: 500 }
     );
   }
 }
 
-// POST - Create new university accreditation
+// POST - Create new featured program
 export async function POST(request: NextRequest) {
   try {
     const session = await auth();
@@ -38,38 +31,39 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { title, description, imageUrl, isActive } = body;
+    const { title, slug, description, documentUrl, documentName, icon, order } = body;
 
-    if (!title) {
+    if (!title || !slug) {
       return NextResponse.json(
-        { error: "Title is required" },
+        { error: "Title and slug are required" },
         { status: 400 }
       );
     }
 
-    const accreditation = await prisma.universityAccreditation.create({
+    const program = await prisma.featuredProgram.create({
       data: {
         title,
+        slug,
         description: description || "",
-        imageUrl: imageUrl || "",
-        isActive: isActive !== undefined ? isActive : true,
+        documentUrl: documentUrl || null,
+        documentName: documentName || null,
+        icon: icon || null,
+        order: order || 0,
+        isActive: true,
       },
-      include: {
-        documents: true
-      }
     });
 
-    return NextResponse.json(accreditation);
+    return NextResponse.json(program);
   } catch (error) {
-    console.error("Error creating university accreditation:", error);
+    console.error("Error creating featured program:", error);
     return NextResponse.json(
-      { error: "Failed to create university accreditation" },
+      { error: "Failed to create featured program" },
       { status: 500 }
     );
   }
 }
 
-// PUT - Update university accreditation
+// PUT - Update featured program
 export async function PUT(request: NextRequest) {
   try {
     const session = await auth();
@@ -79,7 +73,7 @@ export async function PUT(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { id, title, description, imageUrl, isActive } = body;
+    const { id, title, slug, description, documentUrl, documentName, icon, order, isActive } = body;
 
     if (!id) {
       return NextResponse.json(
@@ -88,34 +82,31 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    const accreditation = await prisma.universityAccreditation.update({
+    const program = await prisma.featuredProgram.update({
       where: { id },
       data: {
         title,
+        slug,
         description,
-        imageUrl,
+        documentUrl,
+        documentName,
+        icon,
+        order,
         isActive,
       },
-      include: {
-        documents: {
-          orderBy: {
-            order: 'asc'
-          }
-        }
-      }
     });
 
-    return NextResponse.json(accreditation);
+    return NextResponse.json(program);
   } catch (error) {
-    console.error("Error updating university accreditation:", error);
+    console.error("Error updating featured program:", error);
     return NextResponse.json(
-      { error: "Failed to update university accreditation" },
+      { error: "Failed to update featured program" },
       { status: 500 }
     );
   }
 }
 
-// DELETE - Delete university accreditation (documents will be cascade deleted)
+// DELETE - Delete featured program
 export async function DELETE(request: NextRequest) {
   try {
     const session = await auth();
@@ -134,16 +125,15 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    // Delete accreditation (documents will be cascade deleted)
-    await prisma.universityAccreditation.delete({
+    await prisma.featuredProgram.delete({
       where: { id },
     });
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("Error deleting university accreditation:", error);
+    console.error("Error deleting featured program:", error);
     return NextResponse.json(
-      { error: "Failed to delete university accreditation" },
+      { error: "Failed to delete featured program" },
       { status: 500 }
     );
   }

@@ -77,6 +77,7 @@ model SiteConfig {
   alamat          String?  @db.Text
   email           String?
   instagramUrl    String?
+  carouselImages  String?  @db.Text // JSON array untuk gambar carousel (max 5)
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 }
@@ -270,17 +271,114 @@ model StudyProgramAccreditation {
 
 // Model untuk Akreditasi Perguruan Tinggi
 model UniversityAccreditation {
-  id            String   @id @default(cuid())
-  title         String
-  description   String?  @db.Text
-  documentUrl   String?  @db.Text // PDF/DOC file
-  documentName  String?
-  imageUrl      String?  @db.Text // Image banner
-  order         Int      @default(0)
-  isActive      Boolean  @default(true)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id          String                              @id @default(cuid())
+  title       String
+  description String?                             @db.Text
+  imageUrl    String?                             @db.Text // Single image banner
+  isActive    Boolean                             @default(true)
+  documents   UniversityAccreditationDocument[] // Multiple documents
+  createdAt   DateTime                            @default(now())
+  updatedAt   DateTime                            @updatedAt
+}
+
+// Model untuk Dokumen Akreditasi Perguruan Tinggi (Multiple)
+model UniversityAccreditationDocument {
+  id             String                   @id @default(cuid())
+  accreditationId String
+  accreditation   UniversityAccreditation @relation(fields: [accreditationId], references: [id], onDelete: Cascade)
+  title          String                   // Nama dokumen (misal: "SK Akreditasi 2024")
+  documentUrl    String                   @db.Text // PDF/DOC file URL
+  documentName   String?                  // Original filename
+  order          Int                      @default(0)
+  createdAt      DateTime                 @default(now())
+  updatedAt      DateTime                 @updatedAt
+
+  @@index([accreditationId, order])
+}
+
+// Model untuk Program Unggulan
+model FeaturedProgram {
+  id          String   @id @default(cuid())
+  title       String   // Nama program (e.g., "Pembelajaran di Luar Kampus (MBKM)")
+  slug        String   @unique // URL-friendly identifier (e.g., "mbkm")
+  description String?  @db.Text // Konten/deskripsi program
+  documentUrl String?  @db.Text // Link ke dokumen/peraturan (optional)
+  documentName String? // Nama file dokumen (optional)
+  icon        String?  // Icon identifier untuk UI (optional)
+  order       Int      @default(0) // Urutan tampilan
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   @@index([order])
+}
+
+// Enum untuk tipe kepakaran
+enum ExpertiseType {
+  FASILITATOR_PEKERTI // Fasilitator Pekerti/AA
+  AUDITOR_SPMI        // Auditor SPMI
+  ASESOR_BKD          // Asesor BKD
+}
+
+// Model untuk Kepakaran (Fasilitator, Auditor, Asesor)
+model Expertise {
+  id        String        @id @default(cuid())
+  type      ExpertiseType // Jenis kepakaran
+  name      String        // Nama lengkap dengan gelar
+  order     Int           @default(0) // Nomor urut
+  isActive  Boolean       @default(true)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  @@index([type, order])
+}
+
+// Model untuk Tautan/Link
+model Link {
+  id        String   @id @default(cuid())
+  name      String   // Nama tautan (e.g., "SAPTO 2", "BAN-PT")
+  url       String   @db.Text // URL tautan
+  order     Int      @default(0) // Nomor urut
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([order])
+}
+
+// Model untuk Berita/News
+model News {
+  id          String   @id @default(cuid())
+  title       String   @db.Text // Judul berita
+  slug        String   @unique // URL-friendly slug
+  excerpt     String   @db.Text // Ringkasan/kutipan berita
+  content     String   @db.LongText // Isi berita lengkap (HTML dari editor)
+  coverImage  String?  @db.Text // Path/URL gambar cover
+  galleryImages String? @db.Text // JSON array of gallery image URLs (ditampilkan sebelum content)
+  author      String   // Nama penulis (e.g., "Admin LP3M")
+  publishedAt DateTime @default(now()) // Tanggal publikasi
+  isPublished Boolean  @default(false) // Status publikasi
+  viewCount   Int      @default(0) // Jumlah views
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([slug])
+  @@index([publishedAt])
+  @@index([isPublished])
+}
+
+model Download {
+  id          String   @id @default(cuid())
+  name        String   @db.Text // Nama dokumen
+  description String?  @db.Text // Deskripsi dokumen (opsional)
+  fileUrl     String   @db.Text // URL file PDF/DOCS
+  fileType    String   // pdf, doc, docx, dll
+  fileSize    Int      // Ukuran file dalam bytes
+  downloadCount Int    @default(0) // Jumlah download
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([name(length: 191)])
+  @@index([createdAt])
 }
 

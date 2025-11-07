@@ -1,9 +1,15 @@
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
-import { Card, CardBody, CardHeader } from "@heroui/card";
-import { Chip } from "@heroui/chip";
-import { Divider } from "@heroui/divider";
 import { prisma } from "@/lib/prisma";
+import { DashboardClient } from "@/components/dashboard-client";
+import { AdminPageLayout } from "@/components/admin-page-layout";
+
+// Dashboard Icon
+const LayoutDashboardIcon = ({ className }: { className?: string }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" />
+  </svg>
+);
 
 export default async function AdminDashboard() {
   const session = await auth();
@@ -13,178 +19,199 @@ export default async function AdminDashboard() {
     redirect("/auth/signin");
   }
 
-  // Get statistics
-  const totalUsers = await prisma.user.count();
-  const totalAdmins = await prisma.user.count({
-    where: { role: "ADMIN" },
-  });
-  const totalRegularUsers = await prisma.user.count({
-    where: { role: "USER" },
-  });
+  // Get statistics from all tables
+  const [
+    totalUsers,
+    totalLeadership,
+    totalStaff,
+    totalCenters,
+    totalFaculties,
+    totalGPM,
+    totalUniversityAccreditation,
+    totalFeaturedPrograms,
+    totalExpertise,
+    totalLinks,
+    totalNews,
+    totalDownloads,
+    publishedNews,
+    totalNewsViews,
+  ] = await Promise.all([
+    prisma.user.count(),
+    prisma.leadership.count(),
+    prisma.staff.count(),
+    prisma.center.count(),
+    prisma.faculty.count(),
+    prisma.qualityAssuranceGroup.count(),
+    prisma.universityAccreditation.count(),
+    prisma.featuredProgram.count(),
+    prisma.expertise.count(),
+    prisma.link.count(),
+    prisma.news.count(),
+    prisma.download.count(),
+    prisma.news.count({ where: { isPublished: true } }),
+    prisma.news.aggregate({ _sum: { viewCount: true } }),
+  ]);
 
+  // Get monthly trend data for the last 5 months (real data from createdAt)
+  const currentDate = new Date();
+  const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const trendData = [];
+
+  for (let i = 4; i >= 0; i--) {
+    const monthDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - i, 1);
+    const nextMonthDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - i + 1, 1);
+    const monthName = monthNames[monthDate.getMonth()];
+
+    const [newsCount, programCount, expertiseCount, downloadCount, linkCount] = await Promise.all([
+      prisma.news.count({
+        where: {
+          createdAt: {
+            gte: monthDate,
+            lt: nextMonthDate,
+          },
+        },
+      }),
+      prisma.featuredProgram.count({
+        where: {
+          createdAt: {
+            gte: monthDate,
+            lt: nextMonthDate,
+          },
+        },
+      }),
+      prisma.expertise.count({
+        where: {
+          createdAt: {
+            gte: monthDate,
+            lt: nextMonthDate,
+          },
+        },
+      }),
+      prisma.download.count({
+        where: {
+          createdAt: {
+            gte: monthDate,
+            lt: nextMonthDate,
+          },
+        },
+      }),
+      prisma.link.count({
+        where: {
+          createdAt: {
+            gte: monthDate,
+            lt: nextMonthDate,
+          },
+        },
+      }),
+    ]);
+
+    trendData.push({
+      month: monthName,
+      Berita: newsCount,
+      Program: programCount,
+      Kepakaran: expertiseCount,
+      Unduhan: downloadCount,
+      Tautan: linkCount,
+      total: newsCount + programCount + expertiseCount + downloadCount + linkCount,
+    });
+  }
+
+  // Prepare stats data for client component
   const stats = [
     {
       title: "Total Users",
       value: totalUsers,
-      color: "primary" as const,
-      icon: "👥",
+      color: "bg-blue-500",
+      change: "+12%",
     },
     {
-      title: "Admins",
-      value: totalAdmins,
-      color: "success" as const,
-      icon: "👑",
+      title: "Berita",
+      value: totalNews,
+      color: "bg-green-500",
+      subtitle: `${publishedNews} Published`,
     },
     {
-      title: "Regular Users",
-      value: totalRegularUsers,
-      color: "warning" as const,
-      icon: "👤",
+      title: "Program Unggulan",
+      value: totalFeaturedPrograms,
+      color: "bg-purple-500",
     },
     {
-      title: "Sessions",
-      value: await prisma.session.count(),
-      color: "secondary" as const,
-      icon: "🔐",
+      title: "Kepakaran",
+      value: totalExpertise,
+      color: "bg-orange-500",
+    },
+    {
+      title: "Unduhan",
+      value: totalDownloads,
+      color: "bg-pink-500",
+    },
+    {
+      title: "Tautan",
+      value: totalLinks,
+      color: "bg-cyan-500",
+    },
+    {
+      title: "Total Views",
+      value: totalNewsViews._sum.viewCount || 0,
+      color: "bg-indigo-500",
+    },
+    {
+      title: "GPM",
+      value: totalGPM,
+      color: "bg-teal-500",
+    },
+  ];
+
+  // Content stats for chart with colors
+  const contentStats = [
+    { name: "Leadership", count: totalLeadership, color: "bg-blue-500" },
+    { name: "Staff", count: totalStaff, color: "bg-green-500" },
+    { name: "Centers", count: totalCenters, color: "bg-purple-500" },
+    { name: "Faculties", count: totalFaculties, color: "bg-orange-500" },
+    { name: "Accreditation", count: totalUniversityAccreditation, color: "bg-pink-500" },
+  ];
+
+  // Quick actions
+  const quickActions = [
+    {
+      title: "Tambah Berita",
+      description: "Buat artikel berita baru",
+      href: "/admin/berita",
+      color: "bg-blue-500",
+    },
+    {
+      title: "Tambah Program",
+      description: "Tambah program unggulan",
+      href: "/admin/program-unggulan",
+      color: "bg-purple-500",
+    },
+    {
+      title: "Upload Dokumen",
+      description: "Upload file unduhan",
+      href: "/admin/unduhan",
+      color: "bg-pink-500",
+    },
+    {
+      title: "Kelola Tautan",
+      description: "Tambah atau edit tautan",
+      href: "/admin/tautan",
+      color: "bg-cyan-500",
     },
   ];
 
   return (
-    <div className="space-y-8">
-      {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold">Dashboard</h1>
-        <p className="text-default-500 mt-2">
-          Welcome back, {session?.user?.name || "Admin"}!
-        </p>
-      </div>
-
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {stats.map((stat) => (
-          <Card key={stat.title} className="border-none shadow-md">
-            <CardBody className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-default-500">{stat.title}</p>
-                  <p className="text-3xl font-bold mt-2">{stat.value}</p>
-                </div>
-                <div className="text-4xl">{stat.icon}</div>
-              </div>
-              <Divider className="my-3" />
-              <Chip color={stat.color} variant="flat" size="sm">
-                Active
-              </Chip>
-            </CardBody>
-          </Card>
-        ))}
-      </div>
-
-      {/* Recent Activity */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card className="border-none shadow-md">
-          <CardHeader className="pb-0 pt-6 px-6">
-            <h3 className="text-xl font-bold">System Information</h3>
-          </CardHeader>
-          <CardBody className="p-6">
-            <div className="space-y-4">
-              <div className="flex justify-between items-center">
-                <span className="text-default-500">Database</span>
-                <Chip color="success" variant="dot" size="sm">
-                  MySQL Connected
-                </Chip>
-              </div>
-              <Divider />
-              <div className="flex justify-between items-center">
-                <span className="text-default-500">Authentication</span>
-                <Chip color="success" variant="dot" size="sm">
-                  Auth.js Active
-                </Chip>
-              </div>
-              <Divider />
-              <div className="flex justify-between items-center">
-                <span className="text-default-500">Your Role</span>
-                <Chip color="primary" variant="flat" size="sm">
-                  {session?.user?.role}
-                </Chip>
-              </div>
-              <Divider />
-              <div className="flex justify-between items-center">
-                <span className="text-default-500">Email</span>
-                <span className="text-sm font-medium">
-                  {session?.user?.email}
-                </span>
-              </div>
-            </div>
-          </CardBody>
-        </Card>
-
-        <Card className="border-none shadow-md">
-          <CardHeader className="pb-0 pt-6 px-6">
-            <h3 className="text-xl font-bold">Quick Actions</h3>
-          </CardHeader>
-          <CardBody className="p-6">
-            <div className="space-y-3">
-              <a
-                href="/admin/users"
-                className="block p-4 rounded-lg border border-default-200 hover:border-primary hover:bg-default-50 transition-colors"
-              >
-                <div className="flex items-center gap-3">
-                  <span className="text-2xl">👥</span>
-                  <div>
-                    <p className="font-semibold">Manage Users</p>
-                    <p className="text-sm text-default-500">
-                      View and manage all users
-                    </p>
-                  </div>
-                </div>
-              </a>
-              <a
-                href="/admin/content"
-                className="block p-4 rounded-lg border border-default-200 hover:border-primary hover:bg-default-50 transition-colors"
-              >
-                <div className="flex items-center gap-3">
-                  <span className="text-2xl">📝</span>
-                  <div>
-                    <p className="font-semibold">Manage Content</p>
-                    <p className="text-sm text-default-500">
-                      Create and edit content
-                    </p>
-                  </div>
-                </div>
-              </a>
-              <a
-                href="/admin/analytics"
-                className="block p-4 rounded-lg border border-default-200 hover:border-primary hover:bg-default-50 transition-colors"
-              >
-                <div className="flex items-center gap-3">
-                  <span className="text-2xl">📊</span>
-                  <div>
-                    <p className="font-semibold">View Analytics</p>
-                    <p className="text-sm text-default-500">
-                      Check website statistics
-                    </p>
-                  </div>
-                </div>
-              </a>
-              <a
-                href="/admin/settings"
-                className="block p-4 rounded-lg border border-default-200 hover:border-primary hover:bg-default-50 transition-colors"
-              >
-                <div className="flex items-center gap-3">
-                  <span className="text-2xl">⚙️</span>
-                  <div>
-                    <p className="font-semibold">Settings</p>
-                    <p className="text-sm text-default-500">
-                      Configure system settings
-                    </p>
-                  </div>
-                </div>
-              </a>
-            </div>
-          </CardBody>
-        </Card>
-      </div>
-    </div>
+    <AdminPageLayout
+      icon={<LayoutDashboardIcon />}
+      title="Dashboard"
+      description="Overview of LPMPP UNSOED system and quick access to key features"
+    >
+      <DashboardClient
+        stats={stats}
+        contentStats={contentStats}
+        trendData={trendData}
+        quickActions={quickActions}
+        userName={session?.user?.name || "Admin"}
+      />
+    </AdminPageLayout>
   );
 }

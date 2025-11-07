@@ -16,6 +16,7 @@ import {
   DropdownMenu,
   DropdownItem,
 } from "@heroui/dropdown";
+import { Accordion, AccordionItem } from "@heroui/accordion";
 import { Avatar } from "@heroui/avatar";
 import { Button } from "@heroui/button";
 import NextLink from "next/link";
@@ -87,6 +88,12 @@ const UserCircleIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
+const DocumentIcon = ({ className }: { className?: string }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+  </svg>
+);
+
 export function AdminNavbar() {
   const pathname = usePathname();
   const { data: session } = useSession();
@@ -140,6 +147,26 @@ export function AdminNavbar() {
     { key: "akreditasi-internasional", label: "Akreditasi Internasional", href: "/admin/akreditasi-internasional", icon: FileTextIcon },
     { key: "akreditasi-prodi", label: "Akreditasi Program Studi", href: "/admin/akreditasi-prodi", icon: FileTextIcon },
     { key: "akreditasi-pt", label: "Akreditasi Perguruan Tinggi", href: "/admin/akreditasi-pt", icon: FileTextIcon },
+  ];
+
+  const programUnggulanItems = [
+    { key: "program-unggulan", label: "Program Unggulan", href: "/admin/program-unggulan", icon: FileTextIcon },
+  ];
+
+  const kepakaranItems = [
+    { key: "kepakaran", label: "Kepakaran", href: "/admin/kepakaran", icon: FileTextIcon },
+  ];
+
+  const tautanItems = [
+    { key: "tautan", label: "Tautan", href: "/admin/tautan", icon: FileTextIcon },
+  ];
+
+  const beritaItems = [
+    { key: "berita", label: "Berita", href: "/admin/berita", icon: FileTextIcon },
+  ];
+
+  const unduhanItems = [
+    { key: "unduhan", label: "Unduhan", href: "/admin/unduhan", icon: DocumentIcon },
   ];
 
   const handleLogout = () => {
@@ -307,6 +334,86 @@ export function AdminNavbar() {
             })}
           </DropdownMenu>
         </Dropdown>
+
+        {/* Program Unggulan */}
+        <NavbarItem>
+          <NextLink
+            href="/admin/program-unggulan"
+            className={clsx(
+              "flex items-center gap-2 px-3 py-2 rounded-lg transition-colors",
+              pathname === "/admin/program-unggulan"
+                ? "bg-primary text-primary-foreground"
+                : "text-foreground hover:bg-default-100"
+            )}
+          >
+            <FileTextIcon className="w-4 h-4" />
+            Program Unggulan
+          </NextLink>
+        </NavbarItem>
+
+        {/* Kepakaran */}
+        <NavbarItem>
+          <NextLink
+            href="/admin/kepakaran"
+            className={clsx(
+              "flex items-center gap-2 px-3 py-2 rounded-lg transition-colors",
+              pathname === "/admin/kepakaran"
+                ? "bg-primary text-primary-foreground"
+                : "text-foreground hover:bg-default-100"
+            )}
+          >
+            <FileTextIcon className="w-4 h-4" />
+            Kepakaran
+          </NextLink>
+        </NavbarItem>
+
+        {/* Tautan */}
+        <NavbarItem>
+          <NextLink
+            href="/admin/tautan"
+            className={clsx(
+              "flex items-center gap-2 px-3 py-2 rounded-lg transition-colors",
+              pathname === "/admin/tautan"
+                ? "bg-primary text-primary-foreground"
+                : "text-foreground hover:bg-default-100"
+            )}
+          >
+            <FileTextIcon className="w-4 h-4" />
+            Tautan
+          </NextLink>
+        </NavbarItem>
+
+        {/* Berita */}
+        <NavbarItem>
+          <NextLink
+            href="/admin/berita"
+            className={clsx(
+              "flex items-center gap-2 px-3 py-2 rounded-lg transition-colors",
+              pathname === "/admin/berita"
+                ? "bg-primary text-primary-foreground"
+                : "text-foreground hover:bg-default-100"
+            )}
+          >
+            <FileTextIcon className="w-4 h-4" />
+            Berita
+          </NextLink>
+        </NavbarItem>
+
+        {/* Unduhan */}
+        <NavbarItem>
+          <NextLink
+            href="/admin/unduhan"
+            className={clsx(
+              "flex items-center gap-2 px-3 py-2 rounded-lg transition-colors",
+              pathname === "/admin/unduhan"
+                ? "bg-primary text-primary-foreground"
+                : "text-foreground hover:bg-default-100"
+            )}
+          >
+            <DocumentIcon className="w-4 h-4" />
+            Unduhan
+          </NextLink>
+        </NavbarItem>
       </NavbarContent>
 
       {/* Right Side - Theme + Profile Dropdown */}
@@ -413,31 +520,6 @@ export function AdminNavbar() {
           </div>
         </NavbarMenuItem>
 
-        {/* Menu Items */}
-        {menuItems.map((item, index) => {
-          const Icon = item.icon;
-          const isActive = pathname === item.href;
-          
-          return (
-            <NavbarMenuItem key={`${item.label}-${index}`}>
-              <NextLink
-                href={item.href}
-                prefetch={true}
-                className={clsx(
-                  "flex items-center gap-3 w-full px-4 py-3 rounded-lg transition-all",
-                  isActive
-                    ? "bg-primary text-primary-foreground font-semibold"
-                    : "text-default-600 hover:bg-default-100"
-                )}
-                onClick={() => setIsMenuOpen(false)}
-              >
-                <Icon className="w-5 h-5" />
-                {item.label}
-              </NextLink>
-            </NavbarMenuItem>
-          );
-        })}
-
         {/* User Info in Mobile */}
         {session?.user && (
           <>
@@ -465,19 +547,211 @@ export function AdminNavbar() {
                 </div>
               </div>
             </NavbarMenuItem>
-            
-            {/* Logout Button for Mobile */}
+
+            {/* Dashboard */}
             <NavbarMenuItem>
-              <Button
-                color="danger"
-                variant="flat"
-                className="w-full"
-                startContent={<LogOutIcon className="w-5 h-5" />}
-                onPress={handleLogout}
+              <NextLink
+                href="/admin"
+                className={clsx(
+                  "flex items-center gap-3 w-full px-4 py-3 rounded-lg",
+                  pathname === "/admin"
+                    ? "bg-primary text-primary-foreground font-semibold"
+                    : "hover:bg-default-100"
+                )}
+                onClick={() => setIsMenuOpen(false)}
               >
-                Log Out
-              </Button>
+                <LayoutDashboardIcon className="w-5 h-5" />
+                Dashboard
+              </NextLink>
             </NavbarMenuItem>
+
+            {/* Separator */}
+            <NavbarMenuItem>
+              <div className="border-t border-divider my-2" />
+            </NavbarMenuItem>
+
+            {/* Accordion Menus for Mobile */}
+            <NavbarMenuItem>
+              <Accordion variant="light" className="px-0">
+                {/* Data Master Accordion */}
+                <AccordionItem
+                  key="data-master"
+                  aria-label="Data Master"
+                  title={
+                    <div className="flex items-center gap-2">
+                      <UsersIcon className="w-5 h-5" />
+                      <span>Data Master</span>
+                    </div>
+                  }
+                >
+                  <div className="flex flex-col gap-2 pl-7">
+                    {dataMasterItems.map((item) => (
+                      <NextLink
+                        key={item.key}
+                        href={item.href}
+                        className={clsx(
+                          "px-3 py-2 rounded-lg text-sm",
+                          pathname === item.href
+                            ? "bg-primary text-primary-foreground"
+                            : "hover:bg-default-100"
+                        )}
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        {item.label}
+                      </NextLink>
+                    ))}
+                  </div>
+                </AccordionItem>
+
+                {/* SPMI Accordion */}
+                <AccordionItem
+                  key="spmi"
+                  aria-label="SPMI"
+                  title={
+                    <div className="flex items-center gap-2">
+                      <CogIcon className="w-5 h-5" />
+                      <span>SPMI</span>
+                    </div>
+                  }
+                >
+                  <div className="flex flex-col gap-2 pl-7">
+                    {spmiItems.map((item) => (
+                      <NextLink
+                        key={item.key}
+                        href={item.href}
+                        className={clsx(
+                          "px-3 py-2 rounded-lg text-sm",
+                          pathname === item.href
+                            ? "bg-primary text-primary-foreground"
+                            : "hover:bg-default-100"
+                        )}
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        {item.label}
+                      </NextLink>
+                    ))}
+                  </div>
+                </AccordionItem>
+
+                {/* Akreditasi Accordion */}
+                <AccordionItem
+                  key="akreditasi"
+                  aria-label="Akreditasi"
+                  title={
+                    <div className="flex items-center gap-2">
+                      <FileTextIcon className="w-5 h-5" />
+                      <span>Akreditasi</span>
+                    </div>
+                  }
+                >
+                  <div className="flex flex-col gap-2 pl-7">
+                    {akreditasiItems.map((item) => (
+                      <NextLink
+                        key={item.key}
+                        href={item.href}
+                        className={clsx(
+                          "px-3 py-2 rounded-lg text-sm",
+                          pathname === item.href
+                            ? "bg-primary text-primary-foreground"
+                            : "hover:bg-default-100"
+                        )}
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        {item.label}
+                      </NextLink>
+                    ))}
+                  </div>
+                </AccordionItem>
+              </Accordion>
+            </NavbarMenuItem>
+
+            {/* Single Menu Items */}
+            <NavbarMenuItem>
+              <NextLink
+                href="/admin/program-unggulan"
+                className={clsx(
+                  "flex items-center gap-3 w-full px-4 py-3 rounded-lg",
+                  pathname === "/admin/program-unggulan"
+                    ? "bg-primary text-primary-foreground font-semibold"
+                    : "hover:bg-default-100"
+                )}
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <FileTextIcon className="w-5 h-5" />
+                Program Unggulan
+              </NextLink>
+            </NavbarMenuItem>
+
+            <NavbarMenuItem>
+              <NextLink
+                href="/admin/kepakaran"
+                className={clsx(
+                  "flex items-center gap-3 w-full px-4 py-3 rounded-lg",
+                  pathname === "/admin/kepakaran"
+                    ? "bg-primary text-primary-foreground font-semibold"
+                    : "hover:bg-default-100"
+                )}
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <FileTextIcon className="w-5 h-5" />
+                Kepakaran
+              </NextLink>
+            </NavbarMenuItem>
+
+            <NavbarMenuItem>
+              <NextLink
+                href="/admin/tautan"
+                className={clsx(
+                  "flex items-center gap-3 w-full px-4 py-3 rounded-lg",
+                  pathname === "/admin/tautan"
+                    ? "bg-primary text-primary-foreground font-semibold"
+                    : "hover:bg-default-100"
+                )}
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <FileTextIcon className="w-5 h-5" />
+                Tautan
+              </NextLink>
+            </NavbarMenuItem>
+
+            <NavbarMenuItem>
+              <NextLink
+                href="/admin/berita"
+                className={clsx(
+                  "flex items-center gap-3 w-full px-4 py-3 rounded-lg",
+                  pathname === "/admin/berita"
+                    ? "bg-primary text-primary-foreground font-semibold"
+                    : "hover:bg-default-100"
+                )}
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <FileTextIcon className="w-5 h-5" />
+                Berita
+              </NextLink>
+            </NavbarMenuItem>
+
+            <NavbarMenuItem>
+              <NextLink
+                href="/admin/unduhan"
+                className={clsx(
+                  "flex items-center gap-3 w-full px-4 py-3 rounded-lg",
+                  pathname === "/admin/unduhan"
+                    ? "bg-primary text-primary-foreground font-semibold"
+                    : "hover:bg-default-100"
+                )}
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <DocumentIcon className="w-5 h-5" />
+                Unduhan
+              </NextLink>
+            </NavbarMenuItem>
+
+            {/* Separator */}
+            <NavbarMenuItem>
+              <div className="border-t border-divider my-2" />
+            </NavbarMenuItem>
+            
+            
           </>
         )}
       </NavbarMenu>
