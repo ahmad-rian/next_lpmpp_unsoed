@@ -13,14 +13,33 @@ interface SiteConfig {
   logoApp: string | null;
   logoDescription: string | null;
   siteName: string;
-  visi: string | null;
-  misi: string | null;
+  visi: string | null; // Visi LPMPP
+  misi: string | null; // Misi LPMPP
+  visiUnsoed: string | null; // Visi UNSOED
+  misiUnsoed: string | null; // Misi UNSOED
   tugas: string | null;
   fungsi: string | null;
   alamat: string | null;
   email: string | null;
   instagramUrl: string | null;
   carouselImages: string | null; // JSON string array
+  
+  // Field tambahan untuk halaman utama
+  gambarTeam: string | null; // Gambar team
+  gambarSlogan: string | null; // Gambar slogan
+  gambarTambahan: string | null; // Gambar tambahan
+  
+  // Detail Layanan LPMPP
+  layananKami: string | null; // LAYANAN KAMI description
+  pelatihan: string | null; // PELATIHAN description  
+  pembelajaran: string | null; // PEMBELAJARAN description
+  penjaminanMutu: string | null; // PENJAMINAN MUTU description
+  
+  // Informasi dan Layanan
+  informasiLayanan: string | null; // Informasi pelayanan dan jadwal
+  gambarInformasi: string | null; // Gambar untuk informasi layanan
+  gambarStaff: string | null; // Gambar staff pendukung
+  gambarPartner: string | null; // Gambar partner
 }
 
 const CogIcon = () => (
@@ -245,42 +264,81 @@ export default function SiteConfigPage() {
             <div>
               <h2 className="text-xl font-semibold mb-4">Profil Organisasi</h2>
             </div>
-            <Textarea
-              label="Visi"
-              placeholder="Masukkan visi organisasi..."
-              value={config?.visi || ""}
-              onChange={(e) => handleChange("visi", e.target.value)}
-              minRows={3}
-              description="Visi organisasi LPMPP UNSOED"
-              variant="bordered"
-            />
-            <Textarea
-              label="Misi"
-              placeholder="Masukkan misi organisasi..."
-              value={config?.misi || ""}
-              onChange={(e) => handleChange("misi", e.target.value)}
-              minRows={4}
-              description="Misi organisasi LPMPP UNSOED"
-              variant="bordered"
-            />
-            <Textarea
-              label="Tugas"
-              placeholder="Masukkan tugas organisasi..."
-              value={config?.tugas || ""}
-              onChange={(e) => handleChange("tugas", e.target.value)}
-              minRows={4}
-              description="Tugas pokok organisasi"
-              variant="bordered"
-            />
-            <Textarea
-              label="Fungsi"
-              placeholder="Masukkan fungsi organisasi..."
-              value={config?.fungsi || ""}
-              onChange={(e) => handleChange("fungsi", e.target.value)}
-              minRows={4}
-              description="Fungsi organisasi"
-              variant="bordered"
-            />
+            
+            {/* LPMPP Section */}
+            <div className="border-l-4 border-primary pl-4">
+              <h3 className="text-lg font-medium mb-3 text-primary">LPMPP UNSOED</h3>
+              <div className="space-y-4">
+                <Textarea
+                  label="Visi LPMPP"
+                  placeholder="Masukkan visi LPMPP UNSOED..."
+                  value={config?.visi || ""}
+                  onChange={(e) => handleChange("visi", e.target.value)}
+                  minRows={3}
+                  description="Visi organisasi LPMPP UNSOED"
+                  variant="bordered"
+                />
+                <Textarea
+                  label="Misi LPMPP"
+                  placeholder="Masukkan misi LPMPP UNSOED..."
+                  value={config?.misi || ""}
+                  onChange={(e) => handleChange("misi", e.target.value)}
+                  minRows={4}
+                  description="Misi organisasi LPMPP UNSOED"
+                  variant="bordered"
+                />
+              </div>
+            </div>
+
+            {/* UNSOED Section */}
+            <div className="border-l-4 border-secondary pl-4">
+              <h3 className="text-lg font-medium mb-3 text-secondary">Universitas Jenderal Soedirman</h3>
+              <div className="space-y-4">
+                <Textarea
+                  label="Visi UNSOED"
+                  placeholder="Masukkan visi Universitas Jenderal Soedirman..."
+                  value={config?.visiUnsoed || ""}
+                  onChange={(e) => handleChange("visiUnsoed", e.target.value)}
+                  minRows={3}
+                  description="Visi Universitas Jenderal Soedirman"
+                  variant="bordered"
+                />
+                <Textarea
+                  label="Misi UNSOED"
+                  placeholder="Masukkan misi Universitas Jenderal Soedirman..."
+                  value={config?.misiUnsoed || ""}
+                  onChange={(e) => handleChange("misiUnsoed", e.target.value)}
+                  minRows={4}
+                  description="Misi Universitas Jenderal Soedirman"
+                  variant="bordered"
+                />
+              </div>
+            </div>
+
+            {/* Tugas dan Fungsi Section */}
+            <div className="border-l-4 border-success pl-4">
+              <h3 className="text-lg font-medium mb-3 text-success">Tugas & Fungsi</h3>
+              <div className="space-y-4">
+                <Textarea
+                  label="Tugas"
+                  placeholder="Masukkan tugas organisasi..."
+                  value={config?.tugas || ""}
+                  onChange={(e) => handleChange("tugas", e.target.value)}
+                  minRows={4}
+                  description="Tugas pokok organisasi"
+                  variant="bordered"
+                />
+                <Textarea
+                  label="Fungsi"
+                  placeholder="Masukkan fungsi organisasi..."
+                  value={config?.fungsi || ""}
+                  onChange={(e) => handleChange("fungsi", e.target.value)}
+                  minRows={4}
+                  description="Fungsi organisasi"
+                  variant="bordered"
+                />
+              </div>
+            </div>
           </CardBody>
         </Card>
 
@@ -314,6 +372,139 @@ export default function SiteConfigPage() {
               value={config?.instagramUrl || ""}
               onChange={(e) => handleChange("instagramUrl", e.target.value)}
               description="Link ke akun Instagram resmi"
+              variant="bordered"
+            />
+          </CardBody>
+        </Card>
+
+        {/* Gambar Halaman Utama */}
+        <Card>
+          <CardBody className="gap-6 p-6">
+            <div>
+              <h2 className="text-xl font-semibold mb-4">Gambar Halaman Utama</h2>
+              <p className="text-sm text-default-500">
+                Upload gambar untuk berbagai section di halaman utama
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <ImageUpload
+                label="Gambar Team"
+                value={config?.gambarTeam || null}
+                onChange={(url) => handleChange("gambarTeam", url)}
+                description="Gambar team LPMPP untuk section tentang tim"
+              />
+              
+              <ImageUpload
+                label="Gambar Slogan"
+                value={config?.gambarSlogan || null}
+                onChange={(url) => handleChange("gambarSlogan", url)}
+                description="Gambar untuk section slogan atau motto"
+              />
+              
+              <ImageUpload
+                label="Gambar Tambahan"
+                value={config?.gambarTambahan || null}
+                onChange={(url) => handleChange("gambarTambahan", url)}
+                description="Gambar tambahan untuk keperluan lainnya"
+              />
+
+              <ImageUpload
+                label="Gambar Informasi Layanan"
+                value={config?.gambarInformasi || null}
+                onChange={(url) => handleChange("gambarInformasi", url)}
+                description="Gambar untuk section informasi dan jadwal layanan"
+              />
+
+              <ImageUpload
+                label="Gambar Staff Pendukung"
+                value={config?.gambarStaff || null}
+                onChange={(url) => handleChange("gambarStaff", url)}
+                description="Gambar staff pendukung atau tim kerja"
+              />
+
+              <ImageUpload
+                label="Gambar Partner"
+                value={config?.gambarPartner || null}
+                onChange={(url) => handleChange("gambarPartner", url)}
+                description="Gambar partner atau kerjasama institusi"
+              />
+            </div>
+          </CardBody>
+        </Card>
+
+        {/* Detail Layanan LPMPP */}
+        <Card>
+          <CardBody className="gap-4 p-6">
+            <div>
+              <h2 className="text-xl font-semibold mb-4">Detail Layanan LPMPP</h2>
+              <p className="text-sm text-default-500">
+                Deskripsi lengkap untuk setiap layanan yang disediakan LPMPP
+              </p>
+            </div>
+            
+            <Textarea
+              label="LAYANAN KAMI"
+              placeholder="LPMPP Universitas Jenderal Soedirman adalah lembaga yang bertugas menjamin mutu pendidikan dan mengembangkan pembelajaran untuk mendukung visi universitas menjadi institusi unggul dan berdaya saing."
+              value={config?.layananKami || ""}
+              onChange={(e) => handleChange("layananKami", e.target.value)}
+              minRows={4}
+              description="Deskripsi umum tentang layanan LPMPP"
+              variant="bordered"
+            />
+            
+            <Textarea
+              label="PELATIHAN"
+              placeholder="LPMPP menyelenggarakan program pelatihan untuk meningkatkan kompetensi tenaga pendidik serta mendukung penjaminan mutu dan pengembangan pembelajaran yang berkualitas di Universitas Jenderal Soedirman."
+              value={config?.pelatihan || ""}
+              onChange={(e) => handleChange("pelatihan", e.target.value)}
+              minRows={3}
+              description="Deskripsi tentang layanan pelatihan"
+              variant="bordered"
+            />
+            
+            <Textarea
+              label="PEMBELAJARAN"
+              placeholder="LPMPP mengembangkan metode, kurikulum, dan teknologi pembelajaran untuk meningkatkan kualitas pendidikan di Universitas Jenderal Soedirman."
+              value={config?.pembelajaran || ""}
+              onChange={(e) => handleChange("pembelajaran", e.target.value)}
+              minRows={3}
+              description="Deskripsi tentang pengembangan pembelajaran"
+              variant="bordered"
+            />
+            
+            <Textarea
+              label="PENJAMINAN MUTU"
+              placeholder="LPMPP memastikan pelaksanaan sistem penjaminan mutu pendidikan yang konsisten, melakukan evaluasi, serta memberikan rekomendasi untuk peningkatan kualitas akademik di Universitas Jenderal Soedirman"
+              value={config?.penjaminanMutu || ""}
+              onChange={(e) => handleChange("penjaminanMutu", e.target.value)}
+              minRows={4}
+              description="Deskripsi tentang sistem penjaminan mutu"
+              variant="bordered"
+            />
+          </CardBody>
+        </Card>
+
+        {/* Informasi dan Layanan */}
+        <Card>
+          <CardBody className="gap-4 p-6">
+            <div>
+              <h2 className="text-xl font-semibold mb-4">Informasi dan Layanan</h2>
+              <p className="text-sm text-default-500">
+                Jadwal pelayanan dan informasi kontak untuk civitas akademika
+              </p>
+            </div>
+            
+            <Textarea
+              label="Informasi Pelayanan"
+              placeholder="LPMPP menyediakan layanan bagi seluruh civitas akademika Universitas Jenderal Soedirman. Jadwal Pelayanan sebagai berikut:
+
+Hari : Senin s/d Jumat
+Waktu : Pukul 08.00 – 16.00 WIB"
+              value={config?.informasiLayanan || ""}
+              onChange={(e) => handleChange("informasiLayanan", e.target.value)}
+              minRows={6}
+              description="Informasi lengkap tentang jadwal dan cara pelayanan"
               variant="bordered"
             />
           </CardBody>

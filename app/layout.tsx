@@ -43,16 +43,16 @@ export default function RootLayout({
         )}
       >
         <NextTopLoader
-          color="#FF0000"
-          initialPosition={0.1}
-          crawlSpeed={100}
-          height={4}
+          color="#3b82f6"
+          initialPosition={0.08}
+          crawlSpeed={200}
+          height={3}
           crawl={true}
-          showSpinner={true}
+          showSpinner={false}
           easing="ease"
-          speed={100}
-          shadow="0 0 15px #FF0000,0 0 8px #FF0000"
-          zIndex={9999}
+          speed={200}
+          shadow="0 0 10px #3b82f6,0 0 5px #3b82f6"
+          zIndex={1600}
           showAtBottom={false}
         />
         <SiteMetadata />

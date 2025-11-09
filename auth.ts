@@ -58,18 +58,24 @@ export const authConfig: NextAuthConfig = {
       }
     },
     async redirect({ url, baseUrl }) {
-      // Redirect ke admin panel setelah login
+      console.log("NextAuth redirect:", { url, baseUrl });
+      
+      // Redirect ke admin panel setelah login sukses
       if (url.startsWith("/auth/signin")) {
         return `${baseUrl}/admin`;
       }
-      // Untuk logout, redirect ke signin
-      if (url === baseUrl) {
-        return `${baseUrl}/auth/signin`;
+      
+      // Jika URL adalah baseUrl (homepage), biarkan redirect ke homepage
+      if (url === baseUrl || url === `${baseUrl}/`) {
+        return baseUrl;
       }
-      // Default: arahkan ke URL yang diminta atau admin
+      
+      // Jika URL internal lainnya, izinkan
       if (url.startsWith(baseUrl)) {
         return url;
       }
+      
+      // Fallback ke admin untuk URL external
       return `${baseUrl}/admin`;
     },
     async session({ session, user }) {

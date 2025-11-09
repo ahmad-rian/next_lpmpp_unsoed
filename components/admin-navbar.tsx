@@ -132,6 +132,9 @@ export function AdminNavbar() {
 
   const dataMasterItems = [
     { key: "site-config", label: "Konfigurasi Situs", href: "/admin/site-config", icon: CogIcon },
+    { key: "data-buku", label: "Data Buku", href: "/admin/data-buku", icon: FileTextIcon },
+    { key: "data-galeri", label: "Data Galeri", href: "/admin/data-galeri", icon: FileTextIcon },
+    { key: "tautan-layanan", label: "Tautan Layanan", href: "/admin/tautan-layanan", icon: FileTextIcon },
     { key: "pimpinan-lembaga", label: "Pimpinan Lembaga", href: "/admin/pimpinan-lembaga", icon: UsersIcon },
     { key: "tata-usaha", label: "Tata Usaha", href: "/admin/tata-usaha", icon: UsersIcon },
     { key: "pusat-unit", label: "Pusat & Unit", href: "/admin/pusat-unit", icon: FileTextIcon },
@@ -169,8 +172,16 @@ export function AdminNavbar() {
     { key: "unduhan", label: "Unduhan", href: "/admin/unduhan", icon: DocumentIcon },
   ];
 
-  const handleLogout = () => {
-    signOut({ callbackUrl: "/auth/signin" });
+  const handleLogout = async () => {
+    try {
+      await signOut({ 
+        redirect: false 
+      });
+      // Manually redirect to homepage after logout
+      window.location.href = "/";
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
   };
 
   return (
@@ -422,6 +433,11 @@ export function AdminNavbar() {
           <ThemeSwitch />
         </NavbarItem>
         
+        {/* Theme Switch for Mobile */}
+        <NavbarItem className="sm:hidden">
+          <ThemeSwitch />
+        </NavbarItem>
+        
         {/* Profile Dropdown - Avatar + Name yang bisa diklik jadi dropdown */}
         <NavbarItem>
           {session?.user ? (
@@ -512,42 +528,9 @@ export function AdminNavbar() {
 
       {/* Mobile Menu */}
       <NavbarMenu>
-        {/* Theme Switch for Mobile */}
-        <NavbarMenuItem>
-          <div className="flex items-center justify-between w-full px-4 py-3">
-            <span className="text-default-600 font-medium">Theme</span>
-            <ThemeSwitch />
-          </div>
-        </NavbarMenuItem>
-
         {/* User Info in Mobile */}
         {session?.user && (
           <>
-            <NavbarMenuItem>
-              <div className="border-t border-divider my-2" />
-            </NavbarMenuItem>
-            
-            <NavbarMenuItem>
-              <div className="flex items-center gap-3 w-full px-4 py-3">
-                <Avatar
-                  src={session.user.image || undefined}
-                  name={session.user.name || session.user.email || "Admin"}
-                  size="sm"
-                  showFallback
-                  isBordered
-                  color="primary"
-                  imgProps={{
-                    referrerPolicy: "no-referrer"
-                  }}
-                />
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold truncate">{session.user.name || "No Name"}</p>
-                  <p className="text-xs text-default-500 truncate">{session.user.email}</p>
-                  <p className="text-xs text-default-400 capitalize">{session.user.role || "Admin"}</p>
-                </div>
-              </div>
-            </NavbarMenuItem>
-
             {/* Dashboard */}
             <NavbarMenuItem>
               <NextLink

@@ -9,7 +9,7 @@ export const siteConfig = {
       href: "/",
     },
     {
-      label: "Profil",
+      label: "Profil LPMPP",
       href: "#",
       children: [
         {

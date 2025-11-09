@@ -1,0 +1,503 @@
+"use client";
+
+import React, { useState, useEffect } from "react";
+import {
+  Table,
+  TableHeader,
+  TableColumn,
+  TableBody,
+  TableRow,
+  TableCell,
+} from "@heroui/table";
+import { Button } from "@heroui/button";
+import {
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  useDisclosure,
+} from "@heroui/modal";
+import { Input, Textarea } from "@heroui/input";
+import { Switch } fro              
+              "use client";
+
+import React, { useState, useEffect } from "react";
+import {
+  Table,
+  TableHeader,
+  TableColumn,
+  TableBody,
+  TableRow,
+  TableCell,
+} from "@heroui/table";
+import { Button } from "@heroui/button";
+import {
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  useDisclosure,
+} from "@heroui/modal";
+import { Input, Textarea } from "@heroui/input";
+import { Switch } from "@heroui/switch";
+import { Chip } from "@heroui/chip";
+import { Card, CardBody } from "@heroui/card";
+import { BookOpenIcon, PlusIcon, PencilIcon, TrashIcon } from "@heroicons/react/24/outline";
+import { AdminPageLayout } from "@/components/admin-page-layout";
+import { ImageUpload } from "@/components/image-upload";
+import { DocumentUpload } from "@/components/document-upload";
+import toast from "react-hot-toast";import { Chip } from "@heroui/chip";
+import { Card, CardBody } from "@heroui/card";
+import { Spinner } from "@heroui/spinner";
+import { 
+  PlusIcon, 
+  PencilIcon, 
+  TrashIcon, 
+  EyeIcon, 
+  EyeSlashIcon,
+  Bars3Icon,
+  BookOpenIcon
+} from "@heroicons/react/24/outline";
+import Image from "next/image";
+import { toast } from "react-hot-toast";
+import { AdminPageLayout } from "@/components/admin-page-layout";
+import { ImageUpload } from "@/components/image-upload";
+import { DocumentUpload } from "@/components/document-upload";
+
+interface DataBuku {
+  id: string;
+  judul: string;
+  deskripsi?: string | null;
+  gambar?: string | null;
+  link?: string | null;
+  order: number;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface DataBukuForm {
+  judul: string;
+  deskripsi: string;
+  gambar: string;
+  link: string;
+  isActive: boolean;
+}
+
+export default function DataBukuPage() {
+  const [dataBuku, setDataBuku] = useState<DataBuku[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [editingItem, setEditingItem] = useState<DataBuku | null>(null);
+  const [formData, setFormData] = useState<DataBukuForm>({
+    judul: "",
+    deskripsi: "",
+    gambar: "",
+    link: "",
+    isActive: true,
+  });
+
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
+  useEffect(() => {
+    fetchDataBuku();
+  }, []);
+
+  const fetchDataBuku = async () => {
+    try {
+      const response = await fetch("/api/admin/data-buku");
+      if (response.ok) {
+        const data = await response.json();
+        setDataBuku(data);
+      } else {
+        toast.error("Gagal memuat data buku");
+      }
+    } catch (error) {
+      console.error("Error fetching data buku:", error);
+      toast.error("Gagal memuat data buku");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const resetForm = () => {
+    setFormData({
+      judul: "",
+      deskripsi: "",
+      gambar: "",
+      link: "",
+      isActive: true,
+    });
+    setEditingItem(null);
+  };
+
+  const handleAdd = () => {
+    resetForm();
+    onOpen();
+  };
+
+  const handleEdit = (item: DataBuku) => {
+    setEditingItem(item);
+    setFormData({
+      judul: item.judul,
+      deskripsi: item.deskripsi || "",
+      gambar: item.gambar || "",
+      link: item.link || "",
+      isActive: item.isActive,
+    });
+    onOpen();
+  };
+
+  const handleSubmit = async () => {
+    if (!formData.judul.trim()) {
+      toast.error("Judul harus diisi");
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      const url = editingItem
+        ? `/api/admin/data-buku/${editingItem.id}`
+        : "/api/admin/data-buku";
+      
+      const method = editingItem ? "PUT" : "POST";
+
+      const response = await fetch(url, {
+        method,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        toast.success(
+          editingItem
+            ? "Data buku berhasil diperbarui"
+            : "Data buku berhasil ditambahkan"
+        );
+        fetchDataBuku();
+        onClose();
+        resetForm();
+      } else {
+        const errorData = await response.json();
+        toast.error(errorData.error || "Terjadi kesalahan");
+      }
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      toast.error("Terjadi kesalahan");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm("Apakah Anda yakin ingin menghapus data buku ini?")) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/admin/data-buku/${id}`, {
+        method: "DELETE",
+      });
+
+      if (response.ok) {
+        toast.success("Data buku berhasil dihapus");
+        fetchDataBuku();
+      } else {
+        toast.error("Gagal menghapus data buku");
+      }
+    } catch (error) {
+      console.error("Error deleting data buku:", error);
+      toast.error("Gagal menghapus data buku");
+    }
+  };
+
+  const toggleActive = async (id: string, isActive: boolean) => {
+    try {
+      const response = await fetch(`/api/admin/data-buku/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ isActive: !isActive }),
+      });
+
+      if (response.ok) {
+        toast.success(
+          `Data buku berhasil ${!isActive ? "diaktifkan" : "dinonaktifkan"}`
+        );
+        fetchDataBuku();
+      } else {
+        toast.error("Gagal mengubah status data buku");
+      }
+    } catch (error) {
+      console.error("Error toggling status:", error);
+      toast.error("Gagal mengubah status data buku");
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-[400px]">
+        <Spinner size="lg" />
+      </div>
+    );
+  }
+
+  return (
+    <AdminPageLayout
+      title="Data Buku"
+      description="Kelola data koleksi buku LPMPP"
+      icon={<BookOpenIcon className="w-8 h-8" />}
+      action={
+        <Button color="primary" startContent={<PlusIcon className="w-5 h-5" />} onPress={handleAdd}>
+          Tambah Data Buku
+        </Button>
+      }
+      badge={{
+        label: "Buku",
+        value: dataBuku.length
+      }}
+    >
+      {/* Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <Card>
+          <CardBody className="text-center">
+            <div className="text-2xl font-bold text-primary">{dataBuku.length}</div>
+            <div className="text-sm text-gray-600">Total Buku</div>
+          </CardBody>
+        </Card>
+        <Card>
+          <CardBody className="text-center">
+            <div className="text-2xl font-bold text-success">
+              {dataBuku.filter(item => item.isActive).length}
+            </div>
+            <div className="text-sm text-gray-600">Aktif</div>
+          </CardBody>
+        </Card>
+        <Card>
+          <CardBody className="text-center">
+            <div className="text-2xl font-bold text-warning">
+              {dataBuku.filter(item => !item.isActive).length}
+            </div>
+            <div className="text-sm text-gray-600">Tidak Aktif</div>
+          </CardBody>
+        </Card>
+      </div>
+
+      {/* Table */}
+      <Card>
+        <CardBody>
+          <Table aria-label="Data Buku table">
+            <TableHeader>
+              <TableColumn>URUTAN</TableColumn>
+              <TableColumn>GAMBAR</TableColumn>
+              <TableColumn>JUDUL</TableColumn>
+              <TableColumn>DESKRIPSI</TableColumn>
+              <TableColumn>LINK</TableColumn>
+              <TableColumn>STATUS</TableColumn>
+              <TableColumn>AKSI</TableColumn>
+            </TableHeader>
+            <TableBody emptyContent="Tidak ada data buku">
+              {dataBuku.map((item, index) => (
+                <TableRow key={item.id}>
+                  <TableCell>
+                    <div className="flex items-center gap-2">
+                      <Bars3Icon className="w-4 h-4 text-gray-400" />
+                      <span className="font-mono text-sm">{index + 1}</span>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    {item.gambar ? (
+                      <div className="relative w-16 h-12 rounded-lg overflow-hidden">
+                        <Image
+                          src={item.gambar}
+                          alt={item.judul}
+                          fill
+                          className="object-cover"
+                          sizes="64px"
+                        />
+                      </div>
+                    ) : (
+                      <div className="w-16 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
+                        <span className="text-xs text-gray-400">No Image</span>
+                      </div>
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    <div className="max-w-xs">
+                      <p className="font-semibold line-clamp-2">{item.judul}</p>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="max-w-xs">
+                      <p className="text-sm text-gray-600 line-clamp-2">
+                        {item.deskripsi || "-"}
+                      </p>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    {item.link ? (
+                      <a
+                        href={item.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 hover:text-blue-800 text-sm underline"
+                      >
+                        Lihat Link
+                      </a>
+                    ) : (
+                      "-"
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    <Chip
+                      color={item.isActive ? "success" : "default"}
+                      variant="flat"
+                      size="sm"
+                    >
+                      {item.isActive ? "Aktif" : "Tidak Aktif"}
+                    </Chip>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex gap-2">
+                      <Button
+                        isIconOnly
+                        size="sm"
+                        variant="light"
+                        color={item.isActive ? "warning" : "success"}
+                        onPress={() => toggleActive(item.id, item.isActive)}
+                      >
+                        {item.isActive ? <EyeSlashIcon className="w-4 h-4" /> : <EyeIcon className="w-4 h-4" />}
+                      </Button>
+                      <Button
+                        isIconOnly
+                        size="sm"
+                        variant="light"
+                        color="primary"
+                        onPress={() => handleEdit(item)}
+                      >
+                        <PencilIcon className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        isIconOnly
+                        size="sm"
+                        variant="light"
+                        color="danger"
+                        onPress={() => handleDelete(item.id)}
+                      >
+                        <TrashIcon className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardBody>
+      </Card>
+
+      {/* Modal Form */}
+      <Modal
+        isOpen={isOpen}
+        onClose={onClose}
+        size="2xl"
+        scrollBehavior="inside"
+      >
+        <ModalContent>
+          <ModalHeader>
+            {editingItem ? "Edit Data Buku" : "Tambah Data Buku"}
+          </ModalHeader>
+          <ModalBody>
+            <div className="space-y-4">
+              <Input
+                label="Judul Buku"
+                placeholder="Masukkan judul buku"
+                value={formData.judul}
+                onChange={(e) =>
+                  setFormData({ ...formData, judul: e.target.value })
+                }
+                isRequired
+              />
+              
+              <Textarea
+                label="Deskripsi"
+                placeholder="Masukkan deskripsi buku (opsional)"
+                value={formData.deskripsi}
+                onChange={(e) =>
+                  setFormData({ ...formData, deskripsi: e.target.value })
+                }
+                maxRows={4}
+              />
+              
+              <Input
+                label="URL Gambar"
+                placeholder="Masukkan URL gambar cover buku"
+                value={formData.gambar}
+                onChange={(e) =>
+                  setFormData({ ...formData, gambar: e.target.value })
+                }
+                type="url"
+              />
+              
+              <Input
+                label="Link Buku"
+                placeholder="Masukkan link ke buku (URL eksternal atau download)"
+                value={formData.link}
+                onChange={(e) =>
+                  setFormData({ ...formData, link: e.target.value })
+                }
+                type="url"
+              />
+              
+              <div className="flex items-center gap-3">
+                <Switch
+                  isSelected={formData.isActive}
+                  onValueChange={(value) =>
+                    setFormData({ ...formData, isActive: value })
+                  }
+                />
+                <span className="text-sm">Aktif</span>
+              </div>
+              
+              {/* Preview Gambar */}
+              {formData.gambar && (
+                <div className="space-y-2">
+                  <p className="text-sm font-medium">Preview Gambar:</p>
+                  <div className="relative w-32 h-24 rounded-lg overflow-hidden border">
+                    <Image
+                      src={formData.gambar}
+                      alt="Preview"
+                      fill
+                      className="object-cover"
+                      sizes="128px"
+                      onError={() => {
+                        setFormData({ ...formData, gambar: "" });
+                        toast.error("URL gambar tidak valid");
+                      }}
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+          </ModalBody>
+          <ModalFooter>
+            <Button variant="light" onPress={onClose}>
+              Batal
+            </Button>
+            <Button
+              color="primary"
+              onPress={handleSubmit}
+              isLoading={submitting}
+            >
+              {editingItem ? "Perbarui" : "Simpan"}
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+    </AdminPageLayout>
+  );
+}

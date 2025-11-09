@@ -13,5 +13,6 @@ export function AuthButtons() {
     );
   }
 
-  return session?.user ? <SignOutButton /> : <SignInButton />;
+  // Hanya tampilkan SignOutButton jika user sudah login, tidak tampilkan SignInButton
+  return session?.user ? <SignOutButton /> : null;
 }

@@ -65,26 +65,46 @@ model VerificationToken {
 }
 
 model SiteConfig {
-  id              String   @id @default(cuid())
-  logoUnsoed      String?  @db.Text // Path/URL logo UNSOED
-  logoApp         String?  @db.Text // Path/URL logo aplikasi
-  logoDescription String?  @db.Text // Detail penjelasan tentang logo
-  siteName        String   @default("LPMPP UNSOED")
-  visi            String?  @db.Text
-  misi            String?  @db.Text
-  tugas           String?  @db.Text
-  fungsi          String?  @db.Text
-  alamat          String?  @db.Text
+  id              String  @id @default(cuid())
+  logoUnsoed      String? @db.Text // Path/URL logo UNSOED
+  logoApp         String? @db.Text // Path/URL logo aplikasi
+  logoDescription String? @db.Text // Detail penjelasan tentang logo
+  siteName        String  @default("LPMPP UNSOED")
+  visi            String? @db.Text // Visi LPMPP
+  misi            String? @db.Text // Misi LPMPP
+  visiUnsoed      String? @db.Text // Visi UNSOED
+  misiUnsoed      String? @db.Text // Misi UNSOED
+  tugas           String? @db.Text
+  fungsi          String? @db.Text
+  alamat          String? @db.Text
   email           String?
   instagramUrl    String?
-  carouselImages  String?  @db.Text // JSON array untuk gambar carousel (max 5)
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  carouselImages  String? @db.Text // JSON array untuk gambar carousel (max 5)
+
+  // Field tambahan untuk halaman utama
+  gambarTeam     String? @db.Text // Gambar team
+  gambarSlogan   String? @db.Text // Gambar slogan
+  gambarTambahan String? @db.Text // Gambar tambahan
+
+  // Detail Layanan LPMPP
+  layananKami    String? @db.Text // LAYANAN KAMI description
+  pelatihan      String? @db.Text // PELATIHAN description  
+  pembelajaran   String? @db.Text // PEMBELAJARAN description
+  penjaminanMutu String? @db.Text // PENJAMINAN MUTU description
+
+  // Informasi dan Layanan
+  informasiLayanan String? @db.Text // Informasi pelayanan dan jadwal
+  gambarInformasi  String? @db.Text // Gambar untuk informasi layanan
+  gambarStaff      String? @db.Text // Gambar staff pendukung
+  gambarPartner    String? @db.Text // Gambar partner
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 enum LeadershipPosition {
-  HEAD       // Kepala Lembaga
-  SECRETARY  // Sekretaris Lembaga
+  HEAD // Kepala Lembaga
+  SECRETARY // Sekretaris Lembaga
 }
 
 model Leadership {
@@ -100,11 +120,11 @@ model Leadership {
 }
 
 enum StaffPosition {
-  SUB_COORDINATOR          // Sub Koordinator
-  GENERAL_STAFF           // Staff Umum
+  SUB_COORDINATOR // Sub Koordinator
+  GENERAL_STAFF // Staff Umum
   PROGRAM_DATA_INFO_STAFF // Staff Program, Data & Informasi
-  DRIVER                  // Pengemudi
-  OFFICE_ASSISTANT        // Pramu Bakti
+  DRIVER // Pengemudi
+  OFFICE_ASSISTANT // Pramu Bakti
 }
 
 model Staff {
@@ -123,7 +143,7 @@ model Staff {
 // Model untuk Pusat & Unit di LPMPP
 model Center {
   id          String         @id @default(cuid())
-  name        String         // Nama pusat (misal: "Pusat Penjaminan Mutu Internal")
+  name        String // Nama pusat (misal: "Pusat Penjaminan Mutu Internal")
   slug        String         @unique // URL-friendly name
   description String?        @db.Text // Tugas dan fungsi pusat
   order       Int            @default(0) // Untuk ordering pusat
@@ -137,7 +157,7 @@ model Center {
 
 enum CenterMemberRole {
   COORDINATOR // Koordinator Pusat
-  MEMBER      // Anggota/Staff
+  MEMBER // Anggota/Staff
 }
 
 model CenterMember {
@@ -157,19 +177,19 @@ model CenterMember {
 
 // Model untuk konten SPMI
 model SpmiContent {
-  id          String   @id @default(cuid())
-  section     String   // "tujuan" atau "fungsi"
-  content     String   @db.Text
-  order       Int      @default(0)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id        String   @id @default(cuid())
+  section   String // "tujuan" atau "fungsi"
+  content   String   @db.Text
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@unique([section])
 }
 
 enum DocumentType {
-  SPMI       // Dokumen SPMI
-  AUDIT      // Dokumen Audit
+  SPMI // Dokumen SPMI
+  AUDIT // Dokumen Audit
   REGULATION // Peraturan
 }
 
@@ -180,8 +200,8 @@ model Document {
   title       String
   description String?      @db.Text
   fileUrl     String       @db.Text // Path ke file
-  fileName    String       // Nama file original
-  fileSize    Int?         // Ukuran file dalam bytes
+  fileName    String // Nama file original
+  fileSize    Int? // Ukuran file dalam bytes
   order       Int          @default(0)
   isActive    Boolean      @default(true)
   createdAt   DateTime     @default(now())
@@ -192,31 +212,31 @@ model Document {
 
 // Model untuk Master Fakultas
 model Faculty {
-  id                      String                    @id @default(cuid())
-  name                    String                    @unique // Nama lengkap fakultas
-  shortName               String?                   // Singkatan fakultas
-  code                    String?                   @unique // Kode fakultas
-  order                   Int                       @default(0)
-  isActive                Boolean                   @default(true)
-  qualityAssuranceGroups  QualityAssuranceGroup[]   // Relasi ke GPM
-  createdAt               DateTime                  @default(now())
-  updatedAt               DateTime                  @updatedAt
+  id                     String                  @id @default(cuid())
+  name                   String                  @unique // Nama lengkap fakultas
+  shortName              String? // Singkatan fakultas
+  code                   String?                 @unique // Kode fakultas
+  order                  Int                     @default(0)
+  isActive               Boolean                 @default(true)
+  qualityAssuranceGroups QualityAssuranceGroup[] // Relasi ke GPM
+  createdAt              DateTime                @default(now())
+  updatedAt              DateTime                @updatedAt
 
   @@index([order])
 }
 
 // Model untuk Gugus Penjamin Mutu
 model QualityAssuranceGroup {
-  id          String                    @id @default(cuid())
-  facultyId   String                    // Foreign key ke Faculty
-  faculty     Faculty                   @relation(fields: [facultyId], references: [id], onDelete: Cascade)
-  description String?                   @db.Text
-  contactInfo String?                   @db.Text
-  order       Int                       @default(0)
-  isActive    Boolean                   @default(true)
+  id          String                     @id @default(cuid())
+  facultyId   String // Foreign key ke Faculty
+  faculty     Faculty                    @relation(fields: [facultyId], references: [id], onDelete: Cascade)
+  description String?                    @db.Text
+  contactInfo String?                    @db.Text
+  order       Int                        @default(0)
+  isActive    Boolean                    @default(true)
   documents   QualityAssuranceDocument[] // Relasi ke dokumen GPM
-  createdAt   DateTime                  @default(now())
-  updatedAt   DateTime                  @updatedAt
+  createdAt   DateTime                   @default(now())
+  updatedAt   DateTime                   @updatedAt
 
   @@index([facultyId])
   @@index([order])
@@ -224,88 +244,27 @@ model QualityAssuranceGroup {
 
 // Model untuk dokumen GPM
 model QualityAssuranceDocument {
-  id        String                 @id @default(cuid())
+  id        String                @id @default(cuid())
   groupId   String
   group     QualityAssuranceGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
   title     String
-  fileUrl   String                 @db.Text // Path ke file
-  fileName  String                 // Nama file original
-  fileSize  Int?                   // Ukuran file dalam bytes
-  order     Int                    @default(0)
-  createdAt DateTime               @default(now())
-  updatedAt DateTime               @updatedAt
+  fileUrl   String                @db.Text // Path ke file
+  fileName  String // Nama file original
+  fileSize  Int? // Ukuran file dalam bytes
+  order     Int                   @default(0)
+  createdAt DateTime              @default(now())
+  updatedAt DateTime              @updatedAt
 
   @@index([groupId, order])
 }
 
 // Model untuk Akreditasi Internasional
 model InternationalAccreditation {
-  id            String   @id @default(cuid())
-  facultyName   String
-  programName   String
-  agency        String   @db.Text // Lembaga akreditasi
-  order         Int      @default(0)
-  isActive      Boolean  @default(true)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-
-  @@index([order])
-}
-
-// Model untuk Akreditasi Program Studi
-model StudyProgramAccreditation {
-  id            String   @id @default(cuid())
-  programName   String
-  level         String   // D-III, S1, S2, S3, Profesi, Spesialis
-  skNumber      String?  // Nomor SK
-  skYear        Int?     // Tahun SK
-  rating        String   // UNGGUL, BAIK SEKALI, BAIK, A, B, C, Terakreditasi Sementara
-  order         Int      @default(0)
-  isActive      Boolean  @default(true)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-
-  @@index([level, order])
-  @@index([rating])
-}
-
-// Model untuk Akreditasi Perguruan Tinggi
-model UniversityAccreditation {
-  id          String                              @id @default(cuid())
-  title       String
-  description String?                             @db.Text
-  imageUrl    String?                             @db.Text // Single image banner
-  isActive    Boolean                             @default(true)
-  documents   UniversityAccreditationDocument[] // Multiple documents
-  createdAt   DateTime                            @default(now())
-  updatedAt   DateTime                            @updatedAt
-}
-
-// Model untuk Dokumen Akreditasi Perguruan Tinggi (Multiple)
-model UniversityAccreditationDocument {
-  id             String                   @id @default(cuid())
-  accreditationId String
-  accreditation   UniversityAccreditation @relation(fields: [accreditationId], references: [id], onDelete: Cascade)
-  title          String                   // Nama dokumen (misal: "SK Akreditasi 2024")
-  documentUrl    String                   @db.Text // PDF/DOC file URL
-  documentName   String?                  // Original filename
-  order          Int                      @default(0)
-  createdAt      DateTime                 @default(now())
-  updatedAt      DateTime                 @updatedAt
-
-  @@index([accreditationId, order])
-}
-
-// Model untuk Program Unggulan
-model FeaturedProgram {
   id          String   @id @default(cuid())
-  title       String   // Nama program (e.g., "Pembelajaran di Luar Kampus (MBKM)")
-  slug        String   @unique // URL-friendly identifier (e.g., "mbkm")
-  description String?  @db.Text // Konten/deskripsi program
-  documentUrl String?  @db.Text // Link ke dokumen/peraturan (optional)
-  documentName String? // Nama file dokumen (optional)
-  icon        String?  // Icon identifier untuk UI (optional)
-  order       Int      @default(0) // Urutan tampilan
+  facultyName String
+  programName String
+  agency      String   @db.Text // Lembaga akreditasi
+  order       Int      @default(0)
   isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -313,18 +272,79 @@ model FeaturedProgram {
   @@index([order])
 }
 
+// Model untuk Akreditasi Program Studi
+model StudyProgramAccreditation {
+  id          String   @id @default(cuid())
+  programName String
+  level       String // D-III, S1, S2, S3, Profesi, Spesialis
+  skNumber    String? // Nomor SK
+  skYear      Int? // Tahun SK
+  rating      String // UNGGUL, BAIK SEKALI, BAIK, A, B, C, Terakreditasi Sementara
+  order       Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([level, order])
+  @@index([rating])
+}
+
+// Model untuk Akreditasi Perguruan Tinggi
+model UniversityAccreditation {
+  id          String                            @id @default(cuid())
+  title       String
+  description String?                           @db.Text
+  imageUrl    String?                           @db.Text // Single image banner
+  isActive    Boolean                           @default(true)
+  documents   UniversityAccreditationDocument[] // Multiple documents
+  createdAt   DateTime                          @default(now())
+  updatedAt   DateTime                          @updatedAt
+}
+
+// Model untuk Dokumen Akreditasi Perguruan Tinggi (Multiple)
+model UniversityAccreditationDocument {
+  id              String                  @id @default(cuid())
+  accreditationId String
+  accreditation   UniversityAccreditation @relation(fields: [accreditationId], references: [id], onDelete: Cascade)
+  title           String // Nama dokumen (misal: "SK Akreditasi 2024")
+  documentUrl     String                  @db.Text // PDF/DOC file URL
+  documentName    String? // Original filename
+  order           Int                     @default(0)
+  createdAt       DateTime                @default(now())
+  updatedAt       DateTime                @updatedAt
+
+  @@index([accreditationId, order])
+}
+
+// Model untuk Program Unggulan
+model FeaturedProgram {
+  id           String   @id @default(cuid())
+  title        String // Nama program (e.g., "Pembelajaran di Luar Kampus (MBKM)")
+  slug         String   @unique // URL-friendly identifier (e.g., "mbkm")
+  description  String?  @db.Text // Konten/deskripsi program
+  documentUrl  String?  @db.Text // Link ke dokumen/peraturan (optional)
+  documentName String? // Nama file dokumen (optional)
+  icon         String? // Icon identifier untuk UI (optional)
+  order        Int      @default(0) // Urutan tampilan
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([order])
+}
+
 // Enum untuk tipe kepakaran
 enum ExpertiseType {
   FASILITATOR_PEKERTI // Fasilitator Pekerti/AA
-  AUDITOR_SPMI        // Auditor SPMI
-  ASESOR_BKD          // Asesor BKD
+  AUDITOR_SPMI // Auditor SPMI
+  ASESOR_BKD // Asesor BKD
 }
 
 // Model untuk Kepakaran (Fasilitator, Auditor, Asesor)
 model Expertise {
   id        String        @id @default(cuid())
   type      ExpertiseType // Jenis kepakaran
-  name      String        // Nama lengkap dengan gelar
+  name      String // Nama lengkap dengan gelar
   order     Int           @default(0) // Nomor urut
   isActive  Boolean       @default(true)
   createdAt DateTime      @default(now())
@@ -336,7 +356,7 @@ model Expertise {
 // Model untuk Tautan/Link
 model Link {
   id        String   @id @default(cuid())
-  name      String   // Nama tautan (e.g., "SAPTO 2", "BAN-PT")
+  name      String // Nama tautan (e.g., "SAPTO 2", "BAN-PT")
   url       String   @db.Text // URL tautan
   order     Int      @default(0) // Nomor urut
   isActive  Boolean  @default(true)
@@ -348,19 +368,19 @@ model Link {
 
 // Model untuk Berita/News
 model News {
-  id          String   @id @default(cuid())
-  title       String   @db.Text // Judul berita
-  slug        String   @unique // URL-friendly slug
-  excerpt     String   @db.Text // Ringkasan/kutipan berita
-  content     String   @db.LongText // Isi berita lengkap (HTML dari editor)
-  coverImage  String?  @db.Text // Path/URL gambar cover
-  galleryImages String? @db.Text // JSON array of gallery image URLs (ditampilkan sebelum content)
-  author      String   // Nama penulis (e.g., "Admin LP3M")
-  publishedAt DateTime @default(now()) // Tanggal publikasi
-  isPublished Boolean  @default(false) // Status publikasi
-  viewCount   Int      @default(0) // Jumlah views
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id            String   @id @default(cuid())
+  title         String   @db.Text // Judul berita
+  slug          String   @unique // URL-friendly slug
+  excerpt       String   @db.Text // Ringkasan/kutipan berita
+  content       String   @db.LongText // Isi berita lengkap (HTML dari editor)
+  coverImage    String?  @db.Text // Path/URL gambar cover
+  galleryImages String?  @db.Text // JSON array of gallery image URLs (ditampilkan sebelum content)
+  author        String // Nama penulis (e.g., "Admin LP3M")
+  publishedAt   DateTime @default(now()) // Tanggal publikasi
+  isPublished   Boolean  @default(false) // Status publikasi
+  viewCount     Int      @default(0) // Jumlah views
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
   @@index([slug])
   @@index([publishedAt])
@@ -368,17 +388,63 @@ model News {
 }
 
 model Download {
-  id          String   @id @default(cuid())
-  name        String   @db.Text // Nama dokumen
-  description String?  @db.Text // Deskripsi dokumen (opsional)
-  fileUrl     String   @db.Text // URL file PDF/DOCS
-  fileType    String   // pdf, doc, docx, dll
-  fileSize    Int      // Ukuran file dalam bytes
-  downloadCount Int    @default(0) // Jumlah download
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id            String   @id @default(cuid())
+  name          String   @db.Text // Nama dokumen
+  description   String?  @db.Text // Deskripsi dokumen (opsional)
+  fileUrl       String   @db.Text // URL file PDF/DOCS
+  fileType      String // pdf, doc, docx, dll
+  fileSize      Int // Ukuran file dalam bytes
+  downloadCount Int      @default(0) // Jumlah download
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
   @@index([name(length: 191)])
   @@index([createdAt])
 }
 
+// Model untuk Data Buku
+model DataBuku {
+  id        String   @id @default(cuid())
+  judul     String   @db.Text // Judul buku
+  deskripsi String?  @db.Text // Deskripsi buku
+  gambar    String?  @db.Text // Path/URL gambar cover buku (auto convert ke WebP)
+  link      String?  @db.Text // Link ke buku (URL eksternal atau download)
+  order     Int      @default(0) // Urutan tampilan
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([order])
+  @@index([isActive])
+}
+
+// Model untuk Data Galeri
+model DataGaleri {
+  id        String   @id @default(cuid())
+  judul     String?  @db.Text // Judul/caption foto (opsional)
+  gambar    String   @db.Text // Path/URL gambar (auto convert ke WebP)
+  deskripsi String?  @db.Text // Deskripsi foto (opsional)
+  order     Int      @default(0) // Urutan tampilan
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([order])
+  @@index([isActive])
+}
+
+// Model untuk Tautan Layanan (berisi Gambar dan Link)
+model TautanLayanan {
+  id        String   @id @default(cuid())
+  nama      String // Nama layanan
+  gambar    String?  @db.Text // Path/URL gambar layanan (auto convert ke WebP)
+  link      String   @db.Text // URL link layanan
+  deskripsi String?  @db.Text // Deskripsi layanan (opsional)
+  order     Int      @default(0) // Urutan tampilan
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([order])
+  @@index([isActive])
+}

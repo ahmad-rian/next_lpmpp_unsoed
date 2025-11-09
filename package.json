@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.1",
+    "@heroicons/react": "^2.2.0",
     "@heroui/accordion": "2.2.24",
     "@heroui/alert": "2.2.27",
     "@heroui/autocomplete": "2.3.29",
@@ -76,11 +77,13 @@
     "prisma": "^6.18.0",
     "react": "18.3.1",
     "react-dom": "18.3.1",
+    "react-hot-toast": "^2.6.0",
     "recharts": "^3.3.0",
     "sharp": "^0.34.4",
     "tailwind-merge": "^3.3.1"
   },
   "devDependencies": {
+    "@eslint/compat": "^1.4.1",
     "@next/eslint-plugin-next": "15.3.4",
     "@react-types/shared": "3.32.1",
     "@tailwindcss/postcss": "4.1.11",
