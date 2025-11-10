@@ -34,7 +34,7 @@ export async function PUT(request: NextRequest) {
   try {
     // Check authentication
     const session = await auth();
-    
+
     if (!session || session.user?.role !== "ADMIN") {
       return NextResponse.json(
         { error: "Unauthorized" },
@@ -43,7 +43,7 @@ export async function PUT(request: NextRequest) {
     }
 
     const data = await request.json();
-    
+
     // Validate required fields
     if (!data.siteName) {
       return NextResponse.json(
@@ -65,6 +65,7 @@ export async function PUT(request: NextRequest) {
           logoApp: data.logoApp,
           logoDescription: data.logoDescription,
           siteName: data.siteName,
+          moto: data.moto,
           visi: data.visi,
           misi: data.misi,
           visiUnsoed: data.visiUnsoed,
@@ -75,18 +76,18 @@ export async function PUT(request: NextRequest) {
           email: data.email,
           instagramUrl: data.instagramUrl,
           carouselImages: data.carouselImages,
-          
+
           // Field tambahan untuk halaman utama
           gambarTeam: data.gambarTeam,
           gambarSlogan: data.gambarSlogan,
           gambarTambahan: data.gambarTambahan,
-          
+
           // Detail Layanan LPMPP
           layananKami: data.layananKami,
           pelatihan: data.pelatihan,
           pembelajaran: data.pembelajaran,
           penjaminanMutu: data.penjaminanMutu,
-          
+
           // Informasi dan Layanan
           informasiLayanan: data.informasiLayanan,
           gambarInformasi: data.gambarInformasi,
@@ -102,6 +103,7 @@ export async function PUT(request: NextRequest) {
           logoApp: data.logoApp,
           logoDescription: data.logoDescription,
           siteName: data.siteName,
+          moto: data.moto,
           visi: data.visi,
           misi: data.misi,
           visiUnsoed: data.visiUnsoed,
@@ -112,18 +114,18 @@ export async function PUT(request: NextRequest) {
           email: data.email,
           instagramUrl: data.instagramUrl,
           carouselImages: data.carouselImages,
-          
+
           // Field tambahan untuk halaman utama
           gambarTeam: data.gambarTeam,
           gambarSlogan: data.gambarSlogan,
           gambarTambahan: data.gambarTambahan,
-          
+
           // Detail Layanan LPMPP
           layananKami: data.layananKami,
           pelatihan: data.pelatihan,
           pembelajaran: data.pembelajaran,
           penjaminanMutu: data.penjaminanMutu,
-          
+
           // Informasi dan Layanan
           informasiLayanan: data.informasiLayanan,
           gambarInformasi: data.gambarInformasi,

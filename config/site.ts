@@ -14,13 +14,13 @@ export const siteConfig = {
       children: [
         {
           label: "Tentang Kami",
-          href: "/about",
+          href: "/tentang-kami",
           description: "Informasi umum LPMPP UNSOED",
           icon: "information",
         },
         {
           label: "Pimpinan Lembaga",
-          href: "/pimpinan",
+          href: "/pimpinan-lembaga",
           description: "Struktur kepemimpinan",
           icon: "users",
         },
@@ -34,30 +34,22 @@ export const siteConfig = {
     },
     {
       label: "Unit Kerja",
-      href: "#",
-      children: [
-        {
-          label: "Pusat & Unit",
-          href: "/pusat-unit",
-          description: "Daftar pusat dan unit kerja",
-          icon: "building",
-        },
-        {
-          label: "Fakultas",
-          href: "/fakultas",
-          description: "Informasi fakultas",
-          icon: "academic",
-        },
-      ],
+      href: "/pusat-unit",
     },
     {
       label: "SPMI",
       href: "#",
       children: [
         {
-          label: "Dokumen GPM",
-          href: "/spmi/gpm",
-          description: "Dokumen Gugus Penjaminan Mutu",
+          label: "Tentang SPMI",
+          href: "/spmi/tentang",
+          description: "Informasi Sistem Penjaminan Mutu Internal",
+          icon: "information",
+        },
+        {
+          label: "Dokumen GPM Fakultas",
+          href: "/spmi/gugus-penjamin-mutu-fakultas",
+          description: "Dokumen Gugus Penjaminan Mutu Fakultas",
           icon: "clipboard",
         },
         {
@@ -65,6 +57,12 @@ export const siteConfig = {
           href: "/spmi/dokumen",
           description: "Sistem Penjaminan Mutu Internal",
           icon: "document",
+        },
+        {
+          label: "Peraturan",
+          href: "/spmi/peraturan",
+          description: "Peraturan dan kebijakan SPMI",
+          icon: "scale",
         },
       ],
     },
@@ -140,7 +138,7 @@ export const siteConfig = {
     },
     {
       label: "Pimpinan Lembaga",
-      href: "/pimpinan",
+      href: "/pimpinan-lembaga",
     },
     {
       label: "Tata Usaha",

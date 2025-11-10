@@ -24,7 +24,7 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const session = await auth();
-    
+
     if (!session || session.user?.role !== "ADMIN") {
       return NextResponse.json(
         { error: "Unauthorized" },
@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
     }
 
     const data = await request.json();
-    
+
     const accreditation = await prisma.internationalAccreditation.create({
       data: {
         facultyName: data.facultyName,
@@ -57,7 +57,7 @@ export async function POST(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   try {
     const session = await auth();
-    
+
     if (!session || session.user?.role !== "ADMIN") {
       return NextResponse.json(
         { error: "Unauthorized" },
@@ -66,7 +66,7 @@ export async function PUT(request: NextRequest) {
     }
 
     const data = await request.json();
-    
+
     if (!data.id) {
       return NextResponse.json(
         { error: "ID is required" },
@@ -99,7 +99,7 @@ export async function PUT(request: NextRequest) {
 export async function DELETE(request: NextRequest) {
   try {
     const session = await auth();
-    
+
     if (!session || session.user?.role !== "ADMIN") {
       return NextResponse.json(
         { error: "Unauthorized" },

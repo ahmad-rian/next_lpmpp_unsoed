@@ -203,22 +203,22 @@ export default function AkreditasiProdiPage() {
       const method = editingItem ? "PUT" : "POST";
       const body = editingItem
         ? {
-            id: editingItem.id,
-            programName: formData.programName,
-            level: formData.level,
-            skNumber: formData.skNumber || null,
-            skYear: formData.skYear ? parseInt(formData.skYear) : null,
-            rating: formData.rating,
-            order: formData.order,
-          }
+          id: editingItem.id,
+          programName: formData.programName,
+          level: formData.level,
+          skNumber: formData.skNumber || null,
+          skYear: formData.skYear ? parseInt(formData.skYear) : null,
+          rating: formData.rating,
+          order: formData.order,
+        }
         : {
-            programName: formData.programName,
-            level: formData.level,
-            skNumber: formData.skNumber || null,
-            skYear: formData.skYear ? parseInt(formData.skYear) : null,
-            rating: formData.rating,
-            order: formData.order,
-          };
+          programName: formData.programName,
+          level: formData.level,
+          skNumber: formData.skNumber || null,
+          skYear: formData.skYear ? parseInt(formData.skYear) : null,
+          rating: formData.rating,
+          order: formData.order,
+        };
 
       const response = await fetch(url, {
         method,
@@ -328,174 +328,174 @@ export default function AkreditasiProdiPage() {
 
         {/* Chart Card */}
         <Card>
-        <CardBody>
-          <div className="space-y-4">
-            <div className="flex justify-between items-center">
-              <h2 className="text-lg font-semibold">Statistik Peringkat Akreditasi</h2>
-              {lastUpdate && (
-                <p className="text-sm text-default-500">Update: {lastUpdate}</p>
+          <CardBody>
+            <div className="space-y-4">
+              <div className="flex justify-between items-center">
+                <h2 className="text-lg font-semibold">Statistik Peringkat Akreditasi</h2>
+                {lastUpdate && (
+                  <p className="text-sm text-default-500">Update: {lastUpdate}</p>
+                )}
+              </div>
+              {chartData.length > 0 ? (
+                <ResponsiveContainer width="100%" height={300}>
+                  <BarChart data={chartData} layout="vertical" margin={{ left: 80, right: 30 }}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis type="number" />
+                    <YAxis dataKey="name" type="category" />
+                    <Tooltip />
+                    <Legend />
+                    <Bar dataKey="value" name="Jumlah Program Studi">
+                      {chartData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={getRatingColor(entry.name)} />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="flex justify-center items-center h-[300px] text-default-400">
+                  Belum ada data untuk ditampilkan
+                </div>
               )}
             </div>
-            {chartData.length > 0 ? (
-              <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={chartData} layout="vertical" margin={{ left: 80, right: 30 }}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis type="number" />
-                  <YAxis dataKey="name" type="category" />
-                  <Tooltip />
-                  <Legend />
-                  <Bar dataKey="value" name="Jumlah Program Studi">
-                    {chartData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={getRatingColor(entry.name)} />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            ) : (
-              <div className="flex justify-center items-center h-[300px] text-default-400">
-                Belum ada data untuk ditampilkan
+          </CardBody>
+        </Card>
+
+        {/* Table */}
+        <Table aria-label="Akreditasi Program Studi Table">
+          <TableHeader>
+            <TableColumn>NO</TableColumn>
+            <TableColumn>PROGRAM STUDI</TableColumn>
+            <TableColumn>STRATA</TableColumn>
+            <TableColumn>NO. SK</TableColumn>
+            <TableColumn>TAHUN SK</TableColumn>
+            <TableColumn>PERINGKAT</TableColumn>
+            <TableColumn>AKSI</TableColumn>
+          </TableHeader>
+          <TableBody emptyContent="Belum ada data akreditasi">
+            {accreditations.map((item, index) => (
+              <TableRow key={item.id}>
+                <TableCell>{index + 1}</TableCell>
+                <TableCell>{item.programName}</TableCell>
+                <TableCell>{item.level}</TableCell>
+                <TableCell>{item.skNumber || "-"}</TableCell>
+                <TableCell>{item.skYear || "-"}</TableCell>
+                <TableCell>
+                  <Chip color={getRatingChipColor(item.rating)} variant="flat" size="sm">
+                    {item.rating}
+                  </Chip>
+                </TableCell>
+                <TableCell>
+                  <div className="flex gap-2">
+                    <Button
+                      size="sm"
+                      variant="flat"
+                      color="warning"
+                      isIconOnly
+                      onPress={() => handleOpenModal(item)}
+                    >
+                      <PencilIcon className="w-4 h-4" />
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="flat"
+                      color="danger"
+                      isIconOnly
+                      onPress={() => handleDelete(item.id)}
+                    >
+                      <TrashIcon className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+
+        {/* Modal */}
+        <Modal isOpen={isOpen} onClose={handleCloseModal} size="2xl">
+          <ModalContent>
+            <ModalHeader>
+              {editingItem ? "Edit Akreditasi" : "Tambah Akreditasi"}
+            </ModalHeader>
+            <ModalBody>
+              <div className="space-y-4">
+                <Input
+                  label="Program Studi"
+                  placeholder="Masukkan nama program studi"
+                  value={formData.programName}
+                  onChange={(e: any) =>
+                    setFormData({ ...formData, programName: e.target.value })
+                  }
+                  isRequired
+                />
+                <Select
+                  label="Strata"
+                  placeholder="Pilih strata"
+                  selectedKeys={formData.level ? [formData.level] : []}
+                  onChange={(e: any) =>
+                    setFormData({ ...formData, level: e.target.value })
+                  }
+                  isRequired
+                >
+                  {LEVEL_OPTIONS.map((option) => (
+                    <SelectItem key={option.key}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </Select>
+                <Input
+                  label="No. SK"
+                  placeholder="Masukkan nomor SK (opsional)"
+                  value={formData.skNumber}
+                  onChange={(e: any) =>
+                    setFormData({ ...formData, skNumber: e.target.value })
+                  }
+                />
+                <Input
+                  type="number"
+                  label="Tahun SK"
+                  placeholder="Masukkan tahun SK (opsional)"
+                  value={formData.skYear}
+                  onChange={(e: any) =>
+                    setFormData({ ...formData, skYear: e.target.value })
+                  }
+                />
+                <Select
+                  label="Peringkat"
+                  placeholder="Pilih peringkat akreditasi"
+                  selectedKeys={formData.rating ? [formData.rating] : []}
+                  onChange={(e: any) =>
+                    setFormData({ ...formData, rating: e.target.value })
+                  }
+                  isRequired
+                >
+                  {RATING_OPTIONS.map((option) => (
+                    <SelectItem key={option.key}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </Select>
+                <Input
+                  type="number"
+                  label="Urutan"
+                  placeholder="Masukkan urutan tampilan"
+                  value={formData.order.toString()}
+                  onChange={(e: any) =>
+                    setFormData({ ...formData, order: parseInt(e.target.value) || 0 })
+                  }
+                />
               </div>
-            )}
-          </div>
-        </CardBody>
-      </Card>
-
-      {/* Table */}
-      <Table aria-label="Akreditasi Program Studi Table">
-        <TableHeader>
-          <TableColumn>NO</TableColumn>
-          <TableColumn>PROGRAM STUDI</TableColumn>
-          <TableColumn>STRATA</TableColumn>
-          <TableColumn>NO. SK</TableColumn>
-          <TableColumn>TAHUN SK</TableColumn>
-          <TableColumn>PERINGKAT</TableColumn>
-          <TableColumn>AKSI</TableColumn>
-        </TableHeader>
-        <TableBody emptyContent="Belum ada data akreditasi">
-          {accreditations.map((item, index) => (
-            <TableRow key={item.id}>
-              <TableCell>{index + 1}</TableCell>
-              <TableCell>{item.programName}</TableCell>
-              <TableCell>{item.level}</TableCell>
-              <TableCell>{item.skNumber || "-"}</TableCell>
-              <TableCell>{item.skYear || "-"}</TableCell>
-              <TableCell>
-                <Chip color={getRatingChipColor(item.rating)} variant="flat" size="sm">
-                  {item.rating}
-                </Chip>
-              </TableCell>
-              <TableCell>
-                <div className="flex gap-2">
-                  <Button
-                    size="sm"
-                    variant="flat"
-                    color="warning"
-                    isIconOnly
-                    onPress={() => handleOpenModal(item)}
-                  >
-                    <PencilIcon className="w-4 h-4" />
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="flat"
-                    color="danger"
-                    isIconOnly
-                    onPress={() => handleDelete(item.id)}
-                  >
-                    <TrashIcon className="w-4 h-4" />
-                  </Button>
-                </div>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-
-      {/* Modal */}
-      <Modal isOpen={isOpen} onClose={handleCloseModal} size="2xl">
-        <ModalContent>
-          <ModalHeader>
-            {editingItem ? "Edit Akreditasi" : "Tambah Akreditasi"}
-          </ModalHeader>
-          <ModalBody>
-            <div className="space-y-4">
-              <Input
-                label="Program Studi"
-                placeholder="Masukkan nama program studi"
-                value={formData.programName}
-                onChange={(e: any) =>
-                  setFormData({ ...formData, programName: e.target.value })
-                }
-                isRequired
-              />
-              <Select
-                label="Strata"
-                placeholder="Pilih strata"
-                selectedKeys={formData.level ? [formData.level] : []}
-                onChange={(e: any) =>
-                  setFormData({ ...formData, level: e.target.value })
-                }
-                isRequired
-              >
-                {LEVEL_OPTIONS.map((option) => (
-                  <SelectItem key={option.key}>
-                    {option.label}
-                  </SelectItem>
-                ))}
-              </Select>
-              <Input
-                label="No. SK"
-                placeholder="Masukkan nomor SK (opsional)"
-                value={formData.skNumber}
-                onChange={(e: any) =>
-                  setFormData({ ...formData, skNumber: e.target.value })
-                }
-              />
-              <Input
-                type="number"
-                label="Tahun SK"
-                placeholder="Masukkan tahun SK (opsional)"
-                value={formData.skYear}
-                onChange={(e: any) =>
-                  setFormData({ ...formData, skYear: e.target.value })
-                }
-              />
-              <Select
-                label="Peringkat"
-                placeholder="Pilih peringkat akreditasi"
-                selectedKeys={formData.rating ? [formData.rating] : []}
-                onChange={(e: any) =>
-                  setFormData({ ...formData, rating: e.target.value })
-                }
-                isRequired
-              >
-                {RATING_OPTIONS.map((option) => (
-                  <SelectItem key={option.key}>
-                    {option.label}
-                  </SelectItem>
-                ))}
-              </Select>
-              <Input
-                type="number"
-                label="Urutan"
-                placeholder="Masukkan urutan tampilan"
-                value={formData.order.toString()}
-                onChange={(e: any) =>
-                  setFormData({ ...formData, order: parseInt(e.target.value) || 0 })
-                }
-              />
-            </div>
-          </ModalBody>
-          <ModalFooter>
-            <Button variant="flat" onPress={handleCloseModal}>
-              Batal
-            </Button>
-            <Button color="primary" onPress={handleSubmit} isLoading={saving}>
-              {editingItem ? "Simpan Perubahan" : "Tambah Data"}
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+            </ModalBody>
+            <ModalFooter>
+              <Button variant="flat" onPress={handleCloseModal}>
+                Batal
+              </Button>
+              <Button color="primary" onPress={handleSubmit} isLoading={saving}>
+                {editingItem ? "Simpan Perubahan" : "Tambah Data"}
+              </Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
       </div>
     </AdminPageLayout>
   );

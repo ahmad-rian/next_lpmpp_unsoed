@@ -109,11 +109,11 @@ export default function BeritaPage() {
       setLoading(true);
       const response = await fetch("/api/news");
       const data = await response.json();
-      
+
       if (!response.ok) {
         throw new Error(data.error || "Failed to fetch news");
       }
-      
+
       if (Array.isArray(data)) {
         setNews(data);
       } else {
@@ -436,9 +436,9 @@ export default function BeritaPage() {
       )}
 
       {/* Modal */}
-      <Modal 
-        isOpen={isOpen} 
-        onClose={onClose} 
+      <Modal
+        isOpen={isOpen}
+        onClose={onClose}
         size="5xl"
         scrollBehavior="inside"
       >

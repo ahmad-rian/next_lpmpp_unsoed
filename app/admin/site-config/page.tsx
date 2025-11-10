@@ -13,6 +13,7 @@ interface SiteConfig {
   logoApp: string | null;
   logoDescription: string | null;
   siteName: string;
+  moto: string | null; // Moto LPMPP
   visi: string | null; // Visi LPMPP
   misi: string | null; // Misi LPMPP
   visiUnsoed: string | null; // Visi UNSOED
@@ -23,18 +24,18 @@ interface SiteConfig {
   email: string | null;
   instagramUrl: string | null;
   carouselImages: string | null; // JSON string array
-  
+
   // Field tambahan untuk halaman utama
   gambarTeam: string | null; // Gambar team
   gambarSlogan: string | null; // Gambar slogan
   gambarTambahan: string | null; // Gambar tambahan
-  
+
   // Detail Layanan LPMPP
   layananKami: string | null; // LAYANAN KAMI description
   pelatihan: string | null; // PELATIHAN description  
   pembelajaran: string | null; // PEMBELAJARAN description
   penjaminanMutu: string | null; // PENJAMINAN MUTU description
-  
+
   // Informasi dan Layanan
   informasiLayanan: string | null; // Informasi pelayanan dan jadwal
   gambarInformasi: string | null; // Gambar untuk informasi layanan
@@ -145,11 +146,10 @@ export default function SiteConfigPage() {
       icon={<CogIcon />}
     >
       {message && (
-        <div className={`p-4 rounded-lg ${
-          message.type === 'success' 
-            ? 'bg-success/10 text-success border border-success/20' 
+        <div className={`p-4 rounded-lg ${message.type === 'success'
+            ? 'bg-success/10 text-success border border-success/20'
             : 'bg-danger/10 text-danger border border-danger/20'
-        }`}>
+          }`}>
           {message.text}
         </div>
       )}
@@ -169,7 +169,7 @@ export default function SiteConfigPage() {
                 onChange={(url) => handleChange("logoUnsoed", url)}
                 description="Logo resmi Universitas Jenderal Soedirman"
               />
-              
+
               <ImageUpload
                 label="Logo Aplikasi"
                 value={config?.logoApp || null}
@@ -198,6 +198,17 @@ export default function SiteConfigPage() {
               description="Nama resmi aplikasi/situs"
               variant="bordered"
               size="lg"
+            />
+
+            <Textarea
+              label="Moto LPMPP"
+              placeholder="Masukkan moto atau tagline LPMPP"
+              value={config?.moto || ""}
+              onChange={(e) => handleChange("moto", e.target.value)}
+              description="Moto atau tagline LPMPP UNSOED"
+              variant="bordered"
+              minRows={2}
+              maxRows={4}
             />
           </CardBody>
         </Card>
@@ -264,7 +275,7 @@ export default function SiteConfigPage() {
             <div>
               <h2 className="text-xl font-semibold mb-4">Profil Organisasi</h2>
             </div>
-            
+
             {/* LPMPP Section */}
             <div className="border-l-4 border-primary pl-4">
               <h3 className="text-lg font-medium mb-3 text-primary">LPMPP UNSOED</h3>
@@ -394,14 +405,14 @@ export default function SiteConfigPage() {
                 onChange={(url) => handleChange("gambarTeam", url)}
                 description="Gambar team LPMPP untuk section tentang tim"
               />
-              
+
               <ImageUpload
                 label="Gambar Slogan"
                 value={config?.gambarSlogan || null}
                 onChange={(url) => handleChange("gambarSlogan", url)}
                 description="Gambar untuk section slogan atau motto"
               />
-              
+
               <ImageUpload
                 label="Gambar Tambahan"
                 value={config?.gambarTambahan || null}
@@ -442,7 +453,7 @@ export default function SiteConfigPage() {
                 Deskripsi lengkap untuk setiap layanan yang disediakan LPMPP
               </p>
             </div>
-            
+
             <Textarea
               label="LAYANAN KAMI"
               placeholder="LPMPP Universitas Jenderal Soedirman adalah lembaga yang bertugas menjamin mutu pendidikan dan mengembangkan pembelajaran untuk mendukung visi universitas menjadi institusi unggul dan berdaya saing."
@@ -452,7 +463,7 @@ export default function SiteConfigPage() {
               description="Deskripsi umum tentang layanan LPMPP"
               variant="bordered"
             />
-            
+
             <Textarea
               label="PELATIHAN"
               placeholder="LPMPP menyelenggarakan program pelatihan untuk meningkatkan kompetensi tenaga pendidik serta mendukung penjaminan mutu dan pengembangan pembelajaran yang berkualitas di Universitas Jenderal Soedirman."
@@ -462,7 +473,7 @@ export default function SiteConfigPage() {
               description="Deskripsi tentang layanan pelatihan"
               variant="bordered"
             />
-            
+
             <Textarea
               label="PEMBELAJARAN"
               placeholder="LPMPP mengembangkan metode, kurikulum, dan teknologi pembelajaran untuk meningkatkan kualitas pendidikan di Universitas Jenderal Soedirman."
@@ -472,7 +483,7 @@ export default function SiteConfigPage() {
               description="Deskripsi tentang pengembangan pembelajaran"
               variant="bordered"
             />
-            
+
             <Textarea
               label="PENJAMINAN MUTU"
               placeholder="LPMPP memastikan pelaksanaan sistem penjaminan mutu pendidikan yang konsisten, melakukan evaluasi, serta memberikan rekomendasi untuk peningkatan kualitas akademik di Universitas Jenderal Soedirman"
@@ -494,7 +505,7 @@ export default function SiteConfigPage() {
                 Jadwal pelayanan dan informasi kontak untuk civitas akademika
               </p>
             </div>
-            
+
             <Textarea
               label="Informasi Pelayanan"
               placeholder="LPMPP menyediakan layanan bagi seluruh civitas akademika Universitas Jenderal Soedirman. Jadwal Pelayanan sebagai berikut:

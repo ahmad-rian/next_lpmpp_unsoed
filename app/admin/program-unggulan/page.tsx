@@ -90,11 +90,11 @@ export default function ProgramUnggulanPage() {
     try {
       const response = await fetch("/api/featured-programs");
       const data = await response.json();
-      
+
       if (!response.ok) {
         throw new Error(data.error || "Failed to fetch programs");
       }
-      
+
       // Ensure data is an array
       if (Array.isArray(data)) {
         setPrograms(data);
@@ -299,10 +299,10 @@ export default function ProgramUnggulanPage() {
                 <div>
                   <p className="font-medium">{program.title}</p>
                   {program.description && (
-                    <div 
+                    <div
                       className="text-sm text-default-400 line-clamp-2"
-                      dangerouslySetInnerHTML={{ 
-                        __html: program.description.replace(/<[^>]*>/g, '').substring(0, 100) + '...' 
+                      dangerouslySetInnerHTML={{
+                        __html: program.description.replace(/<[^>]*>/g, '').substring(0, 100) + '...'
                       }}
                     />
                   )}
@@ -379,15 +379,15 @@ export default function ProgramUnggulanPage() {
                 placeholder="Contoh: Pembelajaran di Luar Kampus (MBKM)"
                 value={formData.title}
                 onChange={(e: any) => {
-                  setFormData({ 
-                    ...formData, 
+                  setFormData({
+                    ...formData,
                     title: e.target.value,
                     slug: generateSlug(e.target.value) // Auto-generate slug
                   });
                 }}
                 isRequired
               />
-              
+
               <Input
                 label="Slug (URL-friendly)"
                 placeholder="mbkm"

@@ -20,8 +20,8 @@ async function main() {
 
   // Create default site configuration
   const siteConfig = await prisma.siteConfig.upsert({
-    where: { 
-      id: (await prisma.siteConfig.findFirst())?.id || "new-config" 
+    where: {
+      id: (await prisma.siteConfig.findFirst())?.id || "new-config"
     },
     update: {},
     create: {
@@ -74,28 +74,28 @@ async function main() {
   const staffData: Array<{ position: any; name: string; title: string; order: number }> = [
     // Sub Koordinator
     { position: "SUB_COORDINATOR", name: "Prasetyo Heru Saptono, S.Pd., M.B.A", title: "Sub Koordinator", order: 1 },
-    
+
     // Staff Umum
     { position: "GENERAL_STAFF", name: "Sri Apriani, S.E.", title: "Staff Umum", order: 1 },
     { position: "GENERAL_STAFF", name: "Kusrini Kartikawati, A.Md.", title: "Staff Umum", order: 2 },
     { position: "GENERAL_STAFF", name: "Alfia Nova Refi Sari, S.H.", title: "Staff Umum", order: 3 },
-    
+
     // Staff Program, Data & Informasi
     { position: "PROGRAM_DATA_INFO_STAFF", name: "Widya Hastuti, S.E.", title: "Staff Program, Data & Informasi", order: 1 },
     { position: "PROGRAM_DATA_INFO_STAFF", name: "Heri Yuwono W.H, A.Md.", title: "Staff Program, Data & Informasi", order: 2 },
     { position: "PROGRAM_DATA_INFO_STAFF", name: "Dasworo", title: "Staff Program, Data & Informasi", order: 3 },
     { position: "PROGRAM_DATA_INFO_STAFF", name: "Adhitya Ardiansyah, S.H.", title: "Staff Program, Data & Informasi", order: 4 },
-    
+
     // Pengemudi
     { position: "DRIVER", name: "Akhmad Wahyanto", title: "Pengemudi", order: 1 },
-    
+
     // Pramu Bakti
     { position: "OFFICE_ASSISTANT", name: "Yulian Kamal Bachrok", title: "Pramu Bakti", order: 1 },
   ];
 
   // Delete existing staff and create new ones
   await prisma.staff.deleteMany({});
-  
+
   for (const staff of staffData) {
     await prisma.staff.create({
       data: staff as any,
@@ -244,41 +244,9 @@ async function main() {
 
   console.log(`Created ${centersData.length} centers with their members`);
 
-  // Create SPMI Content
-  await prisma.spmiContent.upsert({
-    where: { section: "tujuan" },
-    update: {},
-    create: {
-      section: "tujuan",
-      content: `Tujuan penerapan SPMI di Unsoed adalah untuk:
-      
-1. Menjamin pencapaian tujuan Unsoed
-2. Menjamin pemenuhan dan pelampauan Standar Pendidikan Tinggi (Standar Dikti) secara sistemik dan berkelanjutan, sehingga terbangun budaya mutu
-3. Menjamin keselarasan SPMI dengan SPME
-4. Mewujudkan transparansi dan akuntabilitas kepada seluruh pemangku kepentingan tentang kesesuaian penyelenggaraan pendidikan Unsoed dengan standar yang ditetapkan`,
-      order: 1,
-    },
-  });
-
-  await prisma.spmiContent.upsert({
-    where: { section: "fungsi" },
-    update: {},
-    create: {
-      section: "fungsi",
-      content: `Fungsi SPMI di Unsoed adalah:
-      
-1. Sebagai bentuk akuntabilitas kepada pemangku kepentingan
-2. Sebagai landasan dan arah dalam peningkatan mutu pendidikan
-3. Sebagai pedoman penyelenggaraan pendidikan tinggi sehingga sesuai dengan ketentuan peraturan-peraturan perundangan yang berlaku`,
-      order: 2,
-    },
-  });
-
-  console.log("Created SPMI content");
-
   // Create sample documents
   await prisma.document.deleteMany({});
-  
+
   const sampleDocs = [
     {
       type: "SPMI",
@@ -308,7 +276,7 @@ async function main() {
 
   // Create Fakultas (Master Data) - 12 Fakultas UNSOED
   await prisma.faculty.deleteMany({});
-  
+
   const faculties = [
     { name: "Fakultas Pertanian", shortName: "Faperta", code: "FP", order: 1 },
     { name: "Fakultas Biologi", shortName: "Fabio", code: "FB", order: 2 },
@@ -336,7 +304,7 @@ async function main() {
 
   // Create sample Quality Assurance Groups
   await prisma.qualityAssuranceGroup.deleteMany({});
-  
+
   const sampleGPM = [
     {
       facultyId: createdFaculties[8].id, // FIKES (index 8 - Fakultas Ilmu-ilmu Kesehatan)
@@ -359,6 +327,43 @@ async function main() {
   }
 
   console.log(`Created ${sampleGPM.length} quality assurance groups`);
+
+  // Create SPMI About data
+  const spmiAbout = await prisma.spmiAbout.upsert({
+    where: {
+      id: (await prisma.spmiAbout.findFirst())?.id || "new-spmi"
+    },
+    update: {
+      title: "SPM Unsoed",
+      tujuan: `Tujuan penerapan SPMI di Unsoed adalah untuk:
+
+1. Menjamin pencapaian tujuan Unsoed
+2. Menjamin pemenuhan dan pelampauan Standar Pendidikan Tinggi (Standar Dikti) secara sistemik dan berkelanjutan, sehingga terbangun budaya mutu
+3. Menjamin keselarasan SPMI dengan SPME
+4. Mewujudkan transparansi dan akuntabilitas kepada seluruh pemangku kepentingan tentang kesesuaian penyelenggaraan pendidikan Unsoed dengan standar yang ditetapkan`,
+      fungsi: `Fungsi SPMI di Unsoed adalah:
+
+1. Sebagai bentuk akuntabilitas kepada pemangku kepentingan
+2. Sebagai landasan dan arah dalam peningkatan mutu pendidikan
+3. Sebagai pedoman penyelenggaraan pendidikan tinggi sehingga sesuai dengan ketentuan peraturan-peraturan perundangan yang berlaku`,
+    },
+    create: {
+      title: "SPM Unsoed",
+      tujuan: `Tujuan penerapan SPMI di Unsoed adalah untuk:
+
+1. Menjamin pencapaian tujuan Unsoed
+2. Menjamin pemenuhan dan pelampauan Standar Pendidikan Tinggi (Standar Dikti) secara sistemik dan berkelanjutan, sehingga terbangun budaya mutu
+3. Menjamin keselarasan SPMI dengan SPME
+4. Mewujudkan transparansi dan akuntabilitas kepada seluruh pemangku kepentingan tentang kesesuaian penyelenggaraan pendidikan Unsoed dengan standar yang ditetapkan`,
+      fungsi: `Fungsi SPMI di Unsoed adalah:
+
+1. Sebagai bentuk akuntabilitas kepada pemangku kepentingan
+2. Sebagai landasan dan arah dalam peningkatan mutu pendidikan
+3. Sebagai pedoman penyelenggaraan pendidikan tinggi sehingga sesuai dengan ketentuan peraturan-peraturan perundangan yang berlaku`,
+    },
+  });
+
+  console.log("SPMI About data created/updated:", spmiAbout);
 }
 
 main()

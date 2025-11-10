@@ -136,7 +136,7 @@ export async function PUT(request: NextRequest) {
 
     // Get current news to check if it exists
     const currentNews = await prisma.news.findUnique({ where: { id } });
-    
+
     if (!currentNews) {
       return NextResponse.json(
         { error: "News not found" },

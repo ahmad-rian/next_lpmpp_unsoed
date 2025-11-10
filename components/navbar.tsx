@@ -137,10 +137,10 @@ export const Navbar = () => {
       <NavbarContent className="basis-1/4 lg:basis-1/4" justify="start">
         <NavbarBrand as="li" className="gap-2 max-w-fit">
           <NextLink className="flex justify-start items-center gap-2" href="/">
-            {(configData?.logoUnsoed || configData?.logoApp) ? (
+            {(configData?.logoApp || configData?.logoUnsoed) ? (
               <Image
-                src={configData.logoUnsoed || configData.logoApp || ""}
-                alt={configData.siteName || "Logo"}
+                src={configData.logoApp || configData.logoUnsoed || ""}
+                alt={configData.siteName || "Logo LPMPP"}
                 width={28}
                 height={28}
                 className="rounded"
@@ -173,7 +173,7 @@ export const Navbar = () => {
                   )}
                 </span>
               </NextLink>
-              
+
               {/* Dropdown Card - muncul saat hover */}
               {item.children && item.children.length > 0 && (
                 <div className="absolute top-full left-0 mt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 ease-in-out z-50">
@@ -230,18 +230,18 @@ export const Navbar = () => {
           {/* Beranda */}
           <NavbarMenuItem>
             <NextLink
-              className="w-full text-sm py-3 px-4 block hover:bg-default-100 rounded-lg transition-all duration-200 font-medium text-foreground hover:text-primary flex items-center gap-3"
+              className="w-full text-sm py-3 px-4 hover:bg-default-100 rounded-lg transition-all duration-200 font-medium text-foreground hover:text-primary flex items-center gap-3"
               href="/"
             >
               <HomeIcon className="w-5 h-5 text-primary" />
               Beranda
             </NextLink>
           </NavbarMenuItem>
-          
+
           {/* Accordion untuk menu dengan children */}
           <NavbarMenuItem>
-            <Accordion 
-              variant="light" 
+            <Accordion
+              variant="light"
               className="px-0"
               itemClasses={{
                 base: "py-0",
@@ -263,7 +263,7 @@ export const Navbar = () => {
               >
                 <div className="flex flex-col gap-1 ml-8">
                   <NextLink
-                    href="/about"
+                    href="/tentang-kami"
                     className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-default-100 transition-colors text-sm text-default-600 hover:text-primary"
                   >
                     {MenuIcons.information}
@@ -273,7 +273,7 @@ export const Navbar = () => {
                     </div>
                   </NextLink>
                   <NextLink
-                    href="/pimpinan"
+                    href="/pimpinan-lembaga"
                     className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-default-100 transition-colors text-sm text-default-600 hover:text-primary"
                   >
                     {MenuIcons.users}
@@ -295,40 +295,17 @@ export const Navbar = () => {
                 </div>
               </AccordionItem>
 
-              {/* Unit Kerja */}
-              <AccordionItem
-                key="unit-kerja"
-                aria-label="Unit Kerja"
-                title={
-                  <div className="flex items-center gap-3">
-                    <BuildingOfficeIcon className="w-5 h-5 text-primary" />
-                    <span>Unit Kerja</span>
-                  </div>
-                }
+              {/* Unit Kerja - Direct Link */}
+              <NextLink
+                href="/pusat-unit"
+                className="flex items-center gap-3 px-4 py-3 rounded-md hover:bg-default-100 transition-colors text-sm text-default-600 hover:text-primary"
               >
-                <div className="flex flex-col gap-1 ml-8">
-                  <NextLink
-                    href="/pusat-unit"
-                    className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-default-100 transition-colors text-sm text-default-600 hover:text-primary"
-                  >
-                    {MenuIcons.building}
-                    <div>
-                      <div className="font-medium">Pusat & Unit</div>
-                      <div className="text-xs text-default-400">Daftar pusat dan unit kerja</div>
-                    </div>
-                  </NextLink>
-                  <NextLink
-                    href="/fakultas"
-                    className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-default-100 transition-colors text-sm text-default-600 hover:text-primary"
-                  >
-                    {MenuIcons.academic}
-                    <div>
-                      <div className="font-medium">Fakultas</div>
-                      <div className="text-xs text-default-400">Informasi fakultas</div>
-                    </div>
-                  </NextLink>
+                <BuildingOfficeIcon className="w-5 h-5 text-primary" />
+                <div>
+                  <div className="font-medium">Unit Kerja</div>
+                  <div className="text-xs text-default-400">Daftar pusat dan unit kerja</div>
                 </div>
-              </AccordionItem>
+              </NextLink>
 
               {/* SPMI */}
               <AccordionItem
@@ -343,13 +320,23 @@ export const Navbar = () => {
               >
                 <div className="flex flex-col gap-1 ml-8">
                   <NextLink
-                    href="/spmi/gpm"
+                    href="/spmi/tentang"
+                    className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-default-100 transition-colors text-sm text-default-600 hover:text-primary"
+                  >
+                    {MenuIcons.information}
+                    <div>
+                      <div className="font-medium">Tentang SPMI</div>
+                      <div className="text-xs text-default-400">Informasi Sistem Penjaminan Mutu Internal</div>
+                    </div>
+                  </NextLink>
+                  <NextLink
+                    href="/spmi/gugus-penjamin-mutu-fakultas"
                     className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-default-100 transition-colors text-sm text-default-600 hover:text-primary"
                   >
                     {MenuIcons.clipboard}
                     <div>
-                      <div className="font-medium">Dokumen GPM</div>
-                      <div className="text-xs text-default-400">Dokumen Gugus Penjaminan Mutu</div>
+                      <div className="font-medium">Dokumen GPM Fakultas</div>
+                      <div className="text-xs text-default-400">Dokumen Gugus Penjaminan Mutu Fakultas</div>
                     </div>
                   </NextLink>
                   <NextLink
@@ -360,6 +347,16 @@ export const Navbar = () => {
                     <div>
                       <div className="font-medium">Dokumen SPMI</div>
                       <div className="text-xs text-default-400">Sistem Penjaminan Mutu Internal</div>
+                    </div>
+                  </NextLink>
+                  <NextLink
+                    href="/spmi/peraturan"
+                    className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-default-100 transition-colors text-sm text-default-600 hover:text-primary"
+                  >
+                    {MenuIcons.scale}
+                    <div>
+                      <div className="font-medium">Peraturan</div>
+                      <div className="text-xs text-default-400">Peraturan dan kebijakan SPMI</div>
                     </div>
                   </NextLink>
                 </div>
@@ -460,7 +457,7 @@ export const Navbar = () => {
           {/* Menu tunggal */}
           <NavbarMenuItem>
             <NextLink
-              className="w-full text-sm py-3 px-4 block hover:bg-default-100 rounded-lg transition-all duration-200 font-medium text-foreground hover:text-primary flex items-center gap-3"
+              className="w-full text-sm py-3 px-4 hover:bg-default-100 rounded-lg transition-all duration-200 font-medium text-foreground hover:text-primary flex items-center gap-3"
               href="/program-unggulan"
             >
               <StarIcon className="w-5 h-5 text-primary" />
@@ -470,7 +467,7 @@ export const Navbar = () => {
 
           <NavbarMenuItem>
             <NextLink
-              className="w-full text-sm py-3 px-4 block hover:bg-default-100 rounded-lg transition-all duration-200 font-medium text-foreground hover:text-primary flex items-center gap-3"
+              className="w-full text-sm py-3 px-4 hover:bg-default-100 rounded-lg transition-all duration-200 font-medium text-foreground hover:text-primary flex items-center gap-3"
               href="/berita"
             >
               <NewspaperIcon className="w-5 h-5 text-primary" />
@@ -480,7 +477,7 @@ export const Navbar = () => {
 
           <NavbarMenuItem>
             <NextLink
-              className="w-full text-sm py-3 px-4 block hover:bg-default-100 rounded-lg transition-all duration-200 font-medium text-foreground hover:text-primary flex items-center gap-3"
+              className="w-full text-sm py-3 px-4 hover:bg-default-100 rounded-lg transition-all duration-200 font-medium text-foreground hover:text-primary flex items-center gap-3"
               href="/unduhan"
             >
               <FolderIcon className="w-5 h-5 text-primary" />

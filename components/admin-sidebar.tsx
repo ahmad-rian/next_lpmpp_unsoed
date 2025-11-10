@@ -38,6 +38,11 @@ const menuItems = [
     icon: DocumentIcon,
   },
   {
+    title: "SPMI",
+    href: "/admin/spmi",
+    icon: DocumentIcon,
+  },
+  {
     title: "Analytics",
     href: "/admin/analytics",
     icon: ChartBarIcon,

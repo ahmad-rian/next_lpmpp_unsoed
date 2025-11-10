@@ -232,6 +232,7 @@ model QualityAssuranceGroup {
   faculty     Faculty                    @relation(fields: [facultyId], references: [id], onDelete: Cascade)
   description String?                    @db.Text
   contactInfo String?                    @db.Text
+  directUrl   String?                    @db.Text // URL langsung ke halaman GPM fakultas
   order       Int                        @default(0)
   isActive    Boolean                    @default(true)
   documents   QualityAssuranceDocument[] // Relasi ke dokumen GPM

@@ -142,6 +142,7 @@ export function AdminNavbar() {
   ];
 
   const spmiItems = [
+    { key: "spmi", label: "Tentang SPMI", href: "/admin/spmi", icon: FileTextIcon },
     { key: "spmi-dokumen", label: "Dokumen SPMI", href: "/admin/spmi-dokumen", icon: FileTextIcon },
     { key: "spmi-gpm", label: "GPM Fakultas", href: "/admin/spmi-gpm", icon: UsersIcon },
   ];

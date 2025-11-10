@@ -202,106 +202,106 @@ export default function AkreditasiInternasionalPage() {
 
         {/* Table */}
         <Table aria-label="Akreditasi Internasional Table">
-        <TableHeader>
-          <TableColumn>NO</TableColumn>
-          <TableColumn>FAKULTAS</TableColumn>
-          <TableColumn>PROGRAM STUDI</TableColumn>
-          <TableColumn>LEMBAGA</TableColumn>
-          <TableColumn>AKSI</TableColumn>
-        </TableHeader>
-        <TableBody emptyContent="Belum ada data akreditasi">
-          {accreditations.map((item, index) => (
-            <TableRow key={item.id}>
-              <TableCell>{index + 1}</TableCell>
-              <TableCell>{item.facultyName}</TableCell>
-              <TableCell>{item.programName}</TableCell>
-              <TableCell>
-                <div className="whitespace-pre-wrap">{item.agency}</div>
-              </TableCell>
-              <TableCell>
-                <div className="flex gap-2">
-                  <Button
-                    size="sm"
-                    variant="flat"
-                    color="warning"
-                    isIconOnly
-                    onPress={() => handleOpenModal(item)}
-                  >
-                    <PencilIcon className="w-4 h-4" />
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="flat"
-                    color="danger"
-                    isIconOnly
-                    onPress={() => handleDelete(item.id)}
-                  >
-                    <TrashIcon className="w-4 h-4" />
-                  </Button>
-                </div>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+          <TableHeader>
+            <TableColumn>NO</TableColumn>
+            <TableColumn>FAKULTAS</TableColumn>
+            <TableColumn>PROGRAM STUDI</TableColumn>
+            <TableColumn>LEMBAGA</TableColumn>
+            <TableColumn>AKSI</TableColumn>
+          </TableHeader>
+          <TableBody emptyContent="Belum ada data akreditasi">
+            {accreditations.map((item, index) => (
+              <TableRow key={item.id}>
+                <TableCell>{index + 1}</TableCell>
+                <TableCell>{item.facultyName}</TableCell>
+                <TableCell>{item.programName}</TableCell>
+                <TableCell>
+                  <div className="whitespace-pre-wrap">{item.agency}</div>
+                </TableCell>
+                <TableCell>
+                  <div className="flex gap-2">
+                    <Button
+                      size="sm"
+                      variant="flat"
+                      color="warning"
+                      isIconOnly
+                      onPress={() => handleOpenModal(item)}
+                    >
+                      <PencilIcon className="w-4 h-4" />
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="flat"
+                      color="danger"
+                      isIconOnly
+                      onPress={() => handleDelete(item.id)}
+                    >
+                      <TrashIcon className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
 
-      {/* Modal */}
-      <Modal isOpen={isOpen} onClose={handleCloseModal} size="2xl">
-        <ModalContent>
-          <ModalHeader>
-            {editingItem ? "Edit Akreditasi" : "Tambah Akreditasi"}
-          </ModalHeader>
-          <ModalBody>
-            <div className="space-y-4">
-              <Input
-                label="Fakultas"
-                placeholder="Masukkan nama fakultas"
-                value={formData.facultyName}
-                onChange={(e) =>
-                  setFormData({ ...formData, facultyName: e.target.value })
-                }
-                isRequired
-              />
-              <Input
-                label="Program Studi"
-                placeholder="Masukkan nama program studi"
-                value={formData.programName}
-                onChange={(e) =>
-                  setFormData({ ...formData, programName: e.target.value })
-                }
-                isRequired
-              />
-              <Textarea
-                label="Lembaga"
-                placeholder="Masukkan nama lembaga akreditasi"
-                value={formData.agency}
-                onChange={(e) =>
-                  setFormData({ ...formData, agency: e.target.value })
-                }
-                minRows={3}
-                isRequired
-              />
-              <Input
-                type="number"
-                label="Urutan"
-                placeholder="Masukkan urutan tampilan"
-                value={formData.order.toString()}
-                onChange={(e) =>
-                  setFormData({ ...formData, order: parseInt(e.target.value) || 0 })
-                }
-              />
-            </div>
-          </ModalBody>
-          <ModalFooter>
-            <Button variant="flat" onPress={handleCloseModal}>
-              Batal
-            </Button>
-            <Button color="primary" onPress={handleSubmit} isLoading={saving}>
-              {editingItem ? "Simpan Perubahan" : "Tambah Data"}
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+        {/* Modal */}
+        <Modal isOpen={isOpen} onClose={handleCloseModal} size="2xl">
+          <ModalContent>
+            <ModalHeader>
+              {editingItem ? "Edit Akreditasi" : "Tambah Akreditasi"}
+            </ModalHeader>
+            <ModalBody>
+              <div className="space-y-4">
+                <Input
+                  label="Fakultas"
+                  placeholder="Masukkan nama fakultas"
+                  value={formData.facultyName}
+                  onChange={(e) =>
+                    setFormData({ ...formData, facultyName: e.target.value })
+                  }
+                  isRequired
+                />
+                <Input
+                  label="Program Studi"
+                  placeholder="Masukkan nama program studi"
+                  value={formData.programName}
+                  onChange={(e) =>
+                    setFormData({ ...formData, programName: e.target.value })
+                  }
+                  isRequired
+                />
+                <Textarea
+                  label="Lembaga"
+                  placeholder="Masukkan nama lembaga akreditasi"
+                  value={formData.agency}
+                  onChange={(e) =>
+                    setFormData({ ...formData, agency: e.target.value })
+                  }
+                  minRows={3}
+                  isRequired
+                />
+                <Input
+                  type="number"
+                  label="Urutan"
+                  placeholder="Masukkan urutan tampilan"
+                  value={formData.order.toString()}
+                  onChange={(e) =>
+                    setFormData({ ...formData, order: parseInt(e.target.value) || 0 })
+                  }
+                />
+              </div>
+            </ModalBody>
+            <ModalFooter>
+              <Button variant="flat" onPress={handleCloseModal}>
+                Batal
+              </Button>
+              <Button color="primary" onPress={handleSubmit} isLoading={saving}>
+                {editingItem ? "Simpan Perubahan" : "Tambah Data"}
+              </Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
       </div>
     </AdminPageLayout>
   );

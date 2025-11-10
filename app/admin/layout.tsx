@@ -11,12 +11,12 @@ export default function AdminLayout({
     <div className="relative flex flex-col min-h-screen">
       {/* Admin Navbar */}
       <AdminNavbar />
-      
+
       {/* Main Content */}
       <main className="flex-grow">
         {children}
       </main>
-      
+
       {/* Footer */}
       <footer className="w-full border-t border-divider py-4">
         <div className="container mx-auto max-w-7xl px-6">

@@ -7,8 +7,12 @@ import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure
 import { Input, Textarea } from "@heroui/input";
 import { Select, SelectItem } from "@heroui/select";
 import { Card, CardBody, CardHeader } from "@heroui/card";
-import { Divider } from "@heroui/divider";
-import { DocumentUpload } from "@/components/document-upload";
+import { AdminPageLayout } from "@/components/admin-page-layout";
+
+const showNotification = (message: string, type: 'success' | 'error' = 'success') => {
+  // Simple notification function - replace with your preferred notification system
+  alert(message);
+};
 
 // Heroicons
 const PencilIcon = ({ className }: { className?: string }) => (
@@ -29,13 +33,18 @@ const PlusIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
-interface GPMDocument {
+const LinkIcon = ({ className }: { className?: string }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244" />
+  </svg>
+);
+
+interface GPMLink {
   id: string;
   groupId: string;
   title: string;
-  fileUrl: string;
-  fileName: string;
-  fileSize: number | null;
+  url: string;
+  description: string | null;
   order: number;
 }
 
@@ -52,9 +61,10 @@ interface QualityAssuranceGroup {
   faculty: Faculty;
   description: string | null;
   contactInfo: string | null;
+  directUrl: string | null;
   order: number;
   isActive: boolean;
-  documents?: GPMDocument[];
+  links?: GPMLink[];
 }
 
 export default function SpmiGpmPage() {
@@ -62,7 +72,7 @@ export default function SpmiGpmPage() {
   const [faculties, setFaculties] = useState<Faculty[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedGroup, setSelectedGroup] = useState<QualityAssuranceGroup | null>(null);
-  const [documents, setDocuments] = useState<GPMDocument[]>([]);
+  const [links, setLinks] = useState<GPMLink[]>([]);
 
   // Modal state
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -71,6 +81,7 @@ export default function SpmiGpmPage() {
     facultyId: "",
     description: "",
     contactInfo: "",
+    directUrl: "",
     order: 0,
   });
 
@@ -82,38 +93,28 @@ export default function SpmiGpmPage() {
   } = useDisclosure();
   const [groupToDelete, setGroupToDelete] = useState<QualityAssuranceGroup | null>(null);
 
-  // Document modal
+  // Link modal
   const {
-    isOpen: isDocModalOpen,
-    onOpen: onDocModalOpen,
-    onClose: onDocModalClose,
+    isOpen: isLinkModalOpen,
+    onOpen: onLinkModalOpen,
+    onClose: onLinkModalClose,
   } = useDisclosure();
-  const [docFormData, setDocFormData] = useState({
+  const [linkFormData, setLinkFormData] = useState({
     id: "",
     title: "",
-    fileUrl: "",
-    fileName: "",
-    fileSize: 0,
+    url: "",
+    description: "",
     order: 0,
   });
 
-  // Delete document modal
+  // Delete link modal
   const {
-    isOpen: isDeleteDocOpen,
-    onOpen: onDeleteDocOpen,
-    onClose: onDeleteDocClose,
+    isOpen: isDeleteLinkOpen,
+    onOpen: onDeleteLinkOpen,
+    onClose: onDeleteLinkClose,
   } = useDisclosure();
-  const [docToDelete, setDocToDelete] = useState<GPMDocument | null>(null);
-  const documentSectionRef = React.useRef<HTMLDivElement>(null);
-
-  // State untuk dokumen di dalam modal create
-  const [tempDocuments, setTempDocuments] = useState<Array<{
-    title: string;
-    fileUrl: string;
-    fileName: string;
-    fileSize: number;
-    order: number;
-  }>>([]);
+  const [linkToDelete, setLinkToDelete] = useState<GPMLink | null>(null);
+  const linkSectionRef = React.useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     fetchGroups();
@@ -121,12 +122,12 @@ export default function SpmiGpmPage() {
   }, []);
 
   useEffect(() => {
-    // Scroll ke section dokumen ketika GPM dipilih
-    if (selectedGroup && documentSectionRef.current) {
+    // Scroll ke section link ketika GPM dipilih
+    if (selectedGroup && linkSectionRef.current) {
       setTimeout(() => {
-        documentSectionRef.current?.scrollIntoView({ 
-          behavior: 'smooth', 
-          block: 'start' 
+        linkSectionRef.current?.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start'
         });
       }, 100);
     }
@@ -156,20 +157,20 @@ export default function SpmiGpmPage() {
     }
   };
 
-  const fetchDocuments = async (groupId: string) => {
+  const fetchLinks = async (groupId: string) => {
     try {
-      const response = await fetch(`/api/gpm-documents?groupId=${groupId}`);
+      const response = await fetch(`/api/gpm-links?groupId=${groupId}`);
       const data = await response.json();
-      setDocuments(Array.isArray(data) ? data : []);
+      setLinks(Array.isArray(data) ? data : []);
     } catch (error) {
-      console.error("Error fetching documents:", error);
-      setDocuments([]);
+      console.error("Error fetching links:", error);
+      setLinks([]);
     }
   };
 
   const handleSelectGroup = (group: QualityAssuranceGroup) => {
     setSelectedGroup(group);
-    fetchDocuments(group.id);
+    fetchLinks(group.id);
   };
 
   const handleAdd = () => {
@@ -178,9 +179,9 @@ export default function SpmiGpmPage() {
       facultyId: "",
       description: "",
       contactInfo: "",
+      directUrl: "",
       order: groups.length + 1,
     });
-    setTempDocuments([]); // Reset temp documents
     onOpen();
   };
 
@@ -190,6 +191,7 @@ export default function SpmiGpmPage() {
       facultyId: group.facultyId,
       description: group.description || "",
       contactInfo: group.contactInfo || "",
+      directUrl: group.directUrl || "",
       order: group.order,
     });
     onOpen();
@@ -209,224 +211,196 @@ export default function SpmiGpmPage() {
       });
 
       if (response.ok) {
-        const savedGroup = await response.json();
-        
-        // Jika ada dokumen yang ditambahkan, simpan juga
-        if (!formData.id && tempDocuments.length > 0) {
-          await Promise.all(
-            tempDocuments.map((doc) =>
-              fetch("/api/gpm-documents", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                  groupId: savedGroup.id,
-                  title: doc.title,
-                  fileUrl: doc.fileUrl,
-                  fileName: doc.fileName,
-                  fileSize: doc.fileSize,
-                  order: doc.order,
-                }),
-              })
-            )
-          );
-        }
-        
-        await fetchGroups();
+        showNotification(formData.id ? "GPM berhasil diperbarui" : "GPM berhasil ditambahkan", "success");
         onClose();
-        setTempDocuments([]);
+        fetchGroups();
+      } else {
+        showNotification("Gagal menyimpan GPM", "error");
       }
     } catch (error) {
       console.error("Error saving group:", error);
+      showNotification("Terjadi kesalahan saat menyimpan GPM", "error");
     }
   };
 
-  const confirmDelete = (group: QualityAssuranceGroup) => {
+  const handleDelete = (group: QualityAssuranceGroup) => {
     setGroupToDelete(group);
     onDeleteOpen();
   };
 
-  const handleDelete = async () => {
+  const confirmDelete = async () => {
     if (!groupToDelete) return;
 
     try {
-      const response = await fetch(
-        `/api/quality-assurance-groups?id=${groupToDelete.id}`,
-        {
-          method: "DELETE",
-        }
-      );
+      const response = await fetch("/api/quality-assurance-groups", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: groupToDelete.id }),
+      });
 
       if (response.ok) {
-        await fetchGroups();
+        showNotification("GPM berhasil dihapus", "success");
         onDeleteClose();
+        fetchGroups();
+        if (selectedGroup?.id === groupToDelete.id) {
+          setSelectedGroup(null);
+          setLinks([]);
+        }
+      } else {
+        showNotification("Gagal menghapus GPM", "error");
       }
     } catch (error) {
       console.error("Error deleting group:", error);
+      showNotification("Terjadi kesalahan saat menghapus GPM", "error");
     }
   };
 
-  const handleAddDocument = () => {
+  // Link Functions
+  const handleAddLink = () => {
     if (!selectedGroup) return;
-    setDocFormData({
+
+    setLinkFormData({
       id: "",
       title: "",
-      fileUrl: "",
-      fileName: "",
-      fileSize: 0,
-      order: documents.length + 1,
+      url: "",
+      description: "",
+      order: links.length + 1,
     });
-    onDocModalOpen();
+    onLinkModalOpen();
   };
 
-  const handleEditDocument = (doc: GPMDocument) => {
-    setDocFormData({
-      id: doc.id,
-      title: doc.title,
-      fileUrl: doc.fileUrl,
-      fileName: doc.fileName,
-      fileSize: doc.fileSize || 0,
-      order: doc.order,
+  const handleEditLink = (link: GPMLink) => {
+    setLinkFormData({
+      id: link.id,
+      title: link.title,
+      url: link.url,
+      description: link.description || "",
+      order: link.order,
     });
-    onDocModalOpen();
+    onLinkModalOpen();
   };
 
-  const handleSaveDocument = async () => {
+  const handleSaveLink = async () => {
     if (!selectedGroup) return;
+
     try {
-      const url = docFormData.id
-        ? "/api/gpm-documents"
-        : "/api/gpm-documents";
-      const method = docFormData.id ? "PUT" : "POST";
+      const linkData = {
+        ...linkFormData,
+        groupId: selectedGroup.id,
+      };
+
+      const url = linkFormData.id
+        ? "/api/gpm-links"
+        : "/api/gpm-links";
+      const method = linkFormData.id ? "PUT" : "POST";
 
       const response = await fetch(url, {
         method,
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          ...(docFormData.id && { id: docFormData.id }),
-          groupId: selectedGroup.id,
-          title: docFormData.title,
-          fileUrl: docFormData.fileUrl,
-          fileName: docFormData.fileName,
-          fileSize: docFormData.fileSize,
-          order: docFormData.order,
-        }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(linkData),
       });
 
       if (response.ok) {
-        await fetchDocuments(selectedGroup.id);
-        onDocModalClose();
+        showNotification(linkFormData.id ? "Link berhasil diperbarui" : "Link berhasil ditambahkan", "success");
+        onLinkModalClose();
+        fetchLinks(selectedGroup.id);
+      } else {
+        showNotification("Gagal menyimpan link", "error");
       }
     } catch (error) {
-      console.error("Error saving document:", error);
+      console.error("Error saving link:", error);
+      showNotification("Terjadi kesalahan saat menyimpan link", "error");
     }
   };
 
-  const handleDeleteDocumentConfirm = async () => {
-    if (!docToDelete || !selectedGroup) return;
+  const handleDeleteLink = (link: GPMLink) => {
+    setLinkToDelete(link);
+    onDeleteLinkOpen();
+  };
+
+  const confirmDeleteLink = async () => {
+    if (!linkToDelete) return;
+
     try {
-      const response = await fetch("/api/gpm-documents", {
+      const response = await fetch("/api/gpm-links", {
         method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ id: docToDelete.id }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: linkToDelete.id }),
       });
 
       if (response.ok) {
-        await fetchDocuments(selectedGroup.id);
-        onDeleteDocClose();
+        showNotification("Link berhasil dihapus", "success");
+        onDeleteLinkClose();
+        if (selectedGroup) {
+          fetchLinks(selectedGroup.id);
+        }
+      } else {
+        showNotification("Gagal menghapus link", "error");
       }
     } catch (error) {
-      console.error("Error deleting document:", error);
+      console.error("Error deleting link:", error);
+      showNotification("Terjadi kesalahan saat menghapus link", "error");
     }
   };
-
-  const handleAddTempDocument = () => {
-    const newDoc = {
-      title: "",
-      fileUrl: "",
-      fileName: "",
-      fileSize: 0,
-      order: tempDocuments.length + 1,
-    };
-    setTempDocuments([...tempDocuments, newDoc]);
-  };
-
-  const handleUpdateTempDocument = (index: number, field: string, value: any) => {
-    const updated = [...tempDocuments];
-    updated[index] = { ...updated[index], [field]: value };
-    setTempDocuments(updated);
-  };
-
-  const handleRemoveTempDocument = (index: number) => {
-    setTempDocuments(tempDocuments.filter((_, i) => i !== index));
-  };
-
-  const formatFileSize = (bytes: number | null): string => {
-    if (!bytes) return "-";
-    if (bytes < 1024) return bytes + " B";
-    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(2) + " KB";
-    return (bytes / (1024 * 1024)).toFixed(2) + " MB";
-  };
-
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        Loading...
-      </div>
-    );
-  }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="flex justify-between items-center mb-6">
-        <div>
-          <h1 className="text-3xl font-bold">Gugus Penjamin Mutu Fakultas</h1>
-          <p className="text-default-500 mt-1">
-            Kelola daftar Gugus Penjamin Mutu per Fakultas
-          </p>
-        </div>
-        <Button
-          color="primary"
-          startContent={<PlusIcon className="w-4 h-4" />}
-          onPress={handleAdd}
-        >
-          Tambah GPM
-        </Button>
-      </div>
-
-      <Card>
+    <AdminPageLayout
+      title="Gugus Penjaminan Mutu Fakultas"
+      description="Kelola data Gugus Penjaminan Mutu (GPM) Fakultas beserta link-link yang tersedia"
+    >
+      {/* GPM Table */}
+      <Card className="mb-6">
+        <CardHeader className="flex justify-between items-center">
+          <h3 className="text-xl font-semibold">Daftar GPM Fakultas</h3>
+          <Button
+            color="primary"
+            startContent={<PlusIcon className="w-4 h-4" />}
+            onPress={handleAdd}
+          >
+            Tambah GPM
+          </Button>
+        </CardHeader>
         <CardBody>
-          <Table aria-label="GPM table">
+          <Table aria-label="Tabel GPM Fakultas">
             <TableHeader>
-              <TableColumn>NO</TableColumn>
-              <TableColumn>NAMA FAKULTAS</TableColumn>
-              <TableColumn>SINGKATAN</TableColumn>
+              <TableColumn>FAKULTAS</TableColumn>
               <TableColumn>DESKRIPSI</TableColumn>
               <TableColumn>KONTAK</TableColumn>
+              <TableColumn>LINK Dokumen</TableColumn>
               <TableColumn>URUTAN</TableColumn>
               <TableColumn>AKSI</TableColumn>
             </TableHeader>
-            <TableBody emptyContent="Belum ada GPM">
-              {groups.map((group, index) => (
-                <TableRow key={group.id}>
-                  <TableCell>{index + 1}</TableCell>
+            <TableBody items={groups} isLoading={loading}>
+              {(group) => (
+                <TableRow
+                  key={group.id}
+                  className={selectedGroup?.id === group.id ? "bg-primary-50" : ""}
+                >
                   <TableCell>
-                    <div>
-                      <p className="font-semibold">{group.faculty.name}</p>
-                      <p className="text-xs text-default-400">{group.faculty.code}</p>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="flat"
+                        size="sm"
+                        onPress={() => handleSelectGroup(group)}
+                        className={selectedGroup?.id === group.id ? "bg-primary-100" : ""}
+                      >
+                        {group.faculty.name}
+                      </Button>
                     </div>
                   </TableCell>
-                  <TableCell>{group.faculty.shortName || "-"}</TableCell>
+                  <TableCell>{group.description || "-"}</TableCell>
+                  <TableCell>{group.contactInfo || "-"}</TableCell>
                   <TableCell>
-                    <p className="text-sm text-default-500 line-clamp-2">
-                      {group.description || "-"}
-                    </p>
-                  </TableCell>
-                  <TableCell>
-                    <p className="text-sm">{group.contactInfo || "-"}</p>
+                    {group.directUrl ? (
+                      <a
+                        href={group.directUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 hover:text-blue-800 underline text-sm"
+                      >
+                        {group.directUrl.length > 30 ? `${group.directUrl.substring(0, 30)}...` : group.directUrl}
+                      </a>
+                    ) : "-"}
                   </TableCell>
                   <TableCell>{group.order}</TableCell>
                   <TableCell>
@@ -434,387 +408,299 @@ export default function SpmiGpmPage() {
                       <Button
                         size="sm"
                         variant="flat"
-                        color="secondary"
-                        onPress={() => handleSelectGroup(group)}
-                      >
-                        Lihat Dokumen
-                      </Button>
-                      <Button
-                        size="sm"
-                        isIconOnly
-                        variant="light"
+                        startContent={<PencilIcon className="w-3 h-3" />}
                         onPress={() => handleEdit(group)}
                       >
-                        <PencilIcon className="w-4 h-4" />
+                        Edit
                       </Button>
                       <Button
                         size="sm"
-                        isIconOnly
-                        variant="light"
                         color="danger"
-                        onPress={() => confirmDelete(group)}
+                        variant="flat"
+                        startContent={<TrashIcon className="w-3 h-3" />}
+                        onPress={() => handleDelete(group)}
                       >
-                        <TrashIcon className="w-4 h-4" />
+                        Hapus
                       </Button>
                     </div>
                   </TableCell>
                 </TableRow>
-              ))}
+              )}
             </TableBody>
           </Table>
         </CardBody>
       </Card>
 
-      {/* Document Section */}
+      {/* Links Section */}
       {selectedGroup && (
-        <Card className="mt-6" ref={documentSectionRef}>
-          <CardHeader className="flex justify-between items-center">
-            <div>
-              <h2 className="text-xl font-bold">{selectedGroup.faculty.name}</h2>
-              <p className="text-sm text-default-500">Dokumen GPM</p>
-            </div>
-            <Button
-              color="primary"
-              size="sm"
-              startContent={<PlusIcon className="w-4 h-4" />}
-              onPress={handleAddDocument}
-            >
-              Tambah Dokumen
-            </Button>
-          </CardHeader>
-          <Divider />
-          <CardBody>
-            <Table aria-label="Documents table">
-              <TableHeader>
-                <TableColumn>NO</TableColumn>
-                <TableColumn>JUDUL</TableColumn>
-                <TableColumn>FILE</TableColumn>
-                <TableColumn>UKURAN</TableColumn>
-                <TableColumn>URUTAN</TableColumn>
-                <TableColumn>AKSI</TableColumn>
-              </TableHeader>
-              <TableBody emptyContent="Belum ada dokumen">
-                {documents.map((doc, index) => (
-                  <TableRow key={doc.id}>
-                    <TableCell>{index + 1}</TableCell>
-                    <TableCell>
-                      <p className="font-medium">{doc.title}</p>
-                    </TableCell>
-                    <TableCell>
-                      <a
-                        href={doc.fileUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-primary hover:underline"
-                      >
-                        {doc.fileName}
-                      </a>
-                    </TableCell>
-                    <TableCell>{formatFileSize(doc.fileSize)}</TableCell>
-                    <TableCell>{doc.order}</TableCell>
-                    <TableCell>
-                      <div className="flex gap-2">
-                        <Button
-                          size="sm"
-                          isIconOnly
-                          variant="light"
-                          onPress={() => handleEditDocument(doc)}
-                        >
-                          <PencilIcon className="w-4 h-4" />
-                        </Button>
-                        <Button
-                          size="sm"
-                          isIconOnly
-                          variant="light"
-                          color="danger"
-                          onPress={() => {
-                            setDocToDelete(doc);
-                            onDeleteDocOpen();
-                          }}
-                        >
-                          <TrashIcon className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </CardBody>
-        </Card>
+        <div ref={linkSectionRef}>
+          <Card>
+            <CardHeader className="flex justify-between items-center">
+              <div>
+                <h3 className="text-xl font-semibold">
+                  Link GPM {selectedGroup.faculty.name}
+                </h3>
+                <p className="text-sm text-gray-600">
+                  Kelola link-link untuk Gugus Penjaminan Mutu {selectedGroup.faculty.name}
+                </p>
+              </div>
+              <Button
+                color="primary"
+                startContent={<PlusIcon className="w-4 h-4" />}
+                onPress={handleAddLink}
+              >
+                Tambah Link
+              </Button>
+            </CardHeader>
+            <CardBody>
+              {links.length > 0 ? (
+                <Table aria-label="Tabel Link GPM">
+                  <TableHeader>
+                    <TableColumn>JUDUL</TableColumn>
+                    <TableColumn>URL</TableColumn>
+                    <TableColumn>DESKRIPSI</TableColumn>
+                    <TableColumn>URUTAN</TableColumn>
+                    <TableColumn>AKSI</TableColumn>
+                  </TableHeader>
+                  <TableBody items={links}>
+                    {(link) => (
+                      <TableRow key={link.id}>
+                        <TableCell>{link.title}</TableCell>
+                        <TableCell>
+                          <a
+                            href={link.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-600 hover:text-blue-800 underline text-sm"
+                          >
+                            {link.url.length > 50 ? `${link.url.substring(0, 50)}...` : link.url}
+                          </a>
+                        </TableCell>
+                        <TableCell>{link.description || "-"}</TableCell>
+                        <TableCell>{link.order}</TableCell>
+                        <TableCell>
+                          <div className="flex gap-2">
+                            <Button
+                              size="sm"
+                              variant="flat"
+                              startContent={<PencilIcon className="w-3 h-3" />}
+                              onPress={() => handleEditLink(link)}
+                            >
+                              Edit
+                            </Button>
+                            <Button
+                              size="sm"
+                              color="danger"
+                              variant="flat"
+                              startContent={<TrashIcon className="w-3 h-3" />}
+                              onPress={() => handleDeleteLink(link)}
+                            >
+                              Hapus
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+              ) : (
+                <div className="text-center py-8">
+                  <LinkIcon className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                  <h4 className="text-lg font-medium text-gray-900 mb-2">
+                    Belum Ada Link
+                  </h4>
+                  <p className="text-gray-500 mb-4">
+                    Tambahkan link untuk GPM {selectedGroup.faculty.name}
+                  </p>
+                  <Button
+                    color="primary"
+                    startContent={<PlusIcon className="w-4 h-4" />}
+                    onPress={handleAddLink}
+                  >
+                    Tambah Link Pertama
+                  </Button>
+                </div>
+              )}
+            </CardBody>
+          </Card>
+        </div>
       )}
 
-      {/* Add/Edit Modal */}
-      <Modal isOpen={isOpen} onClose={onClose} size="5xl" scrollBehavior="inside">
+      {/* GPM Modal */}
+      <Modal isOpen={isOpen} onClose={onClose} size="2xl">
         <ModalContent>
           <ModalHeader>
-            {formData.id ? "Edit GPM" : "Tambah GPM Baru"}
+            {formData.id ? "Edit GPM" : "Tambah GPM"}
           </ModalHeader>
           <ModalBody>
             <div className="space-y-4">
-              {/* Form GPM */}
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold">Informasi GPM</h3>
-                <Select
-                  label="Pilih Fakultas"
-                  placeholder="Pilih fakultas"
-                  selectedKeys={formData.facultyId ? [formData.facultyId] : []}
-                  onSelectionChange={(keys) => {
-                    const selectedKey = Array.from(keys)[0] as string;
-                    setFormData({ ...formData, facultyId: selectedKey });
-                  }}
-                  isRequired
-                  isDisabled={!!formData.id} // Disable when editing
-                >
-                  {faculties.map((faculty) => (
-                    <SelectItem key={faculty.id}>
-                      {faculty.name} ({faculty.shortName})
-                    </SelectItem>
-                  ))}
-                </Select>
-                <Textarea
-                  label="Deskripsi"
-                  value={formData.description}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    setFormData({ ...formData, description: e.target.value })
-                  }
-                  placeholder="Informasi tentang GPM fakultas ini"
-                  minRows={3}
-                />
-                <Textarea
-                  label="Informasi Kontak"
-                  value={formData.contactInfo}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    setFormData({ ...formData, contactInfo: e.target.value })
-                  }
-                  placeholder="Email, telepon, atau informasi kontak lainnya"
-                  minRows={2}
-                />
-                <Input
-                  label="Urutan"
-                  type="number"
-                  value={formData.order.toString()}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    setFormData({
-                      ...formData,
-                      order: parseInt(e.target.value) || 0,
-                    })
-                  }
-                />
-              </div>
+              <Select
+                label="Fakultas"
+                placeholder="Pilih Fakultas"
+                selectedKeys={formData.facultyId ? [formData.facultyId] : []}
+                onSelectionChange={(keys) => {
+                  const selectedKey = Array.from(keys)[0] as string;
+                  setFormData({ ...formData, facultyId: selectedKey });
+                }}
+              >
+                {faculties.map((faculty) => (
+                  <SelectItem key={faculty.id} value={faculty.id}>
+                    {faculty.name}
+                  </SelectItem>
+                ))}
+              </Select>
 
-              {/* Dokumen GPM - hanya untuk create baru */}
-              {!formData.id && (
-                <>
-                  <Divider className="my-4" />
-                  <div className="space-y-4">
-                    <div className="flex justify-between items-center">
-                      <div>
-                        <h3 className="text-lg font-semibold">Dokumen GPM (Opsional)</h3>
-                        <p className="text-sm text-default-500">
-                          Tambahkan dokumen-dokumen GPM sekaligus
-                        </p>
-                      </div>
-                      <Button
-                        size="sm"
-                        color="secondary"
-                        variant="flat"
-                        startContent={<PlusIcon className="w-4 h-4" />}
-                        onPress={handleAddTempDocument}
-                      >
-                        Tambah Dokumen
-                      </Button>
-                    </div>
+              <Textarea
+                label="Deskripsi"
+                placeholder="Deskripsi GPM"
+                value={formData.description}
+                onChange={(e) =>
+                  setFormData({ ...formData, description: e.target.value })
+                }
+              />
 
-                    {tempDocuments.length === 0 ? (
-                      <div className="bg-default-100 p-8 rounded-lg text-center">
-                        <p className="text-default-500">
-                          Belum ada dokumen. Klik "Tambah Dokumen" untuk menambahkan.
-                        </p>
-                      </div>
-                    ) : (
-                      <div className="space-y-4">
-                        {tempDocuments.map((doc, index) => {
-                          const isComplete = doc.title && doc.fileUrl && doc.fileName;
-                          return (
-                            <Card 
-                              key={index} 
-                              className={`border-2 ${isComplete ? 'border-success' : 'border-warning'}`}
-                            >
-                              <CardBody className="space-y-3">
-                                <div className="flex justify-between items-start">
-                                  <div className="flex items-center gap-2">
-                                    <h4 className="font-semibold text-sm">
-                                      Dokumen #{index + 1}
-                                    </h4>
-                                    {isComplete ? (
-                                      <span className="text-xs text-success">✓ Lengkap</span>
-                                    ) : (
-                                      <span className="text-xs text-warning">⚠ Belum lengkap</span>
-                                    )}
-                                  </div>
-                                  <Button
-                                    size="sm"
-                                    isIconOnly
-                                    variant="light"
-                                    color="danger"
-                                    onPress={() => handleRemoveTempDocument(index)}
-                                  >
-                                    <TrashIcon className="w-4 h-4" />
-                                  </Button>
-                                </div>
-                                <Input
-                                  label="Judul Dokumen"
-                                  placeholder="Masukkan judul dokumen"
-                                  value={doc.title}
-                                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                                    handleUpdateTempDocument(index, "title", e.target.value)
-                                  }
-                                  size="sm"
-                                  isRequired
-                                />
-                                <DocumentUpload
-                                  label="File Dokumen (PDF/DOC/DOCX)"
-                                  value={doc.fileUrl}
-                                  onChange={(url, fileName, fileSize) => {
-                                    handleUpdateTempDocument(index, "fileUrl", url);
-                                    handleUpdateTempDocument(index, "fileName", fileName);
-                                    handleUpdateTempDocument(index, "fileSize", fileSize);
-                                  }}
-                                />
-                                {doc.fileName && (
-                                  <p className="text-xs text-default-500">
-                                    File: {doc.fileName} ({formatFileSize(doc.fileSize)})
-                                  </p>
-                                )}
-                              </CardBody>
-                            </Card>
-                          );
-                        })}
-                      </div>
-                    )}
-                  </div>
-                </>
-              )}
+              <Input
+                label="Kontak"
+                placeholder="Informasi kontak GPM"
+                value={formData.contactInfo}
+                onChange={(e) =>
+                  setFormData({ ...formData, contactInfo: e.target.value })
+                }
+              />
+
+              <Input
+                label="Link Dokumen"
+                placeholder="https://fikes.unsoed.ac.id/gugus-penjaminan-mutu/"
+                value={formData.directUrl}
+                onChange={(e) =>
+                  setFormData({ ...formData, directUrl: e.target.value })
+                }
+                description="URL langsung ke halaman GPM fakultas"
+              />
+
+              <Input
+                type="number"
+                label="Urutan"
+                placeholder="Urutan tampil"
+                value={formData.order.toString()}
+                onChange={(e) =>
+                  setFormData({ ...formData, order: parseInt(e.target.value) || 0 })
+                }
+              />
             </div>
           </ModalBody>
           <ModalFooter>
-            <Button variant="light" onPress={onClose}>
+            <Button variant="flat" onPress={onClose}>
               Batal
             </Button>
-            <Button
-              color="primary"
-              onPress={handleSave}
-              isDisabled={
-                !formData.facultyId ||
-                (tempDocuments.length > 0 && 
-                 tempDocuments.some(doc => !doc.title || !doc.fileUrl || !doc.fileName))
-              }
-            >
-              Simpan {!formData.id && tempDocuments.length > 0 && `(${tempDocuments.length} dokumen)`}
+            <Button color="primary" onPress={handleSave}>
+              {formData.id ? "Perbarui" : "Tambah"}
             </Button>
           </ModalFooter>
         </ModalContent>
       </Modal>
 
-      {/* Delete Modal */}
+      {/* Delete GPM Modal */}
       <Modal isOpen={isDeleteOpen} onClose={onDeleteClose}>
         <ModalContent>
-          <ModalHeader>Konfirmasi Hapus</ModalHeader>
+          <ModalHeader>Hapus GPM</ModalHeader>
           <ModalBody>
             <p>
               Apakah Anda yakin ingin menghapus GPM{" "}
-              <strong>{groupToDelete?.faculty?.name}</strong>?
+              <strong>{groupToDelete?.faculty.name}</strong>?
+              Semua link yang terkait juga akan terhapus.
             </p>
           </ModalBody>
           <ModalFooter>
-            <Button variant="light" onPress={onDeleteClose}>
+            <Button variant="flat" onPress={onDeleteClose}>
               Batal
             </Button>
-            <Button color="danger" onPress={handleDelete}>
+            <Button color="danger" onPress={confirmDelete}>
               Hapus
             </Button>
           </ModalFooter>
         </ModalContent>
       </Modal>
 
-      {/* Document Add/Edit Modal */}
-      <Modal isOpen={isDocModalOpen} onClose={onDocModalClose} size="2xl">
+      {/* Link Modal */}
+      <Modal isOpen={isLinkModalOpen} onClose={onLinkModalClose} size="2xl">
         <ModalContent>
           <ModalHeader>
-            {docFormData.id ? "Edit Dokumen" : "Tambah Dokumen Baru"}
+            {linkFormData.id ? "Edit Link" : "Tambah Link"}
           </ModalHeader>
           <ModalBody>
             <div className="space-y-4">
               <Input
-                label="Judul Dokumen"
-                placeholder="Masukkan judul dokumen"
-                value={docFormData.title}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                  setDocFormData({ ...docFormData, title: e.target.value })
+                label="Judul Link"
+                placeholder="Masukkan judul link"
+                value={linkFormData.title}
+                onChange={(e) =>
+                  setLinkFormData({ ...linkFormData, title: e.target.value })
                 }
                 isRequired
               />
-              <DocumentUpload
-                label="File Dokumen (PDF/DOC/DOCX)"
-                value={docFormData.fileUrl}
-                onChange={(url, fileName, fileSize) =>
-                  setDocFormData({
-                    ...docFormData,
-                    fileUrl: url,
-                    fileName: fileName,
-                    fileSize: fileSize,
-                  })
+
+              <Input
+                label="URL"
+                placeholder="https://example.com"
+                value={linkFormData.url}
+                onChange={(e) =>
+                  setLinkFormData({ ...linkFormData, url: e.target.value })
+                }
+                isRequired
+              />
+
+              <Textarea
+                label="Deskripsi"
+                placeholder="Deskripsi singkat tentang link ini"
+                value={linkFormData.description}
+                onChange={(e) =>
+                  setLinkFormData({ ...linkFormData, description: e.target.value })
                 }
               />
+
               <Input
-                label="Urutan"
                 type="number"
-                value={docFormData.order.toString()}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                  setDocFormData({
-                    ...docFormData,
-                    order: parseInt(e.target.value) || 0,
-                  })
+                label="Urutan"
+                placeholder="Urutan tampil"
+                value={linkFormData.order.toString()}
+                onChange={(e) =>
+                  setLinkFormData({ ...linkFormData, order: parseInt(e.target.value) || 0 })
                 }
               />
             </div>
           </ModalBody>
           <ModalFooter>
-            <Button variant="light" onPress={onDocModalClose}>
+            <Button variant="flat" onPress={onLinkModalClose}>
               Batal
             </Button>
-            <Button
-              color="primary"
-              onPress={handleSaveDocument}
-              isDisabled={!docFormData.title || !docFormData.fileUrl}
-            >
-              Simpan
+            <Button color="primary" onPress={handleSaveLink}>
+              {linkFormData.id ? "Perbarui" : "Tambah"}
             </Button>
           </ModalFooter>
         </ModalContent>
       </Modal>
 
-      {/* Delete Document Modal */}
-      <Modal isOpen={isDeleteDocOpen} onClose={onDeleteDocClose}>
+      {/* Delete Link Modal */}
+      <Modal isOpen={isDeleteLinkOpen} onClose={onDeleteLinkClose}>
         <ModalContent>
-          <ModalHeader>Konfirmasi Hapus</ModalHeader>
+          <ModalHeader>Hapus Link</ModalHeader>
           <ModalBody>
             <p>
-              Apakah Anda yakin ingin menghapus dokumen{" "}
-              <strong>{docToDelete?.title}</strong>?
+              Apakah Anda yakin ingin menghapus link{" "}
+              <strong>{linkToDelete?.title}</strong>?
             </p>
           </ModalBody>
           <ModalFooter>
-            <Button variant="light" onPress={onDeleteDocClose}>
+            <Button variant="flat" onPress={onDeleteLinkClose}>
               Batal
             </Button>
-            <Button color="danger" onPress={handleDeleteDocumentConfirm}>
+            <Button color="danger" onPress={confirmDeleteLink}>
               Hapus
             </Button>
           </ModalFooter>
         </ModalContent>
       </Modal>
-    </div>
+    </AdminPageLayout>
   );
 }

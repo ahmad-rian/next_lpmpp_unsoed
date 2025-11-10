@@ -3,6 +3,7 @@
 import { usePathname } from "next/navigation";
 import { Link } from "@heroui/link";
 import { Navbar } from "@/components/navbar";
+import { Footer } from "@/components/footer";
 import { PageTransition } from "@/components/page-transition";
 
 export function ConditionalLayout({ children }: { children: React.ReactNode }) {
@@ -18,22 +19,12 @@ export function ConditionalLayout({ children }: { children: React.ReactNode }) {
   // Layout normal dengan navbar & footer untuk user
   return (
     <PageTransition>
-      <div className="relative flex flex-col h-screen">
+      <div className="relative flex flex-col min-h-screen">
         <Navbar />
         <main className="container mx-auto max-w-7xl pt-16 px-6 flex-grow">
           {children}
         </main>
-        <footer className="w-full flex items-center justify-center py-3">
-          <Link
-            isExternal
-            className="flex items-center gap-1 text-current"
-            href="https://heroui.com?utm_source=next-app-template"
-            title="heroui.com homepage"
-          >
-            <span className="text-default-600">Powered by</span>
-            <p className="text-primary">HeroUI</p>
-          </Link>
-        </footer>
+        <Footer />
       </div>
     </PageTransition>
   );
