@@ -20,12 +20,15 @@ async function main() {
 
   // Create default site configuration
   const siteConfig = await prisma.siteConfig.upsert({
-    where: {
-      id: (await prisma.siteConfig.findFirst())?.id || "new-config"
+    where: { 
+      id: (await prisma.siteConfig.findFirst())?.id || "new-config" 
     },
     update: {},
     create: {
       siteName: "LPMPP UNSOED",
+      tagline: "Lembaga Penjaminan Mutu dan Pengembangan Pembelajaran",
+      motto: "Unggul dalam Inovasi, Profesional dalam Layanan, Berkualitas dalam Hasil",
+      headMessage: "Selamat datang di website resmi Lembaga Penjaminan Mutu dan Pengembangan Pembelajaran (LPMPP) Universitas Jenderal Soedirman. LPMPP berkomitmen untuk terus meningkatkan kualitas pendidikan dan pembelajaran melalui sistem penjaminan mutu yang berkelanjutan dan pengembangan inovasi pembelajaran berbasis teknologi.",
       logoUnsoed: "/assets/images/logo.webp",
       logoApp: "/assets/images/logo.webp",
       logoDescription: "Logo LPMPP UNSOED menggambarkan komitmen terhadap kualitas pendidikan dan pembelajaran. Elemen visual dalam logo mencerminkan inovasi, profesionalisme, dan dedikasi dalam pengembangan mutu pendidikan tinggi di Universitas Jenderal Soedirman.",
@@ -36,6 +39,11 @@ async function main() {
       alamat: "Jl. HR Boenyamin No.708, Grendeng, Purwokerto Utara, Kabupaten Banyumas, Jawa Tengah 53122",
       email: "lpmpp@unsoed.ac.id",
       instagramUrl: "https://instagram.com/lpmppunsoed",
+      carouselImages: JSON.stringify([
+        "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?q=80&w=2940",
+        "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?q=80&w=2940",
+        "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?q=80&w=2940",
+      ]),
     },
   });
 
@@ -74,28 +82,28 @@ async function main() {
   const staffData: Array<{ position: any; name: string; title: string; order: number }> = [
     // Sub Koordinator
     { position: "SUB_COORDINATOR", name: "Prasetyo Heru Saptono, S.Pd., M.B.A", title: "Sub Koordinator", order: 1 },
-
+    
     // Staff Umum
     { position: "GENERAL_STAFF", name: "Sri Apriani, S.E.", title: "Staff Umum", order: 1 },
     { position: "GENERAL_STAFF", name: "Kusrini Kartikawati, A.Md.", title: "Staff Umum", order: 2 },
     { position: "GENERAL_STAFF", name: "Alfia Nova Refi Sari, S.H.", title: "Staff Umum", order: 3 },
-
+    
     // Staff Program, Data & Informasi
     { position: "PROGRAM_DATA_INFO_STAFF", name: "Widya Hastuti, S.E.", title: "Staff Program, Data & Informasi", order: 1 },
     { position: "PROGRAM_DATA_INFO_STAFF", name: "Heri Yuwono W.H, A.Md.", title: "Staff Program, Data & Informasi", order: 2 },
     { position: "PROGRAM_DATA_INFO_STAFF", name: "Dasworo", title: "Staff Program, Data & Informasi", order: 3 },
     { position: "PROGRAM_DATA_INFO_STAFF", name: "Adhitya Ardiansyah, S.H.", title: "Staff Program, Data & Informasi", order: 4 },
-
+    
     // Pengemudi
     { position: "DRIVER", name: "Akhmad Wahyanto", title: "Pengemudi", order: 1 },
-
+    
     // Pramu Bakti
     { position: "OFFICE_ASSISTANT", name: "Yulian Kamal Bachrok", title: "Pramu Bakti", order: 1 },
   ];
 
   // Delete existing staff and create new ones
   await prisma.staff.deleteMany({});
-
+  
   for (const staff of staffData) {
     await prisma.staff.create({
       data: staff as any,
@@ -242,12 +250,13 @@ async function main() {
     }
   }
 
-  console.log(`Created ${centersData.length} centers with their members`);
+    console.log(`Created ${centersData.length} centers with their members`);
 
   // Create sample documents
   await prisma.document.deleteMany({});
-
+  
   const sampleDocs = [
+    // Dokumen SPMI
     {
       type: "SPMI",
       title: "Peraturan Rektor No. 34 Tahun 2021 tentang Sistem Penjaminan Mutu Internal",
@@ -258,10 +267,27 @@ async function main() {
     },
     {
       type: "SPMI",
-      title: "Keputusan Rektor No. 3/UN23/JM.00/2025 tentang Penetapan Dokumen Kebijakan Dan Standar SPMI",
+      title: "Keputusan Rektor No. 3/UN23/JM.00/2025 tentang Penetapan Dokumen Kebijakan Dan Standar Sistem Penjaminan Mutu Internal",
       description: "Dokumen keputusan rektor tentang kebijakan dan standar SPMI",
       fileUrl: "/documents/sample.pdf",
       fileName: "keputusan-rektor-3-2025.pdf",
+      order: 2,
+    },
+    // Dokumen AUDIT
+    {
+      type: "AUDIT",
+      title: "Laporan Audit Mutu Internal Tahun 2024",
+      description: "Dokumen laporan hasil audit mutu internal tahun akademik 2024",
+      fileUrl: "/documents/sample.pdf",
+      fileName: "laporan-ami-2024.pdf",
+      order: 1,
+    },
+    {
+      type: "AUDIT",
+      title: "Panduan Audit Mutu Internal UNSOED",
+      description: "Dokumen panduan pelaksanaan audit mutu internal di lingkungan UNSOED",
+      fileUrl: "/documents/sample.pdf",
+      fileName: "panduan-ami-unsoed.pdf",
       order: 2,
     },
   ];
@@ -272,11 +298,11 @@ async function main() {
     });
   }
 
-  console.log(`Created ${sampleDocs.length} sample documents`);
+  console.log("Created sample documents (SPMI & AUDIT)");
 
   // Create Fakultas (Master Data) - 12 Fakultas UNSOED
   await prisma.faculty.deleteMany({});
-
+  
   const faculties = [
     { name: "Fakultas Pertanian", shortName: "Faperta", code: "FP", order: 1 },
     { name: "Fakultas Biologi", shortName: "Fabio", code: "FB", order: 2 },
@@ -304,7 +330,7 @@ async function main() {
 
   // Create sample Quality Assurance Groups
   await prisma.qualityAssuranceGroup.deleteMany({});
-
+  
   const sampleGPM = [
     {
       facultyId: createdFaculties[8].id, // FIKES (index 8 - Fakultas Ilmu-ilmu Kesehatan)
@@ -330,8 +356,8 @@ async function main() {
 
   // Create SPMI About data
   const spmiAbout = await prisma.spmiAbout.upsert({
-    where: {
-      id: (await prisma.spmiAbout.findFirst())?.id || "new-spmi"
+    where: { 
+      id: (await prisma.spmiAbout.findFirst())?.id || "new-spmi" 
     },
     update: {
       title: "SPM Unsoed",
@@ -364,6 +390,172 @@ async function main() {
   });
 
   console.log("SPMI About data created/updated:", spmiAbout);
+
+  // Delete existing accreditation data
+  await prisma.internationalAccreditation.deleteMany({});
+  await prisma.studyProgramAccreditation.deleteMany({});
+
+  // Create International Accreditation data
+  const internationalAccreditations = await prisma.internationalAccreditation.createMany({
+    data: [
+      {
+        faculty: "Fakultas Teknik",
+        studyProgram: "Program Sarjana Teknik Sipil",
+        accreditationBody: "Indonesian Accreditation Board for Engineering Education (IABEE)",
+        order: 1,
+      },
+      {
+        faculty: "Fakultas Ilmu-Ilmu Kesehatan",
+        studyProgram: "Program Profesi Ners",
+        accreditationBody: "The Accreditation Agency for Study Programmes in Engineering, Informatics, Natural Sciences and Mathematics (ASIIN)",
+        order: 2,
+      },
+      {
+        faculty: "Fakultas Ilmu-Ilmu Kesehatan",
+        studyProgram: "Program Sarjana Keperawatan",
+        accreditationBody: "The Accreditation Agency for Study Programmes in Engineering, Informatics, Natural Sciences and Mathematics (ASIIN)",
+        order: 3,
+      },
+      {
+        faculty: "Fakultas Hukum",
+        studyProgram: "Program Sarjana Hukum",
+        accreditationBody: "Foundation for International Business Administration Accreditation (FIBAA)",
+        order: 4,
+      },
+      {
+        faculty: "Fakultas Ekonomi dan Bisnis",
+        studyProgram: "Program Sarjana Akuntansi",
+        accreditationBody: "Foundation for International Business Administration Accreditation (FIBAA)",
+        order: 5,
+      },
+      {
+        faculty: "Fakultas Ekonomi dan Bisnis",
+        studyProgram: "Program Sarjana Manajemen",
+        accreditationBody: "Foundation for International Business Administration Accreditation (FIBAA)",
+        order: 6,
+      },
+      {
+        faculty: "Fakultas Ekonomi dan Bisnis",
+        studyProgram: "Program Sarjana Ekonomi Pembangunan",
+        accreditationBody: "Foundation for International Business Administration Accreditation (FIBAA)",
+        order: 7,
+      },
+    ],
+  });
+
+  console.log("International Accreditation data created:", internationalAccreditations);
+
+  // Create Study Program Accreditation data
+  const studyProgramAccreditations = await prisma.studyProgramAccreditation.createMany({
+    data: [
+      { studyProgram: "Bahasa Inggris", level: "D3", skNumber: "285/SK/BAN-PT/Ak/D3/II/2025", skYear: 2025, rank: "UNGGUL", order: 1 },
+      { studyProgram: "Budi Daya Ikan", level: "D3", skNumber: "627/SK/BAN-PT/Ak.Ppj/D3/II/2024", skYear: 2024, rank: "B", order: 2 },
+      { studyProgram: "Bisnis Internasional", level: "D3", skNumber: "10010/SK/BAN-PT/Ak.KP/D3/II/2023", skYear: 2023, rank: "UNGGUL", order: 3 },
+      { studyProgram: "Akuntansi", level: "D3", skNumber: "1340/SK/BAN-PT/Ak.KP/D3/IV/2023", skYear: 2023, rank: "UNGGUL", order: 4 },
+      { studyProgram: "Budi Daya Ternak", level: "D3", skNumber: "6487/SK/BAN-PT/Ak.KP/D3/V/2025", skYear: 2025, rank: "UNGGUL", order: 5 },
+      { studyProgram: "Administrasi Bisnis", level: "D3", skNumber: "3142/SK/BAN-PT/AK-ISK/Dipl-III/V/2022", skYear: 2022, rank: "UNGGUL", order: 6 },
+      { studyProgram: "Agribisnis", level: "D3", skNumber: "4464/SK/BAN-PT/Ak-PPJ/Dipl-III/VII/2022", skYear: 2022, rank: "B", order: 7 },
+      { studyProgram: "Administrasi Perkantoran", level: "D3", skNumber: "11176/SK/BAN-PT/Ak-PNB/Dipl-III/IX/2021", skYear: 2021, rank: "B", order: 8 },
+      { studyProgram: "Perencanaan Sumber Daya Lahan", level: "D3", skNumber: "4142/SK/BAN-PT/Akred/Dipl-III/VII/2020", skYear: 2020, rank: "B", order: 9 },
+      { studyProgram: "Bahasa Mandarin", level: "D3", skNumber: "7238/SK/BAN-PT/Akred/Dipl-III/XI/2020", skYear: 2020, rank: "A", order: 10 },
+      
+      { studyProgram: "APOTEKER", level: "PROFESI", skNumber: "0063/LAM-PTKes/Akr/Pro/I/2023", skYear: 2023, rank: "BAIK_SEKALI", order: 11 },
+      { studyProgram: "DOKTER GIGI", level: "PROFESI", skNumber: "0094/LAM-PTKes/Akr/Pro/II/2023", skYear: 2023, rank: "BAIK_SEKALI", order: 12 },
+      { studyProgram: "PENDIDIKAN PROFESI DOKTER", level: "PROFESI", skNumber: "0547/LAM-PTKes/Akr/Pro/VII/2022", skYear: 2022, rank: "UNGGUL", order: 13 },
+      { studyProgram: "NERS", level: "PROFESI", skNumber: "0511/LAM-PTKes/Akr/SAR/IV/2025", skYear: 2025, rank: "UNGGUL", order: 14 },
+      { studyProgram: "Pendidikan Profesi Akuntan", level: "PROFESI", skNumber: "2239/DE/A.5/AR.10/IV/2025", skYear: 2025, rank: "UNGGUL", order: 15 },
+      
+      { studyProgram: "Sastra Indonesia", level: "S1", skNumber: "451/SK/BAN-PT/Ak.Ppj/S/III/2025", skYear: 2025, rank: "UNGGUL", order: 16 },
+      { studyProgram: "Teknik Komputer", level: "S1", skNumber: "020/SK/LAM-INFOKOM/Ak.Min/S/III/2024", skYear: 2024, rank: "BAIK", order: 17 },
+      { studyProgram: "Teknik Mesin", level: "S1", skNumber: "0058/SK/LAM Teknik/PB.AS/III/2024", skYear: 2024, rank: "BAIK", order: 18 },
+      { studyProgram: "Ilmu Komunikasi", level: "S1", skNumber: "531/SK/BAN-PT/Ak.KP/S/II/2024", skYear: 2024, rank: "UNGGUL", order: 19 },
+      { studyProgram: "Manajemen Sumber Daya Perairan", level: "S1", skNumber: "549/SK/BAN-PT/Ak.KP/S/II/2024", skYear: 2024, rank: "UNGGUL", order: 20 },
+      { studyProgram: "Sosiologi", level: "S1", skNumber: "564/SK/BAN-PT/Ak.KP/S/II/2024", skYear: 2024, rank: "UNGGUL", order: 21 },
+      { studyProgram: "Biologi Terapan", level: "S1", skNumber: "440/SK/BAN-PT/Ak.P/S/II/2024", skYear: 2024, rank: "TERAKREDITASI_SEMENTARA", order: 22 },
+      { studyProgram: "Proteksi Tanaman", level: "S1", skNumber: "454/SK/BAN-PT/Ak.P/S/II/2024", skYear: 2024, rank: "TERAKREDITASI_SEMENTARA", order: 23 },
+      { studyProgram: "Sastra Inggris", level: "S1", skNumber: "7227/SK/BAN-PT/Ak/S/XII/2024", skYear: 2024, rank: "UNGGUL", order: 24 },
+      { studyProgram: "Ilmu Politik", level: "S1", skNumber: "6729/SK/BAN-PT/Ak.KP/S/XI/2024", skYear: 2024, rank: "UNGGUL", order: 25 },
+      { studyProgram: "Hubungan Internasional", level: "S1", skNumber: "6550/SK/BAN-PT/Ak.KP/S/XI/2024", skYear: 2024, rank: "UNGGUL", order: 26 },
+      { studyProgram: "Pendidikan Bahasa Indonesia", level: "S1", skNumber: "1514/SK/LAMDIK/Ak/S/X/2024", skYear: 2024, rank: "UNGGUL", order: 27 },
+      { studyProgram: "Statistika", level: "S1", skNumber: "005/SK/LAMSAMA/Akred-M/S/VI/2024", skYear: 2024, rank: "BAIK", order: 28 },
+      { studyProgram: "Mikrobiologi", level: "S1", skNumber: "003/SK/LAMSAMA/Akred-M/S/VI/2024", skYear: 2024, rank: "BAIK", order: 29 },
+      { studyProgram: "Sastra Jepang", level: "S1", skNumber: "4240/SK/BAN-PT/Ak.KP/S/V/2024", skYear: 2024, rank: "UNGGUL", order: 30 },
+      { studyProgram: "Agribisnis", level: "S1", skNumber: "3758/SK/BAN-PT/Ak.KP/S/IV/2024", skYear: 2024, rank: "UNGGUL", order: 31 },
+      { studyProgram: "Pendidikan Jasmani", level: "S1", skNumber: "3765/SK/BAN-PT/Ak.KP/S/IV/2024", skYear: 2024, rank: "UNGGUL", order: 32 },
+      { studyProgram: "Pendidikan Bahasa Jepang", level: "S1", skNumber: "407/SK/LAMDIK/Ak-PSB/S/III/2024", skYear: 2024, rank: "BAIK", order: 33 },
+      { studyProgram: "Teknik Pertanian", level: "S1", skNumber: "6643/SK/BAN-PT/AK.KP/S/V/2025.", skYear: 2025, rank: "UNGGUL", order: 34 },
+      { studyProgram: "FARMASI", level: "S1", skNumber: "0062/LAM-PTKes/Akr/Sar/I/2023", skYear: 2023, rank: "BAIK_SEKALI", order: 35 },
+      { studyProgram: "KEDOKTERAN GIGI", level: "S1", skNumber: "0093/LAM-PTKes/Akr/Sar/II/2023", skYear: 2023, rank: "UNGGUL", order: 36 },
+      { studyProgram: "Ilmu Kelautan", level: "S1", skNumber: "1159/SK/BAN-PT/Ak.Ppj/S/III/2023", skYear: 2023, rank: "UNGGUL", order: 37 },
+      { studyProgram: "Pendidikan Bahasa Inggris", level: "S1", skNumber: "372/SK/LAMDIK/Ak/S/III/2023", skYear: 2023, rank: "UNGGUL", order: 38 },
+      { studyProgram: "Teknik Sipil", level: "S1", skNumber: "0234/SK/LAM Teknik/AS/IV/2025", skYear: 2025, rank: "UNGGUL", order: 39 },
+      { studyProgram: "Peternakan", level: "S1", skNumber: "6657/SK/BAN-PT/Ak.KP/S/V/2025", skYear: 2025, rank: "UNGGUL", order: 40 },
+      { studyProgram: "Administrasi Publik", level: "S1", skNumber: "3495/SK/BAN-PT/Ak.Ppj/S/VIII/2023", skYear: 2023, rank: "UNGGUL", order: 41 },
+      { studyProgram: "Teknik Geologi", level: "S1", skNumber: "3621/SK/BAN-PT/Ak/S/IX/2023", skYear: 2023, rank: "BAIK_SEKALI", order: 42 },
+      { studyProgram: "ILMU GIZI", level: "S1", skNumber: "0954/LAM-PTKes/Akr/Sar/XII/2023", skYear: 2023, rank: "UNGGUL", order: 43 },
+      { studyProgram: "Teknik Elektro", level: "S1", skNumber: "4/SK/BAN-PT/SURV-BDG/S/I/2022", skYear: 2022, rank: "A", order: 44 },
+      { studyProgram: "Pendidikan Ekonomi", level: "S1", skNumber: "649/SK/BAN-PT/Ak-PPJ/S/I/2022", skYear: 2022, rank: "B", order: 45 },
+      { studyProgram: "Ekonomi Pembangunan", level: "S1", skNumber: "2563/SK/BAN-PT/AK-ISK/S/IV/2022", skYear: 2022, rank: "UNGGUL", order: 46 },
+      { studyProgram: "Manajemen", level: "S1", skNumber: "3143/SK/BAN-PT/AK-ISK/S/V/2022", skYear: 2022, rank: "UNGGUL", order: 47 },
+      { studyProgram: "KEDOKTERAN", level: "S1", skNumber: "0546/LAM-PTKes/Akr/Sar/VII/2022", skYear: 2022, rank: "UNGGUL", order: 48 },
+      { studyProgram: "Akuakultur", level: "S1", skNumber: "5354/SK/BAN-PT/Ak.Ppj/S/VIII/2022", skYear: 2022, rank: "BAIK_SEKALI", order: 49 },
+      { studyProgram: "Teknik Industri", level: "S1", skNumber: "0045/SK/LAM Teknik/AS/VIII/2022", skYear: 2022, rank: "BAIK_SEKALI", order: 50 },
+      { studyProgram: "Akuntansi", level: "S1", skNumber: "047/DE/A.5/AR.10/XI/2022", skYear: 2022, rank: "UNGGUL", order: 51 },
+      { studyProgram: "Informatika", level: "S1", skNumber: "187/SK/BAN-PT/Ak-PPJ/S/I/2021", skYear: 2021, rank: "B", order: 52 },
+      { studyProgram: "KESEHATAN MASYARAKAT", level: "S1", skNumber: "0146/LAM-PTKes/Akr/Sar/IV/2021", skYear: 2021, rank: "UNGGUL", order: 53 },
+      { studyProgram: "Teknologi Pangan", level: "S1", skNumber: "6506/SK/BAN-PT/Ak.KP/S/V/2025", skYear: 2025, rank: "UNGGUL", order: 54 },
+      { studyProgram: "Biologi", level: "S1", skNumber: "11998/SK/BAN-PT/Ak-PPJ/S/X/2021", skYear: 2021, rank: "A", order: 55 },
+      { studyProgram: "Agroteknologi", level: "S1", skNumber: "12845/SK/BAN-PT/Ak-PPJ/S/XII/2021", skYear: 2021, rank: "A", order: 56 },
+      { studyProgram: "KEPERAWATAN", level: "S1", skNumber: "0510/LAM-PTKes/Akr/SAR/IV/2025", skYear: 2025, rank: "UNGGUL", order: 57 },
+      { studyProgram: "Fisika", level: "S1", skNumber: "122/SK/LAMSAMA/Akred/S/V/2025", skYear: 2025, rank: "UNGGUL", order: 58 },
+      { studyProgram: "Kimia", level: "S1", skNumber: "071/SK/LAMSAMA/Akred/S/V/2025", skYear: 2025, rank: "UNGGUL", order: 59 },
+      { studyProgram: "Matematika", level: "S1", skNumber: "", skYear: 2025, rank: "UNGGUL", order: 60 },
+      { studyProgram: "Hukum", level: "S1", skNumber: "6626/SK/BAN-PT/Ak-PPJ/S/X/2020", skYear: 2020, rank: "A", order: 61 },
+      
+      { studyProgram: "Biologi", level: "S2", skNumber: "010/SK/LAMSAMA/Akred/M/III/2024", skYear: 2024, rank: "UNGGUL", order: 62 },
+      { studyProgram: "Ilmu Politik", level: "S2", skNumber: "7118/SK/BAN-PT/Ak/M/XII/2024", skYear: 2024, rank: "BAIK_SEKALI", order: 63 },
+      { studyProgram: "Bioteknologi Pertanian", level: "S2", skNumber: "7217/SK/BAN-PT/Ak/M/XII/2024", skYear: 2024, rank: "BAIK_SEKALI", order: 64 },
+      { studyProgram: "Ilmu Pangan", level: "S2", skNumber: "6594/SK/BAN-PT/Ak.KP/M/XI/2024", skYear: 2024, rank: "BAIK_SEKALI", order: 65 },
+      { studyProgram: "ILMU BIOMEDIS", level: "S2", skNumber: "0362/LAM-PTKes/Akr/Mag/VI/2024", skYear: 2024, rank: "BAIK_SEKALI", order: 66 },
+      { studyProgram: "Sumber Daya Akuatik", level: "S2", skNumber: "5966/SK/BAN-PT/PEPA-Ppj/M/IX/2024", skYear: 2024, rank: "BAIK", order: 67 },
+      { studyProgram: "Teknik Sipil", level: "S2", skNumber: "0461/SK/LAM Teknik/AM/VIII/2024", skYear: 2024, rank: "BAIK_SEKALI", order: 68 },
+      { studyProgram: "Fisika", level: "S2", skNumber: "004/SK/LAMSAMA/Akred-M/M/VI/2024", skYear: 2024, rank: "BAIK", order: 69 },
+      { studyProgram: "Agribisnis", level: "S2", skNumber: "5368/SK/BAN-PT/Ak.Ppj/M/VIII/2024", skYear: 2024, rank: "B", order: 70 },
+      { studyProgram: "KEPERAWATAN", level: "S2", skNumber: "0500/LAM-PTKes/Akr/Mag/VII/2024", skYear: 2024, rank: "UNGGUL", order: 71 },
+      { studyProgram: "Kimia", level: "S2", skNumber: "025/SK/LAMSAMA/Akred-M/M/VII/2024", skYear: 2024, rank: "BAIK", order: 72 },
+      { studyProgram: "Penyuluhan Pertanian", level: "S2", skNumber: "5137/SK/BAN-PT/Ak.Ppj/M/VII/2024", skYear: 2024, rank: "B", order: 73 },
+      { studyProgram: "Kenotariatan", level: "S2", skNumber: "4051/SK/BAN-PT/Ak/M/V/2024", skYear: 2024, rank: "UNGGUL", order: 74 },
+      { studyProgram: "Ilmu Komunikasi", level: "S2", skNumber: "4056/SK/BAN-PT/Ak/M/V/2024", skYear: 2024, rank: "UNGGUL", order: 75 },
+      { studyProgram: "Administrasi Publik", level: "S2", skNumber: "3770/SK/BAN-PT/Ak.KP/M/IV/2024", skYear: 2024, rank: "UNGGUL", order: 76 },
+      { studyProgram: "KESEHATAN MASYARAKAT", level: "S2", skNumber: "0211/LAM-PTKes/Akr/Mag/III/2024", skYear: 2024, rank: "BAIK_SEKALI", order: 77 },
+      { studyProgram: "Agronomi", level: "S2", skNumber: "", skYear: 2025, rank: "UNGGUL", order: 78 },
+      { studyProgram: "Hukum", level: "S2", skNumber: "685/SK/BAN-PT/Ak.Ppj/M/III/2023", skYear: 2023, rank: "UNGGUL", order: 79 },
+      { studyProgram: "Sosiologi", level: "S2", skNumber: "999/SK/BAN-PT/Ak/M/III/2023", skYear: 2023, rank: "UNGGUL", order: 80 },
+      { studyProgram: "Ilmu Manajemen", level: "S2", skNumber: "1074/SK/BAN-PT/Ak.Ppj/M/III/2023", skYear: 2023, rank: "UNGGUL", order: 81 },
+      { studyProgram: "Peternakan", level: "S2", skNumber: "6509/SK/BAN-PT/Ak.KP/M/V/2025", skYear: 2025, rank: "UNGGUL", order: 82 },
+      { studyProgram: "Ilmu Lingkungan", level: "S2", skNumber: "3775/SK/BAN-PT/Akred/M/VI/2022", skYear: 2022, rank: "BAIK_SEKALI", order: 83 },
+      { studyProgram: "Ekonomi", level: "S2", skNumber: "3770/SK/BAN-PT/Akred-PMT/M/VI/2022", skYear: 2022, rank: "UNGGUL", order: 84 },
+      { studyProgram: "Akuntansi", level: "S2", skNumber: "8856/SK/BAN-PT/Ak-PPJ/M/VI/2021", skYear: 2021, rank: "A", order: 85 },
+      { studyProgram: "Ilmu Kelautan", level: "S2", skNumber: "063/SK/LAMSAMA/Akred/M/IV/2025", skYear: 2025, rank: "UNGGUL", order: 86 },
+      { studyProgram: "Farmasi", level: "S2", skNumber: "SK Pendirian", skYear: 2025, rank: null, order: 87 },
+      { studyProgram: "Linguistik", level: "S2", skNumber: "SK Pendirian 291/B/O/2025", skYear: 2025, rank: null, order: 88 },
+      
+      { studyProgram: "Ilmu Akuntansi", level: "S3", skNumber: "2163/DE/A.5/AR.10/III/2025", skYear: 2025, rank: "BAIK_SEKALI", order: 89 },
+      { studyProgram: "Ekonomi", level: "S3", skNumber: "1957/DE/A.5/AR.10/I/2025", skYear: 2025, rank: "UNGGUL", order: 90 },
+      { studyProgram: "Ilmu Pertanian", level: "S3", skNumber: "648/SK/BAN-PT/Ak.Ppj/D/II/2024", skYear: 2024, rank: "B", order: 91 },
+      { studyProgram: "Administrasi Publik", level: "S3", skNumber: "4935/SK/BAN-PT/Ak.P/D/VII/2024", skYear: 2024, rank: "TERAKREDITASI_SEMENTARA", order: 92 },
+      { studyProgram: "Peternakan", level: "S3", skNumber: "6210/SK/BAN-PT/Ak/D/IV/2025", skYear: 2025, rank: "UNGGUL", order: 93 },
+      { studyProgram: "Hukum", level: "S3", skNumber: "", skYear: 2025, rank: "BAIK_SEKALI", order: 94 },
+      { studyProgram: "Ilmu Manajemen", level: "S3", skNumber: "10927/SK/BAN-PT/Akred/D/IX/2021", skYear: 2021, rank: "UNGGUL", order: 95 },
+      { studyProgram: "Biologi", level: "S3", skNumber: "13836/SK/BAN-PT/Ak-PPJ/D/XII/2021", skYear: 2021, rank: "B", order: 96 },
+      
+      { studyProgram: "ANESTESIOLOGI DAN TERAPI INTENSIF", level: "SPESIALIS", skNumber: "0070/LAM-PTKes/Akr/Spe/II/2024", skYear: 2024, rank: "BAIK_SEKALI", order: 97 },
+      { studyProgram: "NEUROLOGI", level: "SPESIALIS", skNumber: "0246/LAM-PTKes/Akr.PB/Spe/VIII/2024", skYear: 2024, rank: "BAIK", order: 98 },
+      { studyProgram: "OBSTETRIK DAN GINEKOLOGI", level: "SPESIALIS", skNumber: "0247/LAM-PTKes/Akr.PB/Spe/VIII/2024", skYear: 2024, rank: "BAIK", order: 99 },
+    ],
+  });
+
+  console.log("Study Program Accreditation data created:", studyProgramAccreditations);
 }
 
 main()

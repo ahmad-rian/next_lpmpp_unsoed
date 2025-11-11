@@ -4,59 +4,101 @@ const prisma = new PrismaClient();
 
 const featuredPrograms = [
   {
-    title: 'MBKM (Merdeka Belajar Kampus Merdeka)',
-    slug: 'mbkm',
-    description: '<h2>Program Merdeka Belajar Kampus Merdeka</h2><p>Program Merdeka Belajar Kampus Merdeka adalah kebijakan <strong>Kementerian Pendidikan dan Kebudayaan</strong> yang memberikan kesempatan kepada mahasiswa untuk mengasah kemampuan sesuai bakat dan minat dengan terjun langsung ke dunia kerja sebagai persiapan karir masa depan.</p><p>Program ini memfasilitasi mahasiswa untuk belajar di luar program studi selama <strong>3 semester</strong>, baik di dalam maupun luar perguruan tinggi.</p><h3>Manfaat Program:</h3><ul><li>Pengalaman praktis di dunia kerja</li><li>Pengembangan soft skills dan hard skills</li><li>Networking dengan industri</li><li>Persiapan karir yang lebih matang</li></ul>',
+    title: 'Pembelajaran di Luar Kampus (MBKM)',
+    slug: 'pembelajaran-di-luar-kampus-mbkm',
+    description:
+      '<h2 class="text-xl font-semibold">Pembelajaran di Luar Kampus (MBKM)</h2>' +
+      '<p>Untuk memenuhi dan/atau memperkaya capaian pembelajaran, mahasiswa dimungkinkan untuk mengikuti kegiatan <strong>pembelajaran di luar kampus</strong> dan diakui sebagai proses pembelajaran yang terintegrasi dengan pembelajaran di dalam kampus.</p>' +
+      '<p>Kegiatan tersebut dapat berbentuk <em>magang</em>, <em>asistensi mengajar</em> di satuan pendidikan, <em>kewirausahaan</em>, <em>program membangun desa/KKN Tematik</em>, <em>riset</em>, <em>proyek kemanusiaan</em>, <em>studi independen</em>, dan <em>pertukaran mahasiswa</em> (dalam/luar negeri).</p>' +
+      '<p>Peraturan mengenai MBKM dapat diunduh pada tautan: <strong>Peraturan MBKM</strong>.</p>',
     order: 1,
     isActive: true,
   },
   {
     title: 'Insentif Buku Ajar',
     slug: 'insentif-buku-ajar',
-    description: '<h2>Program Insentif Buku Ajar</h2><p>Program pemberian insentif untuk mendorong dosen dalam menulis dan menerbitkan <strong>buku ajar berkualitas</strong>.</p><h3>Tujuan Program:</h3><ul><li>Meningkatkan kualitas pembelajaran</li><li>Menyediakan referensi yang relevan bagi mahasiswa</li><li>Mendorong produktivitas dosen dalam penulisan karya ilmiah</li></ul><p>Insentif diberikan kepada dosen yang telah menyelesaikan penulisan buku ajar dan memenuhi <em>standar kualitas yang ditetapkan</em>.</p>',
+    description:
+      '<h2 class="text-xl font-semibold">Pemberian Insentif Buku Ajar</h2>' +
+      '<p>Berdasarkan Peraturan Rektor UNSOED No. 23 Tahun 2021 tentang Standar dan Ketentuan Pengajuan Insentif Publikasi Ilmiah dan Kekayaan Intelektual, dosen Unsoed yang telah menerbitkan <strong>Buku Ajar</strong> dapat mengajukan insentif penulisan buku ajar.</p>' +
+      '<p>Satu orang tenaga fungsional hanya berhak mendapat sebanyak-banyaknya 1 (satu) kali insentif dalam 1 (satu) tahun. Insentif Buku Ajar maksimal sebesar <strong>Rp. 15.000.000</strong> (lima belas juta rupiah) dan dikenakan pajak yang berlaku.</p>' +
+      '<p>Semua biaya yang diperlukan pada proses penulisan, penelaahan, editing hingga penerbitan menjadi <em>tanggung jawab penulis/tim penulis</em>.</p>' +
+      '<h3 class="mt-3 font-semibold">Ketentuan Buku Ajar:</h3>' +
+      '<ul class="list-disc pl-5 space-y-1"><li>Merupakan buku pegangan untuk suatu mata kuliah dalam satu semester;</li><li>Ditulis dan disusun oleh tenaga fungsional yang mengampu matakuliah terkait;</li><li>Memenuhi kaidah buku ajar (kompetensi, tujuan pembelajaran, contoh soal, kisi-kisi jawaban, daftar pustaka, glosarium, indeks subjek);</li><li>Diterbitkan oleh <strong>Unsoed Press</strong> dan memiliki ISBN;</li><li>Memuat paling sedikit 60 halaman cetak (spasi tunggal, ukuran 15,5 cm x 23 cm);</li><li>Jika penulis lebih dari satu, Penulis Utama harus dosen UNSOED;</li></ul>' +
+      '<p>Ketentuan lebih rinci tentang Buku Ajar dapat dilihat pada <em>Panduan Penulisan Buku Ilmiah Tahun 2023</em>, yang dapat diunduh pada menu Unduhan website LP3M.</p>' +
+      '<h3 class="mt-3 font-semibold">Cara Pengajuan Insentif:</h3>' +
+      '<ol class="list-decimal pl-5 space-y-1"><li>Penulis utama (pertama) mengajukan surat permohonan kepada Rektor dengan surat pengantar dari Dekan. Surat dikirim ke bagian Rumah Tangga, Gd Rektorat Lantai 1.</li><li>Surat disertai dengan lampiran: 2 eksemplar Buku Ajar ber-ISBN; surat bukti telaah oleh penelaah isi (Doktor/Profesor kompeten); surat bukti telaah oleh penyelaras bahasa; surat pernyataan bermaterai bahwa buku belum didanai pemerintah; fotokopi nomor rekening bank pengusul.</li></ol>' +
+      '<h3 class="mt-3 font-semibold">Catatan:</h3>' +
+      '<ul class="list-disc pl-5 space-y-1"><li>Buku ajar yang dapat diberikan insentif terbit paling lama TS-1 dari saat pengajuan.</li><li>Jika jumlah usulan melebihi kuota, akan diikutkan pada periode berikutnya. Kuota Tahun 2024 sebanyak <strong>20 judul</strong>.</li><li>Surat penugasan penulis/tim penulis dan penugasan penelaah isi/bahasa dapat dimintakan kepada Dekan masing-masing (tidak ada format baku).</li><li>LP3M hanya memproses usulan terkait insentif Buku Ajar.</li></ul>',
     order: 2,
     isActive: true,
   },
   {
-    title: 'Pelatihan SPMI (Sistem Penjaminan Mutu Internal)',
-    slug: 'pelatihan-spmi',
-    description: '<h2>Pelatihan SPMI</h2><p>Pelatihan untuk meningkatkan pemahaman dan kompetensi sivitas akademika dalam implementasi <strong>Sistem Penjaminan Mutu Internal (SPMI)</strong>.</p><h3>Materi Pelatihan:</h3><ol><li>Standar SPMI</li><li>Siklus PPEPP (Penetapan, Pelaksanaan, Evaluasi, Pengendalian, Peningkatan)</li><li>Praktik terbaik dalam pengelolaan mutu pendidikan tinggi</li></ol><blockquote>Program ini dirancang untuk memastikan mutu pendidikan tinggi di Universitas Jenderal Soedirman</blockquote>',
+    title: 'Pelatihan Penyusunan Dokumen SPMI',
+    slug: 'pelatihan-penyusunan-dokumen-spmi',
+    description:
+      '<h2 class="text-xl font-semibold">Pelatihan Penyusunan Dokumen SPMI</h2>' +
+      '<p>Pelatihan untuk meningkatkan kompetensi sivitas akademika dalam <strong>penyusunan dokumen SPMI</strong> yang lengkap dan sesuai standar.</p>' +
+      '<ul class="list-disc pl-5 space-y-1"><li>Standar dan kebijakan SPMI</li><li>Struktur dokumen dan tata kelola</li><li>Best practices penulisan dan pengarsipan</li></ul>',
     order: 3,
+    isActive: true,
+  },
+  {
+    title: 'Pelatihan Penerapan Siklus SPMI',
+    slug: 'pelatihan-penerapan-siklus-spmi',
+    description:
+      '<h2 class="text-xl font-semibold">Pelatihan Penerapan Siklus SPMI</h2>' +
+      '<p>Fokus pada penerapan siklus <strong>PPEPP</strong> (Penetapan, Pelaksanaan, Evaluasi, Pengendalian, Peningkatan) dalam unit kerja.</p>' +
+      '<ul class="list-disc pl-5 space-y-1"><li>Strategi implementasi PPEPP</li><li>Monitoring dan evaluasi berkelanjutan</li><li>Perbaikan mutu berkesinambungan</li></ul>',
+    order: 4,
     isActive: true,
   },
   {
     title: 'Pelatihan Audit Mutu Internal (AMI)',
     slug: 'pelatihan-audit-mutu-internal',
-    description: '<h2>Pelatihan Audit Mutu Internal</h2><p>Program pelatihan untuk mempersiapkan <strong>auditor internal</strong> yang kompeten dalam melaksanakan audit mutu internal perguruan tinggi.</p><h3>Cakupan Materi:</h3><ul><li>Teknik audit</li><li>Penyusunan instrumen audit</li><li>Pelaksanaan audit</li><li>Pelaporan hasil audit sesuai standar SPMI</li></ul>',
-    order: 4,
-    isActive: true,
-  },
-  {
-    title: 'ToT (Training of Trainer) Auditor',
-    slug: 'tot-auditor',
-    description: '<h2>Training of Trainer Auditor</h2><p>Program <strong>Training of Trainer</strong> untuk mempersiapkan auditor yang tidak hanya kompeten dalam melakukan audit, tetapi juga mampu <em>melatih auditor lainnya</em>.</p><p>Program ini bertujuan untuk mengembangkan pool auditor internal yang berkualitas dan berkelanjutan di lingkungan Universitas Jenderal Soedirman.</p>',
+    description:
+      '<h2 class="text-xl font-semibold">Pelatihan Audit Mutu Internal</h2>' +
+      '<p>Program untuk mempersiapkan <strong>auditor internal</strong> yang kompeten dalam melaksanakan AMI.</p>' +
+      '<ul class="list-disc pl-5 space-y-1"><li>Teknik audit dan penyusunan instrumen</li><li>Pelaksanaan audit</li><li>Pelaporan hasil sesuai standar SPMI</li></ul>',
     order: 5,
     isActive: true,
   },
   {
-    title: 'Pelatihan Penulisan Buku Ajar',
-    slug: 'pelatihan-penulisan-buku-ajar',
-    description: '<h2>Pelatihan Penulisan Buku Ajar</h2><p>Pelatihan untuk meningkatkan kompetensi dosen dalam menulis <strong>buku ajar yang berkualitas</strong> dan sesuai dengan standar penerbitan.</p><h3>Materi Pelatihan:</h3><ol><li>Teknik penulisan</li><li>Struktur buku ajar</li><li>Pengembangan materi pembelajaran</li><li>Proses penerbitan buku ajar</li></ol>',
+    title: 'ToT Auditor SPMI',
+    slug: 'tot-auditor-spmi',
+    description:
+      '<h2 class="text-xl font-semibold">Training of Trainer (ToT) Auditor SPMI</h2>' +
+      '<p>Program ToT untuk auditor yang tidak hanya kompeten, tetapi juga mampu <em>melatih auditor lainnya</em>.</p>',
     order: 6,
     isActive: true,
   },
   {
-    title: 'Pelatihan Learning Management System (LMS)',
-    slug: 'pelatihan-lms',
-    description: '<h2>Pelatihan LMS</h2><p>Pelatihan untuk meningkatkan kompetensi dosen dalam menggunakan <strong>Learning Management System (LMS)</strong> untuk pembelajaran daring.</p><h3>Topik yang Dibahas:</h3><ul><li>Pengelolaan kelas virtual</li><li>Pembuatan konten pembelajaran digital</li><li>Penilaian online</li><li>Interaksi dengan mahasiswa melalui platform LMS</li></ul>',
+    title: 'Pelatihan Penulisan Buku Ajar Perguruan Tinggi',
+    slug: 'pelatihan-penulisan-buku-ajar-pt',
+    description:
+      '<h2 class="text-xl font-semibold">Pelatihan Penulisan Buku Ajar Perguruan Tinggi</h2>' +
+      '<p>Meningkatkan kompetensi dosen dalam penulisan <strong>buku ajar berkualitas</strong> sesuai standar penerbitan.</p>' +
+      '<ul class="list-disc pl-5 space-y-1"><li>Teknik penulisan dan struktur buku ajar</li><li>Pengembangan materi dan contoh soal</li><li>Proses editorial dan penerbitan</li></ul>',
     order: 7,
     isActive: true,
   },
   {
-    title: 'Pelatihan Outcome Based Education (OBE)',
-    slug: 'pelatihan-obe',
-    description: '<h2>Pelatihan OBE</h2><p>Pelatihan untuk mengimplementasikan pendekatan <strong>Outcome Based Education (OBE)</strong> dalam proses pembelajaran.</p><h3>Materi Utama:</h3><ul><li>Penyusunan Capaian Pembelajaran (CP)</li><li>Pengembangan kurikulum berbasis OBE</li><li>Metode pembelajaran yang berpusat pada mahasiswa</li><li>Sistem penilaian berbasis capaian pembelajaran</li></ul><p><em>Pendekatan OBE memastikan pembelajaran fokus pada hasil yang terukur</em></p>',
+    title: 'Pelatihan Learning Management System (LMS) untuk Pembelajaran Daring',
+    slug: 'pelatihan-lms',
+    description:
+      '<h2 class="text-xl font-semibold">Pelatihan LMS untuk Pembelajaran Daring</h2>' +
+      '<p>Meningkatkan kompetensi dosen dalam penggunaan <strong>LMS</strong> untuk pembelajaran online.</p>' +
+      '<ul class="list-disc pl-5 space-y-1"><li>Pengelolaan kelas virtual</li><li>Pembuatan konten digital</li><li>Penilaian dan interaksi online</li></ul>',
     order: 8,
+    isActive: true,
+  },
+  {
+    title: 'Pelatihan Kurikulum Perguruan Tinggi Berbasis Luaran (Kurikulum OBE)',
+    slug: 'pelatihan-kurikulum-obe',
+    description:
+      '<h2 class="text-xl font-semibold">Pelatihan Kurikulum OBE</h2>' +
+      '<p>Mengimplementasikan pendekatan <strong>Outcome Based Education (OBE)</strong> dalam proses pendidikan.</p>' +
+      '<ul class="list-disc pl-5 space-y-1"><li>Penyusunan Capaian Pembelajaran</li><li>Pengembangan kurikulum berbasis OBE</li><li>Metode student-centered learning</li><li>Sistem penilaian berbasis capaian</li></ul>',
+    order: 9,
     isActive: true,
   },
 ];

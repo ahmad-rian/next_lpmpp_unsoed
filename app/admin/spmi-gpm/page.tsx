@@ -125,9 +125,9 @@ export default function SpmiGpmPage() {
     // Scroll ke section link ketika GPM dipilih
     if (selectedGroup && linkSectionRef.current) {
       setTimeout(() => {
-        linkSectionRef.current?.scrollIntoView({
-          behavior: 'smooth',
-          block: 'start'
+        linkSectionRef.current?.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'start' 
         });
       }, 100);
     }
@@ -258,7 +258,7 @@ export default function SpmiGpmPage() {
   // Link Functions
   const handleAddLink = () => {
     if (!selectedGroup) return;
-
+    
     setLinkFormData({
       id: "",
       title: "",
@@ -366,13 +366,13 @@ export default function SpmiGpmPage() {
               <TableColumn>FAKULTAS</TableColumn>
               <TableColumn>DESKRIPSI</TableColumn>
               <TableColumn>KONTAK</TableColumn>
-              <TableColumn>LINK Dokumen</TableColumn>
+              <TableColumn>LINK LANGSUNG</TableColumn>
               <TableColumn>URUTAN</TableColumn>
               <TableColumn>AKSI</TableColumn>
             </TableHeader>
             <TableBody items={groups} isLoading={loading}>
               {(group) => (
-                <TableRow
+                <TableRow 
                   key={group.id}
                   className={selectedGroup?.id === group.id ? "bg-primary-50" : ""}
                 >
@@ -392,9 +392,9 @@ export default function SpmiGpmPage() {
                   <TableCell>{group.contactInfo || "-"}</TableCell>
                   <TableCell>
                     {group.directUrl ? (
-                      <a
-                        href={group.directUrl}
-                        target="_blank"
+                      <a 
+                        href={group.directUrl} 
+                        target="_blank" 
                         rel="noopener noreferrer"
                         className="text-blue-600 hover:text-blue-800 underline text-sm"
                       >
@@ -467,9 +467,9 @@ export default function SpmiGpmPage() {
                       <TableRow key={link.id}>
                         <TableCell>{link.title}</TableCell>
                         <TableCell>
-                          <a
-                            href={link.url}
-                            target="_blank"
+                          <a 
+                            href={link.url} 
+                            target="_blank" 
                             rel="noopener noreferrer"
                             className="text-blue-600 hover:text-blue-800 underline text-sm"
                           >
@@ -569,7 +569,7 @@ export default function SpmiGpmPage() {
               />
 
               <Input
-                label="Link Dokumen"
+                label="Link Langsung"
                 placeholder="https://fikes.unsoed.ac.id/gugus-penjaminan-mutu/"
                 value={formData.directUrl}
                 onChange={(e) =>

@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint --fix",
     "db:seed": "tsx prisma/seed.ts",
+    "db:seed:expertise-md": "tsx prisma/seed-expertise-from-md.ts",
     "postinstall": "prisma generate"
   },
   "dependencies": {

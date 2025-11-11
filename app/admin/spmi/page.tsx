@@ -5,6 +5,7 @@ import { Card, CardBody } from "@heroui/card";
 import { Button } from "@heroui/button";
 import { Input, Textarea } from "@heroui/input";
 import { AdminPageLayout } from "@/components/admin-page-layout";
+import toast, { Toaster } from "react-hot-toast";
 
 interface SpmiAbout {
   id: string;
@@ -19,18 +20,10 @@ const DocumentIcon = () => (
   </svg>
 );
 
-interface SpmiAbout {
-  id: string;
-  title: string;
-  tujuan: string;
-  fungsi: string;
-}
-
 export default function AdminSpmiPage() {
   const [spmiData, setSpmiData] = useState<SpmiAbout | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
-  const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
   const [formData, setFormData] = useState({
     title: "SPM Unsoed",
     tujuan: "",
@@ -40,16 +33,6 @@ export default function AdminSpmiPage() {
   useEffect(() => {
     fetchSpmiData();
   }, []);
-
-  // Auto-hide message after 5 seconds
-  useEffect(() => {
-    if (message) {
-      const timer = setTimeout(() => {
-        setMessage(null);
-      }, 5000);
-      return () => clearTimeout(timer);
-    }
-  }, [message]);
 
   const fetchSpmiData = async () => {
     try {
@@ -67,7 +50,7 @@ export default function AdminSpmiPage() {
       }
     } catch (error) {
       console.error("Error fetching SPMI data:", error);
-      setMessage({ type: 'error', text: 'Gagal memuat data SPMI' });
+      toast.error('Gagal memuat data SPMI');
     } finally {
       setIsLoading(false);
     }
@@ -76,7 +59,6 @@ export default function AdminSpmiPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSaving(true);
-    setMessage(null);
 
     try {
       const response = await fetch("/api/admin/spmi", {
@@ -90,14 +72,14 @@ export default function AdminSpmiPage() {
       if (response.ok) {
         const data = await response.json();
         setSpmiData(data);
-        setMessage({ type: 'success', text: 'Data SPMI berhasil disimpan!' });
+        toast.success('Data SPMI berhasil disimpan!');
       } else {
         const errorData = await response.json();
-        setMessage({ type: 'error', text: errorData.error || 'Gagal menyimpan data SPMI' });
+        toast.error(errorData.error || 'Gagal menyimpan data SPMI');
       }
     } catch (error) {
       console.error("Error saving SPMI data:", error);
-      setMessage({ type: 'error', text: 'Terjadi kesalahan saat menyimpan' });
+      toast.error('Terjadi kesalahan saat menyimpan');
     } finally {
       setIsSaving(false);
     }
@@ -121,16 +103,8 @@ export default function AdminSpmiPage() {
       description="Kelola informasi Sistem Penjaminan Mutu Internal (SPMI) UNSOED"
       icon={<DocumentIcon />}
     >
-      {message && (
-        <div className={`p-4 rounded-lg ${
-          message.type === 'success' 
-            ? 'bg-success/10 text-success border border-success/20' 
-            : 'bg-danger/10 text-danger border border-danger/20'
-        }`}>
-          {message.text}
-        </div>
-      )}
-
+      <Toaster position="top-right" />
+      
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Basic Information Section */}
         <Card>

@@ -7,16 +7,42 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const type = searchParams.get("type");
+    const q = searchParams.get("q")?.trim();
+    const pageParam = searchParams.get("page");
+    const pageSizeParam = searchParams.get("pageSize");
 
-    const where = type ? { type: type as any } : {};
+    const where: any = {};
+    if (type) where.type = type as any;
+    if (q) {
+      // MySQL generally uses case-insensitive collations by default,
+      // so we avoid Prisma's `mode: "insensitive"` which isn't supported on MySQL.
+      where.name = {
+        contains: q,
+      };
+    }
+
+    const shouldPaginate = !!pageParam || !!pageSizeParam;
+    const page = Math.max(parseInt(pageParam || "1", 10), 1);
+    const pageSize = Math.min(Math.max(parseInt(pageSizeParam || "20", 10), 1), 100);
+
+    if (shouldPaginate) {
+      const [total, items] = await Promise.all([
+        prisma.expertise.count({ where }),
+        prisma.expertise.findMany({
+          where,
+          orderBy: { order: "asc" },
+          skip: (page - 1) * pageSize,
+          take: pageSize,
+        }),
+      ]);
+
+      return NextResponse.json({ items, total, page, pageSize });
+    }
 
     const expertise = await prisma.expertise.findMany({
       where,
-      orderBy: {
-        order: "asc",
-      },
+      orderBy: { order: "asc" },
     });
-
     return NextResponse.json(expertise);
   } catch (error) {
     console.error("Error fetching expertise:", error);

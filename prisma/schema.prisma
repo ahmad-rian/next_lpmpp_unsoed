@@ -70,6 +70,9 @@ model SiteConfig {
   logoApp         String? @db.Text // Path/URL logo aplikasi
   logoDescription String? @db.Text // Detail penjelasan tentang logo
   siteName        String  @default("LPMPP UNSOED")
+  tagline         String? @db.Text // Tagline LPMPP
+  motto           String? @db.Text // Motto LPMPP
+  headMessage     String? @db.Text // Pesan Ketua Lembaga
   visi            String? @db.Text // Visi LPMPP
   misi            String? @db.Text // Misi LPMPP
   visiUnsoed      String? @db.Text // Visi UNSOED
@@ -259,35 +262,57 @@ model QualityAssuranceDocument {
   @@index([groupId, order])
 }
 
+enum AccreditationLevel {
+  D3 // D-III
+  PROFESI // Profesi
+  S1 // S1
+  S2 // S2
+  S3 // S3
+  SPESIALIS // Spesialis
+}
+
+enum AccreditationRank {
+  UNGGUL // Unggul
+  BAIK_SEKALI // Baik Sekali
+  BAIK // Baik
+  TERAKREDITASI_SEMENTARA // Terakreditasi Sementara
+  A // A
+  B // B
+  C // C
+}
+
 // Model untuk Akreditasi Internasional
 model InternationalAccreditation {
-  id          String   @id @default(cuid())
-  facultyName String
-  programName String
-  agency      String   @db.Text // Lembaga akreditasi
-  order       Int      @default(0)
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id                String   @id @default(cuid())
+  faculty           String // Nama Fakultas
+  studyProgram      String // Program Studi
+  accreditationBody String   @db.Text // Lembaga Akreditasi
+  order             Int      @default(0) // Urutan tampilan
+  isActive          Boolean  @default(true)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
 
   @@index([order])
+  @@index([isActive])
 }
 
 // Model untuk Akreditasi Program Studi
 model StudyProgramAccreditation {
-  id          String   @id @default(cuid())
-  programName String
-  level       String // D-III, S1, S2, S3, Profesi, Spesialis
-  skNumber    String? // Nomor SK
-  skYear      Int? // Tahun SK
-  rating      String // UNGGUL, BAIK SEKALI, BAIK, A, B, C, Terakreditasi Sementara
-  order       Int      @default(0)
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id           String             @id @default(cuid())
+  studyProgram String // Nama Program Studi
+  level        AccreditationLevel // Strata (D-III, S1, S2, S3, Profesi, Spesialis)
+  skNumber     String? // Nomor SK
+  skYear       Int? // Tahun SK
+  rank         AccreditationRank? // Peringkat
+  order        Int                @default(0) // Urutan tampilan
+  isActive     Boolean            @default(true)
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
 
-  @@index([level, order])
-  @@index([rating])
+  @@index([level])
+  @@index([rank])
+  @@index([order])
+  @@index([isActive])
 }
 
 // Model untuk Akreditasi Perguruan Tinggi
@@ -448,4 +473,14 @@ model TautanLayanan {
 
   @@index([order])
   @@index([isActive])
+}
+
+// Model untuk Tentang SPMI
+model SpmiAbout {
+  id        String   @id @default(cuid())
+  title     String   @default("SPM Unsoed")
+  tujuan    String   @db.Text // Tujuan SPMI
+  fungsi    String   @db.Text // Fungsi SPMI
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

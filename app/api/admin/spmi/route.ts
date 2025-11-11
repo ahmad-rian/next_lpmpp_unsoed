@@ -14,11 +14,16 @@ export async function GET() {
     // Ambil data pertama (harusnya hanya ada 1 record)
     const spmiAbout = await prisma.spmiAbout.findFirst();
 
+    if (!spmiAbout) {
+      return NextResponse.json(null);
+    }
+
     return NextResponse.json(spmiAbout);
   } catch (error) {
     console.error("Error fetching SPMI about:", error);
+    console.error("Error details:", error instanceof Error ? error.message : 'Unknown error');
     return NextResponse.json(
-      { error: "Internal Server Error" },
+      { error: "Internal Server Error", details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     );
   }

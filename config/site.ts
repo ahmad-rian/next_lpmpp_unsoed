@@ -53,9 +53,9 @@ export const siteConfig = {
           icon: "clipboard",
         },
         {
-          label: "Dokumen SPMI",
+          label: "Dokumen SPMI & Audit",
           href: "/spmi/dokumen",
-          description: "Sistem Penjaminan Mutu Internal",
+          description: "Sistem Penjaminan Mutu Internal & Audit Mutu Internal",
           icon: "document",
         },
         {
@@ -72,13 +72,13 @@ export const siteConfig = {
       children: [
         {
           label: "Akreditasi PT",
-          href: "/akreditasi/pt",
+          href: "/akreditasi/perguruan-tinggi",
           description: "Akreditasi Perguruan Tinggi",
           icon: "certificate",
         },
         {
           label: "Akreditasi Prodi",
-          href: "/akreditasi/prodi",
+          href: "/akreditasi/program-studi",
           description: "Akreditasi Program Studi",
           icon: "award",
         },
@@ -95,22 +95,22 @@ export const siteConfig = {
       href: "#",
       children: [
         {
-          label: "MBKM",
-          href: "/kepakaran/mbkm",
-          description: "Merdeka Belajar Kampus Merdeka",
-          icon: "book",
+          label: "Fasilitator Pekerti / AA",
+          href: "/kepakaran/fasilitator-pekerti",
+          description: "Daftar Fasilitator Pekerti dan Applied Approach",
+          icon: "users",
         },
         {
-          label: "Asesor",
-          href: "/kepakaran/asesor",
-          description: "Daftar asesor",
-          icon: "usercheck",
-        },
-        {
-          label: "Auditor",
-          href: "/kepakaran/auditor",
-          description: "Daftar auditor",
+          label: "Auditor Mutu Internal",
+          href: "/kepakaran/auditor-mutu-internal",
+          description: "Daftar Auditor Mutu Internal",
           icon: "shield",
+        },
+        {
+          label: "Asesor BKD",
+          href: "/kepakaran/asesor-bkd",
+          description: "Daftar Asesor Beban Kerja Dosen",
+          icon: "usercheck",
         },
       ],
     },
@@ -134,7 +134,7 @@ export const siteConfig = {
     },
     {
       label: "Tentang Kami",
-      href: "/about",
+      href: "/tentang-kami",
     },
     {
       label: "Pimpinan Lembaga",
@@ -147,10 +147,6 @@ export const siteConfig = {
     {
       label: "Pusat & Unit",
       href: "/pusat-unit",
-    },
-    {
-      label: "Fakultas",
-      href: "/fakultas",
     },
     {
       label: "Program Unggulan",

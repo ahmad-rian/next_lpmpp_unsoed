@@ -148,31 +148,31 @@ export default function PusatUnitPage() {
               </div>
             </CardHeader>
             <CardBody className="space-y-1 p-2">
-              {centers.map((center) => (
-                <Button
-                  key={center.id}
-                  variant="light"
-                  className={`w-full justify-start h-auto py-3 px-4 rounded-lg transition-all ${
-                    selectedCenterId === center.id 
-                      ? 'bg-red-500 text-white hover:bg-red-600' 
-                      : 'hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300'
-                  }`}
-                  onClick={() => setSelectedCenterId(center.id)}
-                >
-                  <div className="text-left w-full">
+              {centers.map((center) => {
+                const isSelected = selectedCenterId === center.id;
+                return (
+                  <button
+                    key={center.id}
+                    className={`w-full text-left py-3 px-4 rounded-lg transition-all duration-200 ${
+                      isSelected 
+                        ? 'bg-red-500 text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700' 
+                        : 'text-gray-700 dark:text-gray-300 hover:bg-red-50 dark:hover:bg-red-950/40 hover:text-red-600 dark:hover:text-red-400'
+                    }`}
+                    onClick={() => setSelectedCenterId(center.id)}
+                  >
                     <div className="font-semibold text-sm md:text-base line-clamp-2">
                       {center.name}
                     </div>
                     <div className={`text-xs mt-1 ${
-                      selectedCenterId === center.id 
-                        ? 'text-red-100' 
+                      isSelected 
+                        ? 'text-red-100 dark:text-red-200' 
                         : 'text-gray-500 dark:text-gray-400'
                     }`}>
                       {center.members?.length || 0} Anggota
                     </div>
-                  </div>
-                </Button>
-              ))}
+                  </button>
+                );
+              })}
             </CardBody>
           </Card>
         </div>

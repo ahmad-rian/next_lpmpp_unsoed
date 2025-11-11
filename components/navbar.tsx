@@ -9,12 +9,12 @@ import {
   NavbarItem,
   NavbarMenuItem,
 } from "@heroui/navbar";
-import { Accordion, AccordionItem } from "@heroui/accordion";
 import { link as linkStyles } from "@heroui/theme";
 import NextLink from "next/link";
 import clsx from "clsx";
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 
 import { siteConfig } from "@/config/site";
 import { ThemeSwitch } from "@/components/theme-switch";
@@ -115,6 +115,15 @@ const FolderIcon = ({ className }: { className?: string }) => (
 
 export const Navbar = () => {
   const [configData, setConfigData] = useState<SiteConfigData | null>(null);
+  const [openMenus, setOpenMenus] = useState<{ [key: string]: boolean }>({});
+  const pathname = usePathname();
+
+  const toggleMenu = (key: string) => {
+    setOpenMenus(prev => ({
+      ...prev,
+      [key]: !prev[key]
+    }));
+  };
 
   useEffect(() => {
     const fetchConfig = async () => {
@@ -131,6 +140,20 @@ export const Navbar = () => {
 
     fetchConfig();
   }, []);
+
+  // Helper function to check if path is active
+  const isActive = (href: string) => {
+    if (href === "/") {
+      return pathname === "/";
+    }
+    return pathname.startsWith(href);
+  };
+
+  // Helper function to check if any child is active
+  const hasActiveChild = (children?: Array<{ href: string }>) => {
+    if (!children) return false;
+    return children.some((child) => isActive(child.href));
+  };
 
   return (
     <HeroUINavbar maxWidth="xl" position="sticky">
@@ -155,59 +178,84 @@ export const Navbar = () => {
 
       <NavbarContent className="hidden lg:flex basis-3/5 lg:basis-1/2" justify="center">
         <ul className="flex gap-1 justify-center items-center">
-          {siteConfig.navItems.map((item, index) => (
-            <NavbarItem key={`${item.label}-${index}`} className="relative group">
-              <NextLink
-                className={clsx(
-                  linkStyles({ color: "foreground" }),
-                  "data-[active=true]:text-primary data-[active=true]:font-medium",
-                  "flex items-center gap-1 text-sm px-2 py-2 rounded-lg hover:bg-default-100 transition-all duration-200",
-                )}
-                color="foreground"
-                href={item.href}
-              >
-                <span className="flex items-center gap-1 whitespace-nowrap">
-                  {item.label}
-                  {item.children && item.children.length > 0 && (
-                    <ChevronDownIcon className="w-3 h-3 transition-transform group-hover:rotate-180 duration-300" />
+          {siteConfig.navItems.map((item, index) => {
+            const itemIsActive = isActive(item.href) || hasActiveChild(item.children);
+            
+            return (
+              <NavbarItem key={`${item.label}-${index}`} className="relative group">
+                <NextLink
+                  className={clsx(
+                    linkStyles({ color: "foreground" }),
+                    "flex items-center gap-1 text-sm px-2 py-2 rounded-lg transition-all duration-200",
+                    itemIsActive 
+                      ? "text-red-600 dark:text-red-400 font-semibold bg-red-50 dark:bg-red-950/30" 
+                      : "hover:bg-default-100"
                   )}
-                </span>
-              </NextLink>
-
-              {/* Dropdown Card - muncul saat hover */}
-              {item.children && item.children.length > 0 && (
-                <div className="absolute top-full left-0 mt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 ease-in-out z-50">
-                  <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 p-4 min-w-[280px] backdrop-blur-sm">
-                    <div className="grid gap-2">
-                      {item.children.map((child: { label: string; href: string; description?: string; icon?: string }, index: number) => (
-                        <NextLink
-                          key={index}
-                          href={child.href}
-                          className="group/item flex items-start gap-3 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-all duration-200 border border-transparent hover:border-gray-200 dark:hover:border-gray-600"
-                        >
-                          {child.icon && (
-                            <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-primary/10 dark:bg-primary/20 flex items-center justify-center group-hover/item:bg-primary/20 dark:group-hover/item:bg-primary/30 transition-colors group-hover/item:scale-105">
-                              {MenuIcons[child.icon as IconName]}
-                            </div>
-                          )}
-                          <div className="flex-1">
-                            <div className="font-semibold text-sm text-gray-900 dark:text-gray-100 group-hover/item:text-primary transition-colors">
-                              {child.label}
-                            </div>
-                            {child.description && (
-                              <div className="text-xs text-gray-500 dark:text-gray-400 mt-1 leading-relaxed">
-                                {child.description}
+                  color="foreground"
+                  href={item.href}
+                >
+                  <span className="flex items-center gap-1 whitespace-nowrap">
+                    {item.label}
+                    {item.children && item.children.length > 0 && (
+                      <ChevronDownIcon className="w-3 h-3 transition-transform group-hover:rotate-180 duration-300" />
+                    )}
+                  </span>
+                </NextLink>
+                
+                {/* Dropdown Card - muncul saat hover */}
+                {item.children && item.children.length > 0 && (
+                  <div className="absolute top-full left-0 mt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 ease-in-out z-50">
+                    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 p-4 min-w-[280px] backdrop-blur-sm">
+                      <div className="grid gap-2">
+                        {item.children.map((child: { label: string; href: string; description?: string; icon?: string }, index: number) => {
+                          const childIsActive = isActive(child.href);
+                          
+                          return (
+                            <NextLink
+                              key={index}
+                              href={child.href}
+                              className={clsx(
+                                "group/item flex items-start gap-3 p-3 rounded-lg transition-all duration-200 border",
+                                childIsActive
+                                  ? "bg-red-50 dark:bg-red-950/30 border-red-200 dark:border-red-900/50"
+                                  : "hover:bg-gray-50 dark:hover:bg-gray-700/50 border-transparent hover:border-gray-200 dark:hover:border-gray-600"
+                              )}
+                            >
+                              {child.icon && (
+                                <div className={clsx(
+                                  "flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center transition-all",
+                                  childIsActive
+                                    ? "bg-red-100 dark:bg-red-900/50 scale-105"
+                                    : "bg-primary/10 dark:bg-primary/20 group-hover/item:bg-primary/20 dark:group-hover/item:bg-primary/30 group-hover/item:scale-105"
+                                )}>
+                                  {MenuIcons[child.icon as IconName]}
+                                </div>
+                              )}
+                              <div className="flex-1">
+                                <div className={clsx(
+                                  "font-semibold text-sm transition-colors",
+                                  childIsActive
+                                    ? "text-red-600 dark:text-red-400"
+                                    : "text-gray-900 dark:text-gray-100 group-hover/item:text-primary"
+                                )}>
+                                  {child.label}
+                                </div>
+                                {child.description && (
+                                  <div className="text-xs text-gray-500 dark:text-gray-400 mt-1 leading-relaxed">
+                                    {child.description}
+                                  </div>
+                                )}
                               </div>
-                            )}
-                          </div>
-                        </NextLink>
-                      ))}
+                            </NextLink>
+                          );
+                        })}
+                      </div>
                     </div>
                   </div>
-                </div>
-              )}
-            </NavbarItem>
-          ))}
+                )}
+              </NavbarItem>
+            );
+          })}
         </ul>
       </NavbarContent>
 
@@ -230,234 +278,358 @@ export const Navbar = () => {
           {/* Beranda */}
           <NavbarMenuItem>
             <NextLink
-              className="w-full text-sm py-3 px-4 hover:bg-default-100 rounded-lg transition-all duration-200 font-medium text-foreground hover:text-primary flex items-center gap-3"
+              className={clsx(
+                "w-full text-sm py-3 px-4 rounded-lg transition-all duration-200 font-medium flex items-center gap-3",
+                isActive("/")
+                  ? "bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400"
+                  : "text-foreground hover:bg-default-100 hover:text-primary"
+              )}
               href="/"
             >
-              <HomeIcon className="w-5 h-5 text-primary" />
+              <HomeIcon className={clsx(
+                "w-5 h-5",
+                isActive("/") ? "text-red-600 dark:text-red-400" : "text-primary"
+              )} />
               Beranda
             </NextLink>
           </NavbarMenuItem>
-
-          {/* Accordion untuk menu dengan children */}
+          
+          {/* Custom collapsible menu untuk mobile */}
           <NavbarMenuItem>
-            <Accordion
-              variant="light"
-              className="px-0"
-              itemClasses={{
-                base: "py-0",
-                title: "font-medium text-sm text-foreground",
-                trigger: "px-4 py-3 data-[hover=true]:bg-default-100 rounded-lg",
-                content: "text-small px-0 pb-2",
-              }}
-            >
+            <div className="flex flex-col gap-2">
               {/* Profil LPMPP */}
-              <AccordionItem
-                key="profil"
-                aria-label="Profil LPMPP"
-                title={
+              <div>
+                <button
+                  onClick={() => toggleMenu('profil')}
+                  className={clsx(
+                    "w-full flex items-center justify-between gap-3 px-4 py-3 rounded-lg transition-colors text-sm",
+                    (isActive("/tentang-kami") || isActive("/pimpinan-lembaga") || isActive("/tata-usaha"))
+                      ? "bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 font-semibold"
+                      : "text-foreground hover:bg-default-100"
+                  )}
+                >
                   <div className="flex items-center gap-3">
-                    <UserGroupIcon className="w-5 h-5 text-primary" />
-                    <span>Profil LPMPP</span>
+                    <UserGroupIcon className={clsx(
+                      "w-5 h-5",
+                      (isActive("/tentang-kami") || isActive("/pimpinan-lembaga") || isActive("/tata-usaha"))
+                        ? "text-red-600 dark:text-red-400"
+                        : "text-primary"
+                    )} />
+                    <span className="font-medium">Profil LPMPP</span>
                   </div>
-                }
-              >
-                <div className="flex flex-col gap-1 ml-8">
-                  <NextLink
-                    href="/tentang-kami"
-                    className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-default-100 transition-colors text-sm text-default-600 hover:text-primary"
-                  >
-                    {MenuIcons.information}
-                    <div>
-                      <div className="font-medium">Tentang Kami</div>
-                      <div className="text-xs text-default-400">Informasi umum LPMPP UNSOED</div>
-                    </div>
-                  </NextLink>
-                  <NextLink
-                    href="/pimpinan-lembaga"
-                    className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-default-100 transition-colors text-sm text-default-600 hover:text-primary"
-                  >
-                    {MenuIcons.users}
-                    <div>
-                      <div className="font-medium">Pimpinan Lembaga</div>
-                      <div className="text-xs text-default-400">Struktur kepemimpinan</div>
-                    </div>
-                  </NextLink>
-                  <NextLink
-                    href="/tata-usaha"
-                    className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-default-100 transition-colors text-sm text-default-600 hover:text-primary"
-                  >
-                    {MenuIcons.briefcase}
-                    <div>
-                      <div className="font-medium">Tata Usaha</div>
-                      <div className="text-xs text-default-400">Staff dan kepegawaian</div>
-                    </div>
-                  </NextLink>
-                </div>
-              </AccordionItem>
+                  <ChevronDownIcon className={clsx(
+                    "w-4 h-4 transition-transform",
+                    openMenus['profil'] && "rotate-180"
+                  )} />
+                </button>
+                
+                {openMenus['profil'] && (
+                  <div className="flex flex-col gap-1 ml-8 mt-1">
+                    <NextLink
+                      href="/tentang-kami"
+                      className={clsx(
+                        "flex items-center gap-3 px-3 py-2 rounded-md transition-colors text-sm",
+                        isActive("/tentang-kami")
+                          ? "bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 font-semibold"
+                          : "text-default-600 hover:bg-default-100 hover:text-primary"
+                      )}
+                    >
+                      {MenuIcons.information}
+                      <div>
+                        <div className="font-medium">Tentang Kami</div>
+                        <div className="text-xs text-default-400">Informasi umum LPMPP UNSOED</div>
+                      </div>
+                    </NextLink>
+                    <NextLink
+                      href="/pimpinan-lembaga"
+                      className={clsx(
+                        "flex items-center gap-3 px-3 py-2 rounded-md transition-colors text-sm",
+                        isActive("/pimpinan-lembaga")
+                          ? "bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 font-semibold"
+                          : "text-default-600 hover:bg-default-100 hover:text-primary"
+                      )}
+                    >
+                      {MenuIcons.users}
+                      <div>
+                        <div className="font-medium">Pimpinan Lembaga</div>
+                        <div className="text-xs text-default-400">Struktur kepemimpinan</div>
+                      </div>
+                    </NextLink>
+                    <NextLink
+                      href="/tata-usaha"
+                      className={clsx(
+                        "flex items-center gap-3 px-3 py-2 rounded-md transition-colors text-sm",
+                        isActive("/tata-usaha")
+                          ? "bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 font-semibold"
+                          : "text-default-600 hover:bg-default-100 hover:text-primary"
+                      )}
+                    >
+                      {MenuIcons.briefcase}
+                      <div>
+                        <div className="font-medium">Tata Usaha</div>
+                        <div className="text-xs text-default-400">Staff dan kepegawaian</div>
+                      </div>
+                    </NextLink>
+                  </div>
+                )}
+              </div>
 
               {/* Unit Kerja - Direct Link */}
               <NextLink
                 href="/pusat-unit"
-                className="flex items-center gap-3 px-4 py-3 rounded-md hover:bg-default-100 transition-colors text-sm text-default-600 hover:text-primary"
+                className={clsx(
+                  "flex items-center gap-3 px-4 py-3 rounded-lg transition-colors text-sm font-medium",
+                  isActive("/pusat-unit")
+                    ? "bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400"
+                    : "text-foreground hover:bg-default-100 hover:text-primary"
+                )}
               >
                 <BuildingOfficeIcon className="w-5 h-5 text-primary" />
-                <div>
-                  <div className="font-medium">Unit Kerja</div>
-                  <div className="text-xs text-default-400">Daftar pusat dan unit kerja</div>
-                </div>
+                Unit Kerja
               </NextLink>
 
               {/* SPMI */}
-              <AccordionItem
-                key="spmi"
-                aria-label="SPMI"
-                title={
+              <div>
+                <button
+                  onClick={() => toggleMenu('spmi')}
+                  className={clsx(
+                    "w-full flex items-center justify-between gap-3 px-4 py-3 rounded-lg transition-colors text-sm",
+                    pathname.startsWith("/spmi")
+                      ? "bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 font-semibold"
+                      : "text-foreground hover:bg-default-100"
+                  )}
+                >
                   <div className="flex items-center gap-3">
                     <ClipboardDocumentListIcon className="w-5 h-5 text-primary" />
-                    <span>SPMI</span>
+                    <span className="font-medium">SPMI</span>
                   </div>
-                }
-              >
-                <div className="flex flex-col gap-1 ml-8">
-                  <NextLink
-                    href="/spmi/tentang"
-                    className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-default-100 transition-colors text-sm text-default-600 hover:text-primary"
-                  >
-                    {MenuIcons.information}
-                    <div>
-                      <div className="font-medium">Tentang SPMI</div>
-                      <div className="text-xs text-default-400">Informasi Sistem Penjaminan Mutu Internal</div>
-                    </div>
-                  </NextLink>
-                  <NextLink
-                    href="/spmi/gugus-penjamin-mutu-fakultas"
-                    className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-default-100 transition-colors text-sm text-default-600 hover:text-primary"
-                  >
-                    {MenuIcons.clipboard}
-                    <div>
-                      <div className="font-medium">Dokumen GPM Fakultas</div>
-                      <div className="text-xs text-default-400">Dokumen Gugus Penjaminan Mutu Fakultas</div>
-                    </div>
-                  </NextLink>
-                  <NextLink
-                    href="/spmi/dokumen"
-                    className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-default-100 transition-colors text-sm text-default-600 hover:text-primary"
-                  >
-                    {MenuIcons.document}
-                    <div>
-                      <div className="font-medium">Dokumen SPMI</div>
-                      <div className="text-xs text-default-400">Sistem Penjaminan Mutu Internal</div>
-                    </div>
-                  </NextLink>
-                  <NextLink
-                    href="/spmi/peraturan"
-                    className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-default-100 transition-colors text-sm text-default-600 hover:text-primary"
-                  >
-                    {MenuIcons.scale}
-                    <div>
-                      <div className="font-medium">Peraturan</div>
-                      <div className="text-xs text-default-400">Peraturan dan kebijakan SPMI</div>
-                    </div>
-                  </NextLink>
-                </div>
-              </AccordionItem>
+                  <ChevronDownIcon className={clsx(
+                    "w-4 h-4 transition-transform",
+                    openMenus['spmi'] && "rotate-180"
+                  )} />
+                </button>
+                
+                {openMenus['spmi'] && (
+                  <div className="flex flex-col gap-1 ml-8 mt-1">
+                    <NextLink
+                      href="/spmi/tentang"
+                      className={clsx(
+                        "flex items-center gap-3 px-3 py-2 rounded-md transition-colors text-sm",
+                        isActive("/spmi/tentang")
+                          ? "bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 font-semibold"
+                          : "text-default-600 hover:bg-default-100 hover:text-primary"
+                      )}
+                    >
+                      {MenuIcons.information}
+                      <div>
+                        <div className="font-medium">Tentang SPMI</div>
+                        <div className="text-xs text-default-400">Informasi Sistem Penjaminan Mutu Internal</div>
+                      </div>
+                    </NextLink>
+                    <NextLink
+                      href="/spmi/gugus-penjamin-mutu-fakultas"
+                      className={clsx(
+                        "flex items-center gap-3 px-3 py-2 rounded-md transition-colors text-sm",
+                        isActive("/spmi/gugus-penjamin-mutu-fakultas")
+                          ? "bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 font-semibold"
+                          : "text-default-600 hover:bg-default-100 hover:text-primary"
+                      )}
+                    >
+                      {MenuIcons.clipboard}
+                      <div>
+                        <div className="font-medium">Dokumen GPM Fakultas</div>
+                        <div className="text-xs text-default-400">Dokumen Gugus Penjaminan Mutu Fakultas</div>
+                      </div>
+                    </NextLink>
+                    <NextLink
+                      href="/spmi/dokumen"
+                      className={clsx(
+                        "flex items-center gap-3 px-3 py-2 rounded-md transition-colors text-sm",
+                        isActive("/spmi/dokumen")
+                          ? "bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 font-semibold"
+                          : "text-default-600 hover:bg-default-100 hover:text-primary"
+                      )}
+                    >
+                      {MenuIcons.document}
+                      <div>
+                        <div className="font-medium">Dokumen SPMI & Audit</div>
+                        <div className="text-xs text-default-400">Sistem Penjaminan Mutu Internal & Audit Mutu Internal</div>
+                      </div>
+                    </NextLink>
+                    <NextLink
+                      href="/spmi/peraturan"
+                      className={clsx(
+                        "flex items-center gap-3 px-3 py-2 rounded-md transition-colors text-sm",
+                        isActive("/spmi/peraturan")
+                          ? "bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 font-semibold"
+                          : "text-default-600 hover:bg-default-100 hover:text-primary"
+                      )}
+                    >
+                      {MenuIcons.scale}
+                      <div>
+                        <div className="font-medium">Peraturan</div>
+                        <div className="text-xs text-default-400">Peraturan dan kebijakan SPMI</div>
+                      </div>
+                    </NextLink>
+                  </div>
+                )}
+              </div>
 
               {/* Akreditasi */}
-              <AccordionItem
-                key="akreditasi"
-                aria-label="Akreditasi"
-                title={
+              <div>
+                <button
+                  onClick={() => toggleMenu('akreditasi')}
+                  className={clsx(
+                    "w-full flex items-center justify-between gap-3 px-4 py-3 rounded-lg transition-colors text-sm",
+                    pathname.startsWith("/akreditasi")
+                      ? "bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 font-semibold"
+                      : "text-foreground hover:bg-default-100"
+                  )}
+                >
                   <div className="flex items-center gap-3">
                     <TrophyIcon className="w-5 h-5 text-primary" />
-                    <span>Akreditasi</span>
+                    <span className="font-medium">Akreditasi</span>
                   </div>
-                }
-              >
-                <div className="flex flex-col gap-1 ml-8">
-                  <NextLink
-                    href="/akreditasi/pt"
-                    className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-default-100 transition-colors text-sm text-default-600 hover:text-primary"
-                  >
-                    {MenuIcons.certificate}
-                    <div>
-                      <div className="font-medium">Akreditasi PT</div>
-                      <div className="text-xs text-default-400">Akreditasi Perguruan Tinggi</div>
-                    </div>
-                  </NextLink>
-                  <NextLink
-                    href="/akreditasi/prodi"
-                    className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-default-100 transition-colors text-sm text-default-600 hover:text-primary"
-                  >
-                    {MenuIcons.award}
-                    <div>
-                      <div className="font-medium">Akreditasi Prodi</div>
-                      <div className="text-xs text-default-400">Akreditasi Program Studi</div>
-                    </div>
-                  </NextLink>
-                  <NextLink
-                    href="/akreditasi/internasional"
-                    className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-default-100 transition-colors text-sm text-default-600 hover:text-primary"
-                  >
-                    {MenuIcons.globe}
-                    <div>
-                      <div className="font-medium">Akreditasi Internasional</div>
-                      <div className="text-xs text-default-400">Akreditasi tingkat internasional</div>
-                    </div>
-                  </NextLink>
-                </div>
-              </AccordionItem>
+                  <ChevronDownIcon className={clsx(
+                    "w-4 h-4 transition-transform",
+                    openMenus['akreditasi'] && "rotate-180"
+                  )} />
+                </button>
+                
+                {openMenus['akreditasi'] && (
+                  <div className="flex flex-col gap-1 ml-8 mt-1">
+                    <NextLink
+                      href="/akreditasi/perguruan-tinggi"
+                      className={clsx(
+                        "flex items-center gap-3 px-3 py-2 rounded-md transition-colors text-sm",
+                        isActive("/akreditasi/perguruan-tinggi")
+                          ? "bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 font-semibold"
+                          : "text-default-600 hover:bg-default-100 hover:text-primary"
+                      )}
+                    >
+                      {MenuIcons.certificate}
+                      <div>
+                        <div className="font-medium">Akreditasi PT</div>
+                        <div className="text-xs text-default-400">Akreditasi Perguruan Tinggi</div>
+                      </div>
+                    </NextLink>
+                    <NextLink
+                      href="/akreditasi/program-studi"
+                      className={clsx(
+                        "flex items-center gap-3 px-3 py-2 rounded-md transition-colors text-sm",
+                        isActive("/akreditasi/program-studi")
+                          ? "bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 font-semibold"
+                          : "text-default-600 hover:bg-default-100 hover:text-primary"
+                      )}
+                    >
+                      {MenuIcons.award}
+                      <div>
+                        <div className="font-medium">Program Studi</div>
+                        <div className="text-xs text-default-400">Akreditasi Program Studi</div>
+                      </div>
+                    </NextLink>
+                    <NextLink
+                      href="/akreditasi/internasional"
+                      className={clsx(
+                        "flex items-center gap-3 px-3 py-2 rounded-md transition-colors text-sm",
+                        isActive("/akreditasi/internasional")
+                          ? "bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 font-semibold"
+                          : "text-default-600 hover:bg-default-100 hover:text-primary"
+                      )}
+                    >
+                      {MenuIcons.globe}
+                      <div>
+                        <div className="font-medium">Akreditasi Internasional</div>
+                        <div className="text-xs text-default-400">Akreditasi tingkat internasional</div>
+                      </div>
+                    </NextLink>
+                  </div>
+                )}
+              </div>
 
               {/* Kepakaran */}
-              <AccordionItem
-                key="kepakaran"
-                aria-label="Kepakaran"
-                title={
+              <div>
+                <button
+                  onClick={() => toggleMenu('kepakaran')}
+                  className={clsx(
+                    "w-full flex items-center justify-between gap-3 px-4 py-3 rounded-lg transition-colors text-sm",
+                    pathname.startsWith("/kepakaran")
+                      ? "bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 font-semibold"
+                      : "text-foreground hover:bg-default-100"
+                  )}
+                >
                   <div className="flex items-center gap-3">
                     <AcademicCapIcon className="w-5 h-5 text-primary" />
-                    <span>Kepakaran</span>
+                    <span className="font-medium">Kepakaran</span>
                   </div>
-                }
-              >
-                <div className="flex flex-col gap-1 ml-8">
-                  <NextLink
-                    href="/kepakaran/mbkm"
-                    className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-default-100 transition-colors text-sm text-default-600 hover:text-primary"
-                  >
-                    {MenuIcons.book}
-                    <div>
-                      <div className="font-medium">MBKM</div>
-                      <div className="text-xs text-default-400">Merdeka Belajar Kampus Merdeka</div>
-                    </div>
-                  </NextLink>
-                  <NextLink
-                    href="/kepakaran/asesor"
-                    className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-default-100 transition-colors text-sm text-default-600 hover:text-primary"
-                  >
-                    {MenuIcons.usercheck}
-                    <div>
-                      <div className="font-medium">Asesor</div>
-                      <div className="text-xs text-default-400">Daftar asesor</div>
-                    </div>
-                  </NextLink>
-                  <NextLink
-                    href="/kepakaran/auditor"
-                    className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-default-100 transition-colors text-sm text-default-600 hover:text-primary"
-                  >
-                    {MenuIcons.shield}
-                    <div>
-                      <div className="font-medium">Auditor</div>
-                      <div className="text-xs text-default-400">Daftar auditor</div>
-                    </div>
-                  </NextLink>
-                </div>
-              </AccordionItem>
-            </Accordion>
+                  <ChevronDownIcon className={clsx(
+                    "w-4 h-4 transition-transform",
+                    openMenus['kepakaran'] && "rotate-180"
+                  )} />
+                </button>
+                
+                {openMenus['kepakaran'] && (
+                  <div className="flex flex-col gap-1 ml-8 mt-1">
+                    <NextLink
+                      href="/kepakaran/fasilitator-pekerti"
+                      className={clsx(
+                        "flex items-center gap-3 px-3 py-2 rounded-md transition-colors text-sm",
+                        isActive("/kepakaran/fasilitator-pekerti")
+                          ? "bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 font-semibold"
+                          : "text-default-600 hover:bg-default-100 hover:text-primary"
+                      )}
+                    >
+                      {MenuIcons.users}
+                      <div>
+                        <div className="font-medium">Fasilitator Pekerti / AA</div>
+                        <div className="text-xs text-default-400">Daftar Fasilitator Pekerti dan Applied Approach</div>
+                      </div>
+                    </NextLink>
+                    <NextLink
+                      href="/kepakaran/auditor-mutu-internal"
+                      className={clsx(
+                        "flex items-center gap-3 px-3 py-2 rounded-md transition-colors text-sm",
+                        isActive("/kepakaran/auditor-mutu-internal")
+                          ? "bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 font-semibold"
+                          : "text-default-600 hover:bg-default-100 hover:text-primary"
+                      )}
+                    >
+                      {MenuIcons.shield}
+                      <div>
+                        <div className="font-medium">Auditor Mutu Internal</div>
+                        <div className="text-xs text-default-400">Daftar Auditor Mutu Internal</div>
+                      </div>
+                    </NextLink>
+                    <NextLink
+                      href="/kepakaran/asesor-bkd"
+                      className={clsx(
+                        "flex items-center gap-3 px-3 py-2 rounded-md transition-colors text-sm",
+                        isActive("/kepakaran/asesor-bkd")
+                          ? "bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 font-semibold"
+                          : "text-default-600 hover:bg-default-100 hover:text-primary"
+                      )}
+                    >
+                      {MenuIcons.usercheck}
+                      <div>
+                        <div className="font-medium">Asesor BKD</div>
+                        <div className="text-xs text-default-400">Daftar Asesor Beban Kerja Dosen</div>
+                      </div>
+                    </NextLink>
+                  </div>
+                )}
+              </div>
+            </div>
           </NavbarMenuItem>
 
           {/* Menu tunggal */}
           <NavbarMenuItem>
             <NextLink
-              className="w-full text-sm py-3 px-4 hover:bg-default-100 rounded-lg transition-all duration-200 font-medium text-foreground hover:text-primary flex items-center gap-3"
+              className={clsx(
+                "w-full text-sm py-3 px-4 rounded-lg transition-all duration-200 font-medium flex items-center gap-3",
+                isActive("/program-unggulan")
+                  ? "bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400"
+                  : "text-foreground hover:bg-default-100 hover:text-primary"
+              )}
               href="/program-unggulan"
             >
               <StarIcon className="w-5 h-5 text-primary" />
@@ -467,7 +639,12 @@ export const Navbar = () => {
 
           <NavbarMenuItem>
             <NextLink
-              className="w-full text-sm py-3 px-4 hover:bg-default-100 rounded-lg transition-all duration-200 font-medium text-foreground hover:text-primary flex items-center gap-3"
+              className={clsx(
+                "w-full text-sm py-3 px-4 rounded-lg transition-all duration-200 font-medium flex items-center gap-3",
+                isActive("/berita")
+                  ? "bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400"
+                  : "text-foreground hover:bg-default-100 hover:text-primary"
+              )}
               href="/berita"
             >
               <NewspaperIcon className="w-5 h-5 text-primary" />
@@ -477,7 +654,12 @@ export const Navbar = () => {
 
           <NavbarMenuItem>
             <NextLink
-              className="w-full text-sm py-3 px-4 hover:bg-default-100 rounded-lg transition-all duration-200 font-medium text-foreground hover:text-primary flex items-center gap-3"
+              className={clsx(
+                "w-full text-sm py-3 px-4 rounded-lg transition-all duration-200 font-medium flex items-center gap-3",
+                isActive("/unduhan")
+                  ? "bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400"
+                  : "text-foreground hover:bg-default-100 hover:text-primary"
+              )}
               href="/unduhan"
             >
               <FolderIcon className="w-5 h-5 text-primary" />

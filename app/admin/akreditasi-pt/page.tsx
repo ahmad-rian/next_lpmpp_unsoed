@@ -74,10 +74,10 @@ export default function AkreditasiPTPage() {
   const [saving, setSaving] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
   const [uploadingDoc, setUploadingDoc] = useState(false);
-
+  
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { isOpen: isDocOpen, onOpen: onDocOpen, onClose: onDocClose } = useDisclosure();
-
+  
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -101,7 +101,7 @@ export default function AkreditasiPTPage() {
     try {
       const response = await fetch("/api/university-accreditations");
       const data = await response.json();
-
+      
       // Ambil accreditation pertama (karena seharusnya hanya ada 1)
       if (data && data.length > 0) {
         setAccreditation(data[0]);
@@ -318,10 +318,10 @@ export default function AkreditasiPTPage() {
       const body = editingDoc
         ? docFormData
         : {
-          accreditationId: accreditation.id,
-          ...docFormData,
-          order: accreditation.documents.length,
-        };
+            accreditationId: accreditation.id,
+            ...docFormData,
+            order: accreditation.documents.length,
+          };
 
       const response = await fetch(url, {
         method,

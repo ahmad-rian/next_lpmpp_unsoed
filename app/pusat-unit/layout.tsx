@@ -1,5 +1,5 @@
 export const metadata = {
-  title: 'Pusat & Unit - LPMPP',
+  title: 'Pusat & Unit',
 };
 
 export default function PusatUnitLayout({

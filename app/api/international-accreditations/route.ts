@@ -24,7 +24,7 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const session = await auth();
-
+    
     if (!session || session.user?.role !== "ADMIN") {
       return NextResponse.json(
         { error: "Unauthorized" },
@@ -33,13 +33,14 @@ export async function POST(request: NextRequest) {
     }
 
     const data = await request.json();
-
+    
     const accreditation = await prisma.internationalAccreditation.create({
       data: {
-        facultyName: data.facultyName,
-        programName: data.programName,
-        agency: data.agency,
+        faculty: data.faculty || data.facultyName,
+        studyProgram: data.studyProgram || data.programName,
+        accreditationBody: data.accreditationBody || data.agency,
         order: data.order || 0,
+        isActive: data.isActive !== undefined ? data.isActive : true,
       },
     });
 
@@ -57,7 +58,7 @@ export async function POST(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   try {
     const session = await auth();
-
+    
     if (!session || session.user?.role !== "ADMIN") {
       return NextResponse.json(
         { error: "Unauthorized" },
@@ -66,7 +67,7 @@ export async function PUT(request: NextRequest) {
     }
 
     const data = await request.json();
-
+    
     if (!data.id) {
       return NextResponse.json(
         { error: "ID is required" },
@@ -77,9 +78,9 @@ export async function PUT(request: NextRequest) {
     const accreditation = await prisma.internationalAccreditation.update({
       where: { id: data.id },
       data: {
-        facultyName: data.facultyName,
-        programName: data.programName,
-        agency: data.agency,
+        faculty: data.faculty || data.facultyName,
+        studyProgram: data.studyProgram || data.programName,
+        accreditationBody: data.accreditationBody || data.agency,
         order: data.order,
         isActive: data.isActive,
       },
@@ -99,7 +100,7 @@ export async function PUT(request: NextRequest) {
 export async function DELETE(request: NextRequest) {
   try {
     const session = await auth();
-
+    
     if (!session || session.user?.role !== "ADMIN") {
       return NextResponse.json(
         { error: "Unauthorized" },

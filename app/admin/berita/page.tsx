@@ -86,6 +86,7 @@ export default function BeritaPage() {
     galleryImages: [] as string[],
     author: "Admin LP3M",
     isPublished: false,
+    publishedAt: new Date().toISOString().slice(0, 16), // Add custom timestamp
   });
 
   const [editingNews, setEditingNews] = useState<News | null>(null);
@@ -107,14 +108,18 @@ export default function BeritaPage() {
   const fetchNews = async () => {
     try {
       setLoading(true);
-      const response = await fetch("/api/news");
+      // Gunakan parameter admin=true agar API mengembalikan semua field yang diperlukan admin (content, galleryImages, isPublished)
+      const response = await fetch("/api/news?admin=true&limit=1000");
       const data = await response.json();
-
+      
       if (!response.ok) {
         throw new Error(data.error || "Failed to fetch news");
       }
-
-      if (Array.isArray(data)) {
+      
+      // Handle paginated response format
+      if (data.news && Array.isArray(data.news)) {
+        setNews(data.news);
+      } else if (Array.isArray(data)) {
         setNews(data);
       } else {
         console.error("Invalid data format:", data);
@@ -140,6 +145,7 @@ export default function BeritaPage() {
       galleryImages: [],
       author: "Admin LP3M",
       isPublished: false,
+      publishedAt: new Date().toISOString().slice(0, 16),
     });
     onOpen();
   };
@@ -149,13 +155,14 @@ export default function BeritaPage() {
     const gallery = newsItem.galleryImages ? JSON.parse(newsItem.galleryImages) : [];
     setFormData({
       id: newsItem.id,
-      title: newsItem.title,
-      excerpt: newsItem.excerpt,
-      content: newsItem.content,
+      title: newsItem.title ?? "",
+      excerpt: newsItem.excerpt ?? "",
+      content: newsItem.content ?? "",
       coverImage: newsItem.coverImage || "",
       galleryImages: gallery,
-      author: newsItem.author,
+      author: newsItem.author || "Admin LP3M",
       isPublished: newsItem.isPublished,
+      publishedAt: new Date(newsItem.publishedAt).toISOString().slice(0, 16),
     });
     onOpen();
   };
@@ -257,8 +264,18 @@ export default function BeritaPage() {
     }));
   };
 
+  // Util: safe trimming to avoid calling .trim() on undefined/null
+  const safeTrim = (value: unknown) => {
+    return typeof value === "string" ? value.trim() : "";
+  };
+
   const handleSubmit = async () => {
-    if (!formData.title.trim() || !formData.excerpt.trim() || !formData.content.trim()) {
+    // Normalize fields first to avoid TypeError on .trim()
+    const title = safeTrim(formData.title);
+    const excerpt = safeTrim(formData.excerpt);
+    const content = safeTrim(formData.content);
+
+    if (!title || !excerpt || !content) {
       alert("Judul, excerpt, dan konten harus diisi");
       return;
     }
@@ -267,13 +284,24 @@ export default function BeritaPage() {
       setSaving(true);
 
       const method = editingNews ? "PUT" : "POST";
+      const payload = {
+        id: formData.id || undefined,
+        title,
+        excerpt,
+        content,
+        coverImage: safeTrim(formData.coverImage) || null,
+        galleryImages: JSON.stringify(Array.isArray(formData.galleryImages) ? formData.galleryImages.filter(Boolean) : []),
+        author: safeTrim(formData.author) || "Admin LP3M",
+        isPublished: !!formData.isPublished,
+        publishedAt: formData.publishedAt || new Date().toISOString().slice(0, 16),
+      };
+
+      console.log("Submitting berita:", payload);
+
       const response = await fetch("/api/news", {
         method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...formData,
-          galleryImages: JSON.stringify(formData.galleryImages),
-        }),
+        body: JSON.stringify(payload),
       });
 
       if (!response.ok) {
@@ -436,9 +464,9 @@ export default function BeritaPage() {
       )}
 
       {/* Modal */}
-      <Modal
-        isOpen={isOpen}
-        onClose={onClose}
+      <Modal 
+        isOpen={isOpen} 
+        onClose={onClose} 
         size="5xl"
         scrollBehavior="inside"
       >
@@ -473,10 +501,10 @@ export default function BeritaPage() {
                 <label className="text-sm font-medium mb-2 block">
                   Konten Berita <span className="text-danger">*</span>
                 </label>
-                <RichTextEditor
+              <RichTextEditor
                   value={formData.content}
                   onChange={(content) =>
-                    setFormData({ ...formData, content })
+                    setFormData({ ...formData, content: content ?? "" })
                   }
                   placeholder="Tulis konten berita lengkap di sini..."
                   height="400px"
@@ -559,6 +587,19 @@ export default function BeritaPage() {
                 }
                 isRequired
               />
+
+              <div>
+                <Input
+                  type="datetime-local"
+                  label="Tanggal & Waktu Publikasi"
+                  value={formData.publishedAt}
+                  onChange={(e: any) =>
+                    setFormData({ ...formData, publishedAt: e.target.value })
+                  }
+                  description="Atur tanggal publikasi berita (berguna untuk upload berita lama)"
+                  isRequired
+                />
+              </div>
 
               <Switch
                 isSelected={formData.isPublished}

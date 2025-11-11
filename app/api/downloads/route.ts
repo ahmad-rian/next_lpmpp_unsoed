@@ -7,14 +7,25 @@ export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams;
     const id = searchParams.get("id");
 
+    // Detail & increment count atomically
     if (id) {
-      // Fetch single download and increment download count
       const download = await prisma.download.update({
         where: { id },
         data: {
           downloadCount: {
             increment: 1,
           },
+        },
+        // Select only fields needed by client
+        select: {
+          id: true,
+          name: true,
+          description: true,
+          fileUrl: true,
+          fileType: true,
+          fileSize: true,
+          downloadCount: true,
+          createdAt: true,
         },
       });
 
@@ -28,8 +39,48 @@ export async function GET(request: NextRequest) {
       return NextResponse.json(download);
     }
 
-    // Fetch all downloads
+    // Optional paginated list for efficiency
+    const paginated = searchParams.get("paginated") === "true";
+    const page = parseInt(searchParams.get("page") || "1", 10);
+    const pageSize = parseInt(searchParams.get("pageSize") || "12", 10);
+    const q = searchParams.get("q")?.trim() || "";
+
+    const where = q
+      ? {
+          OR: [
+            { name: { contains: q, mode: "insensitive" } },
+            { description: { contains: q, mode: "insensitive" } },
+          ],
+        }
+      : undefined;
+
+    if (paginated) {
+      const [items, total] = await Promise.all([
+        prisma.download.findMany({
+          where,
+          orderBy: { createdAt: "desc" },
+          skip: (page - 1) * pageSize,
+          take: pageSize,
+          select: {
+            id: true,
+            name: true,
+            description: true,
+            fileUrl: true,
+            fileType: true,
+            fileSize: true,
+            downloadCount: true,
+            createdAt: true,
+          },
+        }),
+        prisma.download.count({ where }),
+      ]);
+
+      return NextResponse.json({ items, total, page, pageSize });
+    }
+
+    // Legacy behavior: return full array (compatibility)
     const downloads = await prisma.download.findMany({
+      where,
       orderBy: { createdAt: "desc" },
     });
 

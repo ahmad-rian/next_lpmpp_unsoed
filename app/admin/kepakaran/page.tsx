@@ -98,11 +98,11 @@ export default function KepakaranPage() {
       setLoading(true);
       const response = await fetch(`/api/expertise?type=${selectedType}`);
       const data = await response.json();
-
+      
       if (!response.ok) {
         throw new Error(data.error || "Failed to fetch expertise");
       }
-
+      
       if (Array.isArray(data)) {
         setExpertise(data);
       } else {
