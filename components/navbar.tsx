@@ -116,6 +116,7 @@ const FolderIcon = ({ className }: { className?: string }) => (
 export const Navbar = () => {
   const [configData, setConfigData] = useState<SiteConfigData | null>(null);
   const [openMenus, setOpenMenus] = useState<{ [key: string]: boolean }>({});
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const pathname = usePathname();
 
   const toggleMenu = (key: string) => {
@@ -155,8 +156,15 @@ export const Navbar = () => {
     return children.some((child) => isActive(child.href));
   };
 
+  // Auto-close mobile menu whenever route changes
+  useEffect(() => {
+    // close menu and collapse all submenus on navigation
+    setIsMenuOpen(false);
+    setOpenMenus({});
+  }, [pathname]);
+
   return (
-    <HeroUINavbar maxWidth="xl" position="sticky">
+    <HeroUINavbar maxWidth="xl" position="sticky" isMenuOpen={isMenuOpen} onMenuOpenChange={setIsMenuOpen}>
       <NavbarContent className="basis-1/4 lg:basis-1/4" justify="start">
         <NavbarBrand as="li" className="gap-2 max-w-fit">
           <NextLink className="flex justify-start items-center gap-2" href="/">
@@ -270,7 +278,7 @@ export const Navbar = () => {
 
       <NavbarContent className="sm:hidden basis-1 pl-4" justify="end">
         <ThemeSwitch />
-        <NavbarMenuToggle />
+        <NavbarMenuToggle aria-label={isMenuOpen ? "Close menu" : "Open menu"} />
       </NavbarContent>
 
       <NavbarMenu>
@@ -285,6 +293,7 @@ export const Navbar = () => {
                   : "text-foreground hover:bg-default-100 hover:text-primary"
               )}
               href="/"
+              onClick={() => setIsMenuOpen(false)}
             >
               <HomeIcon className={clsx(
                 "w-5 h-5",
@@ -333,6 +342,7 @@ export const Navbar = () => {
                           ? "bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 font-semibold"
                           : "text-default-600 hover:bg-default-100 hover:text-primary"
                       )}
+                      onClick={() => setIsMenuOpen(false)}
                     >
                       {MenuIcons.information}
                       <div>
@@ -348,6 +358,7 @@ export const Navbar = () => {
                           ? "bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 font-semibold"
                           : "text-default-600 hover:bg-default-100 hover:text-primary"
                       )}
+                      onClick={() => setIsMenuOpen(false)}
                     >
                       {MenuIcons.users}
                       <div>
@@ -363,6 +374,7 @@ export const Navbar = () => {
                           ? "bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 font-semibold"
                           : "text-default-600 hover:bg-default-100 hover:text-primary"
                       )}
+                      onClick={() => setIsMenuOpen(false)}
                     >
                       {MenuIcons.briefcase}
                       <div>
@@ -383,6 +395,7 @@ export const Navbar = () => {
                     ? "bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400"
                     : "text-foreground hover:bg-default-100 hover:text-primary"
                 )}
+                onClick={() => setIsMenuOpen(false)}
               >
                 <BuildingOfficeIcon className="w-5 h-5 text-primary" />
                 Unit Kerja
@@ -419,6 +432,7 @@ export const Navbar = () => {
                           ? "bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 font-semibold"
                           : "text-default-600 hover:bg-default-100 hover:text-primary"
                       )}
+                      onClick={() => setIsMenuOpen(false)}
                     >
                       {MenuIcons.information}
                       <div>
@@ -434,6 +448,7 @@ export const Navbar = () => {
                           ? "bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 font-semibold"
                           : "text-default-600 hover:bg-default-100 hover:text-primary"
                       )}
+                      onClick={() => setIsMenuOpen(false)}
                     >
                       {MenuIcons.clipboard}
                       <div>
@@ -449,6 +464,7 @@ export const Navbar = () => {
                           ? "bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 font-semibold"
                           : "text-default-600 hover:bg-default-100 hover:text-primary"
                       )}
+                      onClick={() => setIsMenuOpen(false)}
                     >
                       {MenuIcons.document}
                       <div>
@@ -464,6 +480,7 @@ export const Navbar = () => {
                           ? "bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 font-semibold"
                           : "text-default-600 hover:bg-default-100 hover:text-primary"
                       )}
+                      onClick={() => setIsMenuOpen(false)}
                     >
                       {MenuIcons.scale}
                       <div>
@@ -506,6 +523,7 @@ export const Navbar = () => {
                           ? "bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 font-semibold"
                           : "text-default-600 hover:bg-default-100 hover:text-primary"
                       )}
+                      onClick={() => setIsMenuOpen(false)}
                     >
                       {MenuIcons.certificate}
                       <div>
@@ -521,6 +539,7 @@ export const Navbar = () => {
                           ? "bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 font-semibold"
                           : "text-default-600 hover:bg-default-100 hover:text-primary"
                       )}
+                      onClick={() => setIsMenuOpen(false)}
                     >
                       {MenuIcons.award}
                       <div>
@@ -536,6 +555,7 @@ export const Navbar = () => {
                           ? "bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 font-semibold"
                           : "text-default-600 hover:bg-default-100 hover:text-primary"
                       )}
+                      onClick={() => setIsMenuOpen(false)}
                     >
                       {MenuIcons.globe}
                       <div>
@@ -631,6 +651,7 @@ export const Navbar = () => {
                   : "text-foreground hover:bg-default-100 hover:text-primary"
               )}
               href="/program-unggulan"
+              onClick={() => setIsMenuOpen(false)}
             >
               <StarIcon className="w-5 h-5 text-primary" />
               Program Unggulan
@@ -646,6 +667,7 @@ export const Navbar = () => {
                   : "text-foreground hover:bg-default-100 hover:text-primary"
               )}
               href="/berita"
+              onClick={() => setIsMenuOpen(false)}
             >
               <NewspaperIcon className="w-5 h-5 text-primary" />
               Berita
@@ -661,6 +683,7 @@ export const Navbar = () => {
                   : "text-foreground hover:bg-default-100 hover:text-primary"
               )}
               href="/unduhan"
+              onClick={() => setIsMenuOpen(false)}
             >
               <FolderIcon className="w-5 h-5 text-primary" />
               Unduhan

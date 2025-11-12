@@ -6,9 +6,10 @@ import NextTopLoader from "nextjs-toploader";
 import { Providers } from "./providers";
 
 import { siteConfig } from "@/config/site";
-import { fontSans } from "@/config/fonts";
+import { fontSans, fontPlayfair } from "@/config/fonts";
 import { ConditionalLayout } from "@/components/conditional-layout";
 import { SiteMetadata } from "@/components/site-metadata";
+import { ScrollToTop } from "@/components/scroll-to-top";
 
 export const metadata: Metadata = {
   title: {
@@ -40,6 +41,7 @@ export default function RootLayout({
         className={clsx(
           "min-h-screen text-foreground bg-background font-sans antialiased",
           fontSans.variable,
+          fontPlayfair.variable,
         )}
       >
         <NextTopLoader
@@ -58,6 +60,7 @@ export default function RootLayout({
         <SiteMetadata />
         <Providers themeProps={{ attribute: "class", defaultTheme: "dark" }}>
           <ConditionalLayout>{children}</ConditionalLayout>
+          <ScrollToTop />
         </Providers>
       </body>
     </html>

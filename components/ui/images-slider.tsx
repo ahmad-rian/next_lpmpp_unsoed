@@ -6,15 +6,15 @@ import React, { useEffect, useState } from "react";
 export const ImagesSlider = ({
   images,
   children,
-  overlay = true,
+  overlay = false, // Changed default to false
   overlayClassName,
   className,
   autoplay = true,
   direction = "up",
 }: {
   images: string[];
-  children: React.ReactNode;
-  overlay?: React.ReactNode;
+  children?: React.ReactNode; // Made optional
+  overlay?: boolean; // Changed type to boolean
   overlayClassName?: string;
   className?: string;
   autoplay?: boolean;
@@ -128,6 +128,7 @@ export const ImagesSlider = ({
       }}
     >
       {areImagesLoaded && children}
+      {/* Overlay removed by default - only shows if overlay prop is true */}
       {areImagesLoaded && overlay && (
         <div
           className={cn("absolute inset-0 bg-black/60 z-40", overlayClassName)}

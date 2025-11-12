@@ -21,7 +21,7 @@ export function ConditionalLayout({ children }: { children: React.ReactNode }) {
     <PageTransition>
       <div className="relative flex flex-col min-h-screen">
         <Navbar />
-        <main className="container mx-auto max-w-7xl pt-16 px-6 flex-grow">
+        <main className="container mx-auto max-w-7xl pt-6 md:pt-8 lg:pt-10 px-6 flex-grow">
           {children}
         </main>
         <Footer />
