@@ -13,7 +13,7 @@ const LayoutDashboardIcon = ({ className }: { className?: string }) => (
 
 export default async function AdminDashboard() {
   const session = await auth();
-  
+
   // Redirect if not authenticated or not an admin
   if (!session?.user || session.user.role !== "ADMIN") {
     redirect("/auth/signin");
@@ -109,7 +109,7 @@ export default async function AdminDashboard() {
       month: monthName,
       Berita: newsCount,
       Program: programCount,
-      Kepakaran: expertiseCount,
+      Supervisor: expertiseCount,
       Unduhan: downloadCount,
       Tautan: linkCount,
       total: newsCount + programCount + expertiseCount + downloadCount + linkCount,
@@ -136,7 +136,7 @@ export default async function AdminDashboard() {
       color: "bg-purple-500",
     },
     {
-      title: "Kepakaran",
+      title: "Supervisor",
       value: totalExpertise,
       color: "bg-orange-500",
     },

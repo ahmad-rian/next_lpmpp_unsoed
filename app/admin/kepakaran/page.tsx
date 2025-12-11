@@ -56,6 +56,7 @@ const typeLabels = {
   FASILITATOR_PEKERTI: "Fasilitator Pekerti/AA",
   AUDITOR_SPMI: "Auditor SPMI",
   ASESOR_BKD: "Asesor BKD",
+  ASESOR_SERDOS: "Asesor Serdos",
 };
 
 export default function KepakaranPage() {
@@ -98,11 +99,11 @@ export default function KepakaranPage() {
       setLoading(true);
       const response = await fetch(`/api/expertise?type=${selectedType}`);
       const data = await response.json();
-      
+
       if (!response.ok) {
         throw new Error(data.error || "Failed to fetch expertise");
       }
-      
+
       if (Array.isArray(data)) {
         setExpertise(data);
       } else {
@@ -194,7 +195,7 @@ export default function KepakaranPage() {
 
   return (
     <AdminPageLayout
-      title="Kepakaran"
+      title="Supervisor"
       description="Kelola data Fasilitator, Auditor, dan Asesor"
       icon={<AcademicCapIcon />}
     >
@@ -221,13 +222,14 @@ export default function KepakaranPage() {
         <Tab key="FASILITATOR_PEKERTI" title="Fasilitator Pekerti/AA" />
         <Tab key="AUDITOR_SPMI" title="Auditor SPMI" />
         <Tab key="ASESOR_BKD" title="Asesor BKD" />
+        <Tab key="ASESOR_SERDOS" title="Asesor Serdos" />
       </Tabs>
 
       {loading ? (
         <div className="text-center py-8">Loading...</div>
       ) : (
         <>
-          <Table aria-label="Tabel Kepakaran">
+          <Table aria-label="Tabel Supervisor">
             <TableHeader>
               <TableColumn>NO</TableColumn>
               <TableColumn>NAMA</TableColumn>

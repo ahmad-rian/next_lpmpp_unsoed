@@ -10,7 +10,7 @@ export const siteConfig = {
     },
     {
       label: "Profil LPMPP",
-      href: "#",
+      href: "/tentang-kami",
       children: [
         {
           label: "Tentang Kami",
@@ -38,7 +38,7 @@ export const siteConfig = {
     },
     {
       label: "SPMI",
-      href: "#",
+      href: "/spmi/tentang",
       children: [
         {
           label: "Tentang SPMI",
@@ -68,7 +68,7 @@ export const siteConfig = {
     },
     {
       label: "Akreditasi",
-      href: "#",
+      href: "/akreditasi/perguruan-tinggi",
       children: [
         {
           label: "Akreditasi PT",
@@ -91,8 +91,8 @@ export const siteConfig = {
       ],
     },
     {
-      label: "Kepakaran",
-      href: "#",
+      label: "Supervisor",
+      href: "/kepakaran/fasilitator-pekerti",
       children: [
         {
           label: "Fasilitator Pekerti / AA",
@@ -111,6 +111,12 @@ export const siteConfig = {
           href: "/kepakaran/asesor-bkd",
           description: "Daftar Asesor Beban Kerja Dosen",
           icon: "usercheck",
+        },
+        {
+          label: "Asesor Serdos",
+          href: "/kepakaran/asesor-serdos",
+          description: "Daftar Asesor Sertifikasi Dosen",
+          icon: "certificate",
         },
       ],
     },

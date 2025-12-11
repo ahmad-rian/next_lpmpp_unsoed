@@ -44,13 +44,13 @@ export default function TataUsahaPage() {
   // Group staff by position
   const groupedStaff = staff.reduce((acc, person) => {
     const positionName = {
-      'SUB_COORDINATOR': 'Sub Koordinator',
-      'GENERAL_STAFF': 'Staff Umum', 
+      'SUB_COORDINATOR': 'Kepala Sub Bagian Umum',
+      'GENERAL_STAFF': 'Staff Umum',
       'PROGRAM_DATA_INFO_STAFF': 'Staff Program, Data & Informasi',
       'DRIVER': 'Pengemudi',
       'OFFICE_ASSISTANT': 'Pramu Bakti'
     }[person.position] || 'Staff Umum';
-    
+
     if (!acc[positionName]) {
       acc[positionName] = [];
     }
@@ -65,7 +65,7 @@ export default function TataUsahaPage() {
           <Skeleton className="h-12 w-96 mx-auto rounded-lg" />
           <Skeleton className="h-6 w-64 mx-auto rounded-lg" />
         </div>
-        
+
         <div className="space-y-8">
           {Array.from({ length: 3 }).map((_, index) => (
             <div key={index} className="space-y-4">
@@ -90,7 +90,7 @@ export default function TataUsahaPage() {
           Tata Usaha
         </h1>
         <p className="text-base md:text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto px-4">
-          Tim Tata Usaha Lembaga Pengembangan Pembelajaran dan Penjaminan Mutu (LPMPP) 
+          Tim Tata Usaha Lembaga Pengembangan Pembelajaran dan Penjaminan Mutu (LPMPP)
           Universitas Jenderal Soedirman
         </p>
         <Divider className="max-w-24 mx-auto bg-red-500" />
@@ -112,7 +112,7 @@ export default function TataUsahaPage() {
               {/* Staff Cards */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {staffMembers.map((person) => (
-                  <Card 
+                  <Card
                     key={person.id}
                     className="shadow-lg hover:shadow-2xl transition-all duration-300 border-t-4 border-red-500 group"
                   >
@@ -137,7 +137,7 @@ export default function TataUsahaPage() {
                           </div>
                         )}
                       </div>
-                      
+
                       <div className="text-center">
                         <h3 className="text-sm md:text-lg font-bold text-gray-800 dark:text-gray-200 mb-1">
                           {person.name}
@@ -147,9 +147,9 @@ export default function TataUsahaPage() {
                             {person.title}
                           </p>
                         )}
-                        <Chip 
-                          color="danger" 
-                          variant="flat" 
+                        <Chip
+                          color="danger"
+                          variant="flat"
                           size="sm"
                           className="text-xs"
                         >
@@ -157,19 +157,19 @@ export default function TataUsahaPage() {
                         </Chip>
                       </div>
                     </CardHeader>
-                    
+
                     <CardBody className="pt-2">
                       <div className="text-center">
                         <p className="text-xs md:text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
-                          {person.position === 'SUB_COORDINATOR' 
+                          {person.position === 'SUB_COORDINATOR'
                             ? "Membantu koordinasi kegiatan dan program kerja lembaga"
                             : person.position === 'PROGRAM_DATA_INFO_STAFF'
-                            ? "Mengelola program, data, dan sistem informasi lembaga"
-                            : person.position === 'DRIVER'
-                            ? "Menyediakan layanan transportasi untuk kegiatan lembaga"
-                            : person.position === 'OFFICE_ASSISTANT'
-                            ? "Memberikan dukungan kebersihan dan pemeliharaan kantor"
-                            : "Memberikan dukungan administratif umum"
+                              ? "Mengelola program, data, dan sistem informasi lembaga"
+                              : person.position === 'DRIVER'
+                                ? "Menyediakan layanan transportasi untuk kegiatan lembaga"
+                                : person.position === 'OFFICE_ASSISTANT'
+                                  ? "Memberikan dukungan kebersihan dan pemeliharaan kantor"
+                                  : "Memberikan dukungan administratif umum"
                           }
                         </p>
                       </div>

@@ -18,6 +18,7 @@ import { Chip } from "@heroui/chip";
 import { Pagination } from "@heroui/pagination";
 import { AdminPageLayout } from "@/components/admin-page-layout";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell } from "recharts";
+import { calculateAccreditationStatus, formatDateID } from "@/lib/accreditation-utils";
 
 // Heroicons
 const AcademicCapIcon = () => (
@@ -57,6 +58,9 @@ interface StudyProgramAccreditation {
   skNumber: string | null;
   skYear: number | null;
   rank: string | null;
+  validFrom: string | null;
+  validUntil: string | null;
+  certificateUrl: string | null;
   order: number;
   isActive: boolean;
 }
@@ -106,10 +110,12 @@ export default function AkreditasiProdiPage() {
   const [chartData, setChartData] = useState<ChartData[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [editingItem, setEditingItem] = useState<StudyProgramAccreditation | null>(null);
   const [lastUpdate, setLastUpdate] = useState<string>("");
-  
+  const [certificateFile, setCertificateFile] = useState<File | null>(null);
+
   // Pagination & Filter states
   const [page, setPage] = useState(1);
   const [filterLevel, setFilterLevel] = useState<string>("all");
@@ -121,6 +127,9 @@ export default function AkreditasiProdiPage() {
     skNumber: "",
     skYear: "",
     rank: "",
+    validFrom: "",
+    validUntil: "",
+    certificateUrl: "",
     order: 0,
   });
 
@@ -159,10 +168,10 @@ export default function AkreditasiProdiPage() {
   };
 
   // Filter and pagination logic
-  const filteredAccreditations = filterLevel === "all" 
-    ? accreditations 
+  const filteredAccreditations = filterLevel === "all"
+    ? accreditations
     : accreditations.filter(acc => acc.level === filterLevel);
-  
+
   const totalPages = Math.ceil(filteredAccreditations.length / rowsPerPage);
   const paginatedAccreditations = filteredAccreditations.slice(
     (page - 1) * rowsPerPage,
@@ -177,7 +186,10 @@ export default function AkreditasiProdiPage() {
         level: item.level,
         skNumber: item.skNumber || "",
         skYear: item.skYear?.toString() || "",
-        rank: item.rank,
+        rank: item.rank || "",
+        validFrom: item.validFrom ? new Date(item.validFrom).toISOString().split('T')[0] : "",
+        validUntil: item.validUntil ? new Date(item.validUntil).toISOString().split('T')[0] : "",
+        certificateUrl: item.certificateUrl || "",
         order: item.order,
       });
     } else {
@@ -188,6 +200,9 @@ export default function AkreditasiProdiPage() {
         skNumber: "",
         skYear: "",
         rank: "",
+        validFrom: "",
+        validUntil: "",
+        certificateUrl: "",
         order: accreditations.length + 1,
       });
     }
@@ -196,12 +211,16 @@ export default function AkreditasiProdiPage() {
 
   const handleCloseModal = () => {
     setEditingItem(null);
+    setCertificateFile(null);
     setFormData({
       studyProgram: "",
       level: "",
       skNumber: "",
       skYear: "",
       rank: "",
+      validFrom: "",
+      validUntil: "",
+      certificateUrl: "",
       order: 0,
     });
     onClose();
@@ -215,26 +234,54 @@ export default function AkreditasiProdiPage() {
 
     setSaving(true);
     try {
+      let certificateUrl = formData.certificateUrl;
+
+      // Upload file if selected
+      if (certificateFile) {
+        setUploading(true);
+        const uploadFormData = new FormData();
+        uploadFormData.append("file", certificateFile);
+
+        const uploadResponse = await fetch("/api/upload-document", {
+          method: "POST",
+          body: uploadFormData,
+        });
+
+        if (!uploadResponse.ok) {
+          throw new Error("Gagal mengupload sertifikat");
+        }
+
+        const uploadData = await uploadResponse.json();
+        certificateUrl = uploadData.url;
+        setUploading(false);
+      }
+
       const url = "/api/study-program-accreditations";
       const method = editingItem ? "PUT" : "POST";
       const body = editingItem
         ? {
-            id: editingItem.id,
-            studyProgram: formData.studyProgram,
-            level: formData.level,
-            skNumber: formData.skNumber || null,
-            skYear: formData.skYear ? parseInt(formData.skYear) : null,
-            rank: formData.rank,
-            order: formData.order,
-          }
+          id: editingItem.id,
+          studyProgram: formData.studyProgram,
+          level: formData.level,
+          skNumber: formData.skNumber || null,
+          skYear: formData.skYear ? parseInt(formData.skYear) : null,
+          rank: formData.rank,
+          validFrom: formData.validFrom ? new Date(formData.validFrom).toISOString() : null,
+          validUntil: formData.validUntil ? new Date(formData.validUntil).toISOString() : null,
+          certificateUrl: certificateUrl || null,
+          order: formData.order,
+        }
         : {
-            studyProgram: formData.studyProgram,
-            level: formData.level,
-            skNumber: formData.skNumber || null,
-            skYear: formData.skYear ? parseInt(formData.skYear) : null,
-            rank: formData.rank,
-            order: formData.order,
-          };
+          studyProgram: formData.studyProgram,
+          level: formData.level,
+          skNumber: formData.skNumber || null,
+          skYear: formData.skYear ? parseInt(formData.skYear) : null,
+          rank: formData.rank,
+          validFrom: formData.validFrom ? new Date(formData.validFrom).toISOString() : null,
+          validUntil: formData.validUntil ? new Date(formData.validUntil).toISOString() : null,
+          certificateUrl: certificateUrl || null,
+          order: formData.order,
+        };
 
       const response = await fetch(url, {
         method,
@@ -257,6 +304,7 @@ export default function AkreditasiProdiPage() {
       alert(error.message || "Gagal menyimpan data");
     } finally {
       setSaving(false);
+      setUploading(false);
     }
   };
 
@@ -366,222 +414,333 @@ export default function AkreditasiProdiPage() {
 
         {/* Chart Card */}
         <Card>
-        <CardBody>
-          <div className="space-y-4">
-            <div className="flex justify-between items-center">
-              <h2 className="text-lg font-semibold">Statistik Peringkat Akreditasi</h2>
-              {lastUpdate && (
-                <p className="text-sm text-default-500">Update: {lastUpdate}</p>
+          <CardBody>
+            <div className="space-y-4">
+              <div className="flex justify-between items-center">
+                <h2 className="text-lg font-semibold">Statistik Peringkat Akreditasi</h2>
+                {lastUpdate && (
+                  <p className="text-sm text-default-500">Update: {lastUpdate}</p>
+                )}
+              </div>
+
+              {/* Stats Summary */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                <div className="p-3 bg-default-100 rounded-lg">
+                  <p className="text-xs text-default-600">Total Program</p>
+                  <p className="text-2xl font-bold text-primary">{accreditations.length}</p>
+                </div>
+                <div className="p-3 bg-success-50 rounded-lg">
+                  <p className="text-xs text-success-700">Unggul & A</p>
+                  <p className="text-2xl font-bold text-success-600">
+                    {accreditations.filter(a => a.rank === "UNGGUL" || a.rank === "A").length}
+                  </p>
+                </div>
+                <div className="p-3 bg-primary-50 rounded-lg">
+                  <p className="text-xs text-primary-700">Baik Sekali & B</p>
+                  <p className="text-2xl font-bold text-primary-600">
+                    {accreditations.filter(a => a.rank === "BAIK_SEKALI" || a.rank === "B").length}
+                  </p>
+                </div>
+                <div className="p-3 bg-warning-50 rounded-lg">
+                  <p className="text-xs text-warning-700">Baik & C</p>
+                  <p className="text-2xl font-bold text-warning-600">
+                    {accreditations.filter(a => a.rank === "BAIK" || a.rank === "C").length}
+                  </p>
+                </div>
+              </div>
+
+              {chartData.length > 0 ? (
+                <ResponsiveContainer width="100%" height={300}>
+                  <BarChart data={chartData} layout="vertical" margin={{ top: 5, right: 30, left: 120, bottom: 5 }}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis type="number" />
+                    <YAxis type="category" dataKey="name" width={110} fontSize={12} />
+                    <Tooltip />
+                    <Legend />
+                    <Bar dataKey="value" name="Jumlah Program Studi">
+                      {chartData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={getRankColor(entry.name)} />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="flex justify-center items-center h-[300px] text-default-400">
+                  Belum ada data untuk ditampilkan
+                </div>
               )}
             </div>
-            
-            {/* Stats Summary */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-              <div className="p-3 bg-default-100 rounded-lg">
-                <p className="text-xs text-default-600">Total Program</p>
-                <p className="text-2xl font-bold text-primary">{accreditations.length}</p>
-              </div>
-              <div className="p-3 bg-success-50 rounded-lg">
-                <p className="text-xs text-success-700">Unggul & A</p>
-                <p className="text-2xl font-bold text-success-600">
-                  {accreditations.filter(a => a.rank === "UNGGUL" || a.rank === "A").length}
-                </p>
-              </div>
-              <div className="p-3 bg-primary-50 rounded-lg">
-                <p className="text-xs text-primary-700">Baik Sekali & B</p>
-                <p className="text-2xl font-bold text-primary-600">
-                  {accreditations.filter(a => a.rank === "BAIK_SEKALI" || a.rank === "B").length}
-                </p>
-              </div>
-              <div className="p-3 bg-warning-50 rounded-lg">
-                <p className="text-xs text-warning-700">Baik & C</p>
-                <p className="text-2xl font-bold text-warning-600">
-                  {accreditations.filter(a => a.rank === "BAIK" || a.rank === "C").length}
-                </p>
-              </div>
+          </CardBody>
+        </Card>
+
+        {/* Table */}
+        <Table aria-label="Akreditasi Program Studi Table">
+          <TableHeader>
+            <TableColumn>NO</TableColumn>
+            <TableColumn>PROGRAM STUDI</TableColumn>
+            <TableColumn>STRATA</TableColumn>
+            <TableColumn>PERINGKAT</TableColumn>
+            <TableColumn>MASA BERLAKU</TableColumn>
+            <TableColumn>STATUS</TableColumn>
+            <TableColumn>SERTIFIKAT</TableColumn>
+            <TableColumn>AKSI</TableColumn>
+          </TableHeader>
+          <TableBody emptyContent="Belum ada data akreditasi">
+            {paginatedAccreditations.map((item, index) => {
+              const status = calculateAccreditationStatus(item.validUntil ? new Date(item.validUntil) : null);
+
+              return (
+                <TableRow key={item.id}>
+                  <TableCell>{(page - 1) * rowsPerPage + index + 1}</TableCell>
+                  <TableCell>
+                    <div>
+                      <div className="font-medium">{item.studyProgram}</div>
+                      {item.skNumber && (
+                        <div className="text-xs text-default-500">
+                          SK: {item.skNumber} ({item.skYear || '-'})
+                        </div>
+                      )}
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <Chip size="sm" variant="flat" color="primary">
+                      {LEVEL_OPTIONS.find(l => l.key === item.level)?.label || item.level}
+                    </Chip>
+                  </TableCell>
+                  <TableCell>
+                    <Chip color={getRankChipColor(item.rank)} variant="flat" size="sm">
+                      {item.rank}
+                    </Chip>
+                  </TableCell>
+                  <TableCell>
+                    {item.validFrom && item.validUntil ? (
+                      <div className="text-xs">
+                        <div>{formatDateID(item.validFrom)}</div>
+                        <div className="text-default-500">s/d {formatDateID(item.validUntil)}</div>
+                      </div>
+                    ) : (
+                      <span className="text-default-400">-</span>
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    <Chip
+                      color={status.color}
+                      variant="flat"
+                      size="sm"
+                      className="font-semibold"
+                    >
+                      {status.message}
+                    </Chip>
+                  </TableCell>
+                  <TableCell>
+                    {item.certificateUrl ? (
+                      <Button
+                        as="a"
+                        href={item.certificateUrl}
+                        target="_blank"
+                        size="sm"
+                        variant="flat"
+                        color="primary"
+                        startContent={<DownloadIcon className="w-4 h-4" />}
+                      >
+                        Lihat
+                      </Button>
+                    ) : (
+                      <span className="text-default-400 text-sm">-</span>
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex gap-2">
+                      <Button
+                        size="sm"
+                        variant="flat"
+                        color="warning"
+                        isIconOnly
+                        onPress={() => handleOpenModal(item)}
+                      >
+                        <PencilIcon className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="flat"
+                        color="danger"
+                        isIconOnly
+                        onPress={() => handleDelete(item.id)}
+                      >
+                        <TrashIcon className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="flex justify-between items-center px-2 py-2">
+            <div className="text-sm text-default-500">
+              Menampilkan {(page - 1) * rowsPerPage + 1} - {Math.min(page * rowsPerPage, filteredAccreditations.length)} dari {filteredAccreditations.length} data
             </div>
-
-            {chartData.length > 0 ? (
-              <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={chartData} layout="vertical" margin={{ top: 5, right: 30, left: 120, bottom: 5 }}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis type="number" />
-                  <YAxis type="category" dataKey="name" width={110} fontSize={12} />
-                  <Tooltip />
-                  <Legend />
-                  <Bar dataKey="value" name="Jumlah Program Studi">
-                    {chartData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={getRankColor(entry.name)} />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            ) : (
-              <div className="flex justify-center items-center h-[300px] text-default-400">
-                Belum ada data untuk ditampilkan
-              </div>
-            )}
+            <Pagination
+              total={totalPages}
+              initialPage={1}
+              page={page}
+              onChange={setPage}
+              showControls
+              color="primary"
+            />
           </div>
-        </CardBody>
-      </Card>
+        )}
 
-      {/* Table */}
-      <Table aria-label="Akreditasi Program Studi Table">
-        <TableHeader>
-          <TableColumn>NO</TableColumn>
-          <TableColumn>PROGRAM STUDI</TableColumn>
-          <TableColumn>STRATA</TableColumn>
-          <TableColumn>NO. SK</TableColumn>
-          <TableColumn>TAHUN SK</TableColumn>
-          <TableColumn>PERINGKAT</TableColumn>
-          <TableColumn>AKSI</TableColumn>
-        </TableHeader>
-        <TableBody emptyContent="Belum ada data akreditasi">
-          {paginatedAccreditations.map((item, index) => (
-            <TableRow key={item.id}>
-              <TableCell>{(page - 1) * rowsPerPage + index + 1}</TableCell>
-              <TableCell>{item.studyProgram}</TableCell>
-              <TableCell>
-                <Chip size="sm" variant="flat" color="primary">
-                  {LEVEL_OPTIONS.find(l => l.key === item.level)?.label || item.level}
-                </Chip>
-              </TableCell>
-              <TableCell>{item.skNumber || "-"}</TableCell>
-              <TableCell>{item.skYear || "-"}</TableCell>
-              <TableCell>
-                <Chip color={getRankChipColor(item.rank)} variant="flat" size="sm">
-                  {item.rank}
-                </Chip>
-              </TableCell>
-              <TableCell>
-                <div className="flex gap-2">
-                  <Button
-                    size="sm"
-                    variant="flat"
-                    color="warning"
-                    isIconOnly
-                    onPress={() => handleOpenModal(item)}
-                  >
-                    <PencilIcon className="w-4 h-4" />
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="flat"
-                    color="danger"
-                    isIconOnly
-                    onPress={() => handleDelete(item.id)}
-                  >
-                    <TrashIcon className="w-4 h-4" />
-                  </Button>
+        {/* Modal */}
+        <Modal isOpen={isOpen} onClose={handleCloseModal} size="2xl">
+          <ModalContent>
+            <ModalHeader>
+              {editingItem ? "Edit Akreditasi" : "Tambah Akreditasi"}
+            </ModalHeader>
+            <ModalBody>
+              <div className="space-y-4">
+                <Input
+                  label="Program Studi"
+                  placeholder="Masukkan nama program studi"
+                  value={formData.studyProgram}
+                  onChange={(e: any) =>
+                    setFormData({ ...formData, studyProgram: e.target.value })
+                  }
+                  isRequired
+                />
+                <Select
+                  label="Strata"
+                  placeholder="Pilih strata"
+                  selectedKeys={formData.level ? [formData.level] : []}
+                  onChange={(e: any) =>
+                    setFormData({ ...formData, level: e.target.value })
+                  }
+                  isRequired
+                >
+                  {LEVEL_OPTIONS.map((option) => (
+                    <SelectItem key={option.key}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </Select>
+                <Input
+                  label="No. SK"
+                  placeholder="Masukkan nomor SK (opsional)"
+                  value={formData.skNumber}
+                  onChange={(e: any) =>
+                    setFormData({ ...formData, skNumber: e.target.value })
+                  }
+                />
+                <Input
+                  type="number"
+                  label="Tahun SK"
+                  placeholder="Masukkan tahun SK (opsional)"
+                  value={formData.skYear}
+                  onChange={(e: any) =>
+                    setFormData({ ...formData, skYear: e.target.value })
+                  }
+                />
+                <Select
+                  label="Peringkat"
+                  placeholder="Pilih peringkat akreditasi"
+                  selectedKeys={formData.rank ? [formData.rank] : []}
+                  onChange={(e: any) =>
+                    setFormData({ ...formData, rank: e.target.value })
+                  }
+                  isRequired
+                >
+                  {RANK_OPTIONS.map((option) => (
+                    <SelectItem key={option.key}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </Select>
+
+                {/* New Fields */}
+                <div className="grid grid-cols-2 gap-4">
+                  <Input
+                    type="date"
+                    label="Mulai Berlaku"
+                    placeholder="Pilih tanggal mulai"
+                    value={formData.validFrom}
+                    onChange={(e: any) =>
+                      setFormData({ ...formData, validFrom: e.target.value })
+                    }
+                    description="Tanggal mulai berlaku akreditasi"
+                  />
+                  <Input
+                    type="date"
+                    label="Selesai Berlaku"
+                    placeholder="Pilih tanggal selesai"
+                    value={formData.validUntil}
+                    onChange={(e: any) =>
+                      setFormData({ ...formData, validUntil: e.target.value })
+                    }
+                    description="Tanggal selesai berlaku akreditasi"
+                  />
                 </div>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
 
-      {/* Pagination */}
-      {totalPages > 1 && (
-        <div className="flex justify-between items-center px-2 py-2">
-          <div className="text-sm text-default-500">
-            Menampilkan {(page - 1) * rowsPerPage + 1} - {Math.min(page * rowsPerPage, filteredAccreditations.length)} dari {filteredAccreditations.length} data
-          </div>
-          <Pagination
-            total={totalPages}
-            initialPage={1}
-            page={page}
-            onChange={setPage}
-            showControls
-            color="primary"
-          />
-        </div>
-      )}
+                {/* File Upload for Certificate */}
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">
+                    Upload Sertifikat Akreditasi
+                  </label>
+                  <input
+                    type="file"
+                    accept=".pdf,.doc,.docx"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        // Validate file size (max 10MB)
+                        if (file.size > 10 * 1024 * 1024) {
+                          alert("Ukuran file maksimal 10MB");
+                          e.target.value = "";
+                          return;
+                        }
+                        setCertificateFile(file);
+                      }
+                    }}
+                    className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100 cursor-pointer border border-default-200 rounded-lg p-2"
+                  />
+                  <p className="text-xs text-default-500">
+                    Format: PDF, DOC, DOCX (Maks. 10MB)
+                    {certificateFile && (
+                      <span className="text-primary-600 font-medium ml-2">
+                        ✓ {certificateFile.name}
+                      </span>
+                    )}
+                    {formData.certificateUrl && !certificateFile && (
+                      <span className="text-success-600 font-medium ml-2">
+                        ✓ File sudah ada
+                      </span>
+                    )}
+                  </p>
+                </div>
 
-      {/* Modal */}
-      <Modal isOpen={isOpen} onClose={handleCloseModal} size="2xl">
-        <ModalContent>
-          <ModalHeader>
-            {editingItem ? "Edit Akreditasi" : "Tambah Akreditasi"}
-          </ModalHeader>
-          <ModalBody>
-            <div className="space-y-4">
-              <Input
-                label="Program Studi"
-                placeholder="Masukkan nama program studi"
-                value={formData.studyProgram}
-                onChange={(e: any) =>
-                  setFormData({ ...formData, studyProgram: e.target.value })
-                }
-                isRequired
-              />
-              <Select
-                label="Strata"
-                placeholder="Pilih strata"
-                selectedKeys={formData.level ? [formData.level] : []}
-                onChange={(e: any) =>
-                  setFormData({ ...formData, level: e.target.value })
-                }
-                isRequired
-              >
-                {LEVEL_OPTIONS.map((option) => (
-                  <SelectItem key={option.key}>
-                    {option.label}
-                  </SelectItem>
-                ))}
-              </Select>
-              <Input
-                label="No. SK"
-                placeholder="Masukkan nomor SK (opsional)"
-                value={formData.skNumber}
-                onChange={(e: any) =>
-                  setFormData({ ...formData, skNumber: e.target.value })
-                }
-              />
-              <Input
-                type="number"
-                label="Tahun SK"
-                placeholder="Masukkan tahun SK (opsional)"
-                value={formData.skYear}
-                onChange={(e: any) =>
-                  setFormData({ ...formData, skYear: e.target.value })
-                }
-              />
-              <Select
-                label="Peringkat"
-                placeholder="Pilih peringkat akreditasi"
-                selectedKeys={formData.rank ? [formData.rank] : []}
-                onChange={(e: any) =>
-                  setFormData({ ...formData, rank: e.target.value })
-                }
-                isRequired
-              >
-                {RANK_OPTIONS.map((option) => (
-                  <SelectItem key={option.key}>
-                    {option.label}
-                  </SelectItem>
-                ))}
-              </Select>
-              <Input
-                type="number"
-                label="Urutan"
-                placeholder="Masukkan urutan tampilan"
-                value={formData.order.toString()}
-                onChange={(e: any) =>
-                  setFormData({ ...formData, order: parseInt(e.target.value) || 0 })
-                }
-              />
-            </div>
-          </ModalBody>
-          <ModalFooter>
-            <Button variant="flat" onPress={handleCloseModal}>
-              Batal
-            </Button>
-            <Button color="primary" onPress={handleSubmit} isLoading={saving}>
-              {editingItem ? "Simpan Perubahan" : "Tambah Data"}
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+                <Input
+                  type="number"
+                  label="Urutan"
+                  placeholder="Masukkan urutan tampilan"
+                  value={formData.order.toString()}
+                  onChange={(e: any) =>
+                    setFormData({ ...formData, order: parseInt(e.target.value) || 0 })
+                  }
+                />
+              </div>
+            </ModalBody>
+            <ModalFooter>
+              <Button variant="flat" onPress={handleCloseModal} isDisabled={saving || uploading}>
+                Batal
+              </Button>
+              <Button color="primary" onPress={handleSubmit} isLoading={saving || uploading}>
+                {uploading ? "Mengupload..." : saving ? "Menyimpan..." : editingItem ? "Simpan Perubahan" : "Tambah Data"}
+              </Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
       </div>
     </AdminPageLayout>
   );

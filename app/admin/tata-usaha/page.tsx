@@ -22,7 +22,7 @@ interface Staff {
 }
 
 const positionLabels: Record<string, string> = {
-  SUB_COORDINATOR: "Sub Koordinator",
+  SUB_COORDINATOR: "Kepala Sub Bagian Umum",
   GENERAL_STAFF: "Staff Umum",
   PROGRAM_DATA_INFO_STAFF: "Staff Program, Data & Informasi",
   DRIVER: "Pengemudi",
@@ -47,13 +47,13 @@ export default function TataUsahaPage() {
   const [staff, setStaff] = useState<Staff[]>([]);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
-  
+
   // Modal states
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedStaff, setSelectedStaff] = useState<Staff | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
+
   // Form state
   const [formData, setFormData] = useState({
     position: "",
@@ -110,7 +110,7 @@ export default function TataUsahaPage() {
     try {
       const url = selectedStaff ? "/api/staff" : "/api/staff";
       const method = selectedStaff ? "PUT" : "POST";
-      const body = selectedStaff 
+      const body = selectedStaff
         ? { id: selectedStaff.id, ...formData }
         : formData;
 
@@ -122,9 +122,9 @@ export default function TataUsahaPage() {
 
       if (!response.ok) throw new Error("Failed to save");
 
-      setMessage({ 
-        type: 'success', 
-        text: selectedStaff ? 'Staff berhasil diupdate!' : 'Staff berhasil ditambahkan!' 
+      setMessage({
+        type: 'success',
+        text: selectedStaff ? 'Staff berhasil diupdate!' : 'Staff berhasil ditambahkan!'
       });
       setIsModalOpen(false);
       fetchStaff();
@@ -138,7 +138,7 @@ export default function TataUsahaPage() {
 
   const confirmDelete = async () => {
     if (!selectedStaff) return;
-    
+
     setIsSubmitting(true);
     try {
       const response = await fetch(`/api/staff?id=${selectedStaff.id}`, {
@@ -236,7 +236,7 @@ export default function TataUsahaPage() {
                 selectedKeys={formData.position ? [formData.position] : []}
                 onSelectionChange={(keys) => {
                   const selected = Array.from(keys)[0] as string;
-                  setFormData({...formData, position: selected});
+                  setFormData({ ...formData, position: selected });
                 }}
                 isRequired
               >
@@ -247,24 +247,24 @@ export default function TataUsahaPage() {
               <Input
                 label="Nama Lengkap"
                 value={formData.name}
-                onChange={(e) => setFormData({...formData, name: e.target.value})}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 isRequired
               />
               <Input
                 label="Gelar/Keterangan"
                 value={formData.title}
-                onChange={(e) => setFormData({...formData, title: e.target.value})}
+                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
               />
               <Input
                 label="Urutan"
                 type="number"
                 value={String(formData.order)}
-                onChange={(e) => setFormData({...formData, order: Number(e.target.value)})}
+                onChange={(e) => setFormData({ ...formData, order: Number(e.target.value) })}
               />
               <ImageUpload
                 label="Foto Staff"
                 value={formData.photo}
-                onChange={(url) => setFormData({...formData, photo: url})}
+                onChange={(url) => setFormData({ ...formData, photo: url })}
                 description="Upload foto staff (auto-convert ke WebP)"
               />
             </div>

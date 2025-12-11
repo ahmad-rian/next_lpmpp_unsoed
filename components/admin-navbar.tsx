@@ -94,6 +94,12 @@ const DocumentIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
+const CalendarIcon = ({ className }: { className?: string }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
+  </svg>
+);
+
 export function AdminNavbar() {
   const pathname = usePathname();
   const { data: session } = useSession();
@@ -132,6 +138,7 @@ export function AdminNavbar() {
 
   const dataMasterItems = [
     { key: "site-config", label: "Konfigurasi Situs", href: "/admin/site-config", icon: CogIcon },
+    { key: "agenda", label: "Agenda Kegiatan", href: "/admin/agenda", icon: CalendarIcon },
     { key: "data-buku", label: "Data Buku", href: "/admin/data-buku", icon: FileTextIcon },
     { key: "data-galeri", label: "Data Galeri", href: "/admin/data-galeri", icon: FileTextIcon },
     { key: "tautan-layanan", label: "Tautan Layanan", href: "/admin/tautan-layanan", icon: FileTextIcon },
@@ -158,7 +165,7 @@ export function AdminNavbar() {
   ];
 
   const kepakaranItems = [
-    { key: "kepakaran", label: "Kepakaran", href: "/admin/kepakaran", icon: FileTextIcon },
+    { key: "kepakaran", label: "Supervisor", href: "/admin/kepakaran", icon: FileTextIcon },
   ];
 
   const tautanItems = [
@@ -175,8 +182,8 @@ export function AdminNavbar() {
 
   const handleLogout = async () => {
     try {
-      await signOut({ 
-        redirect: false 
+      await signOut({
+        redirect: false
       });
       // Manually redirect to homepage after logout
       window.location.href = "/";
@@ -186,8 +193,8 @@ export function AdminNavbar() {
   };
 
   return (
-    <HeroUINavbar 
-      maxWidth="full" 
+    <HeroUINavbar
+      maxWidth="full"
       position="sticky"
       isMenuOpen={isMenuOpen}
       onMenuOpenChange={setIsMenuOpen}
@@ -363,7 +370,7 @@ export function AdminNavbar() {
           </NextLink>
         </NavbarItem>
 
-        {/* Kepakaran */}
+        {/* Supervisor */}
         <NavbarItem>
           <NextLink
             href="/admin/kepakaran"
@@ -375,7 +382,7 @@ export function AdminNavbar() {
             )}
           >
             <FileTextIcon className="w-4 h-4" />
-            Kepakaran
+            Supervisor
           </NextLink>
         </NavbarItem>
 
@@ -433,12 +440,12 @@ export function AdminNavbar() {
         <NavbarItem className="hidden sm:flex">
           <ThemeSwitch />
         </NavbarItem>
-        
+
         {/* Theme Switch for Mobile */}
         <NavbarItem className="sm:hidden">
           <ThemeSwitch />
         </NavbarItem>
-        
+
         {/* Profile Dropdown - Avatar + Name yang bisa diklik jadi dropdown */}
         <NavbarItem>
           {session?.user ? (
@@ -464,9 +471,9 @@ export function AdminNavbar() {
               </DropdownTrigger>
               <DropdownMenu aria-label="Profile Actions" variant="flat">
                 {/* Profile Header */}
-                <DropdownItem 
-                  key="profile" 
-                  className="h-14 gap-2" 
+                <DropdownItem
+                  key="profile"
+                  className="h-14 gap-2"
                   textValue="Profile"
                   isReadOnly
                   classNames={{
@@ -476,7 +483,7 @@ export function AdminNavbar() {
                   <p className="font-semibold text-xs text-default-500">Signed in as</p>
                   <p className="font-semibold text-sm truncate max-w-[200px]">{session.user.email}</p>
                 </DropdownItem>
-                
+
                 {/* User Info */}
                 <DropdownItem
                   key="user-info"
@@ -492,7 +499,7 @@ export function AdminNavbar() {
                     <span className="text-xs text-default-500 capitalize">{session.user.role || "Admin"}</span>
                   </div>
                 </DropdownItem>
-                
+
                 {/* Divider */}
                 <DropdownItem
                   key="divider"
@@ -502,7 +509,7 @@ export function AdminNavbar() {
                     base: "h-px bg-divider my-1 p-0 cursor-default"
                   }}
                 />
-                
+
                 {/* Logout */}
                 <DropdownItem
                   key="logout"
@@ -678,7 +685,7 @@ export function AdminNavbar() {
                 onClick={() => setIsMenuOpen(false)}
               >
                 <FileTextIcon className="w-5 h-5" />
-                Kepakaran
+                Supervisor
               </NextLink>
             </NavbarMenuItem>
 
@@ -734,8 +741,8 @@ export function AdminNavbar() {
             <NavbarMenuItem>
               <div className="border-t border-divider my-2" />
             </NavbarMenuItem>
-            
-            
+
+
           </>
         )}
       </NavbarMenu>

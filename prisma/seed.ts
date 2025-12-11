@@ -20,8 +20,8 @@ async function main() {
 
   // Create default site configuration
   const siteConfig = await prisma.siteConfig.upsert({
-    where: { 
-      id: (await prisma.siteConfig.findFirst())?.id || "new-config" 
+    where: {
+      id: (await prisma.siteConfig.findFirst())?.id || "new-config"
     },
     update: {},
     create: {
@@ -80,30 +80,30 @@ async function main() {
 
   // Create Staff data
   const staffData: Array<{ position: any; name: string; title: string; order: number }> = [
-    // Sub Koordinator
-    { position: "SUB_COORDINATOR", name: "Prasetyo Heru Saptono, S.Pd., M.B.A", title: "Sub Koordinator", order: 1 },
-    
+    // Kepala Sub Bagian Umum
+    { position: "SUB_COORDINATOR", name: "Prasetyo Heru Saptono, S.Pd., M.B.A", title: "Kepala Sub Bagian Umum", order: 1 },
+
     // Staff Umum
     { position: "GENERAL_STAFF", name: "Sri Apriani, S.E.", title: "Staff Umum", order: 1 },
     { position: "GENERAL_STAFF", name: "Kusrini Kartikawati, A.Md.", title: "Staff Umum", order: 2 },
     { position: "GENERAL_STAFF", name: "Alfia Nova Refi Sari, S.H.", title: "Staff Umum", order: 3 },
-    
+
     // Staff Program, Data & Informasi
     { position: "PROGRAM_DATA_INFO_STAFF", name: "Widya Hastuti, S.E.", title: "Staff Program, Data & Informasi", order: 1 },
     { position: "PROGRAM_DATA_INFO_STAFF", name: "Heri Yuwono W.H, A.Md.", title: "Staff Program, Data & Informasi", order: 2 },
     { position: "PROGRAM_DATA_INFO_STAFF", name: "Dasworo", title: "Staff Program, Data & Informasi", order: 3 },
     { position: "PROGRAM_DATA_INFO_STAFF", name: "Adhitya Ardiansyah, S.H.", title: "Staff Program, Data & Informasi", order: 4 },
-    
+
     // Pengemudi
     { position: "DRIVER", name: "Akhmad Wahyanto", title: "Pengemudi", order: 1 },
-    
+
     // Pramu Bakti
     { position: "OFFICE_ASSISTANT", name: "Yulian Kamal Bachrok", title: "Pramu Bakti", order: 1 },
   ];
 
   // Delete existing staff and create new ones
   await prisma.staff.deleteMany({});
-  
+
   for (const staff of staffData) {
     await prisma.staff.create({
       data: staff as any,
@@ -123,7 +123,7 @@ async function main() {
       description: "Menyusun, mengembangkan, dan mendokumentasikan Sistem Penjaminan Mutu Internal (SPMI); Mengoordinasi penerapan SPMI di tingkat universitas, bersama dengan Gugus Penjaminan Mutu di unit pengelola program studi dan Gugus Kendali Mutu di program studi; dan Melaksanakan layanan pelatihan SPMI.",
       order: 1,
       members: [
-        { role: "COORDINATOR", name: "Prof. Dr. Bambang Tri Harsanto, M.Si", title: "Koordinator Pusat Penjaminan Mutu Internal", order: 1 },
+        { role: "COORDINATOR", name: "Prof. Dr. Bambang Tri Harsanto, M.Si", title: "Kepala Pusat Penjaminan Mutu Internal", order: 1 },
         { role: "MEMBER", name: "Alpha Nadeira Mandamdari, S.P., M.P", title: "", order: 2 },
         { role: "MEMBER", name: "Dr. dr. Eman Sutrisna, M. Kes", title: "", order: 3 },
       ]
@@ -134,7 +134,7 @@ async function main() {
       description: "Menyusun, mengembangkan, dan mendokumentasikan audit mutu internal; Mengoordinasi pelaksanaan audit mutu akademik internal; dan Melaksanakan layanan pelatihan audit mutu akademik internal.",
       order: 2,
       members: [
-        { role: "COORDINATOR", name: "Prof. Mekar Dwi Anggraeni, S.Kep. Ners., M.Kep. Ph.D", title: "Koordinator Pusat Audit Mutu Akademik Internal", order: 1 },
+        { role: "COORDINATOR", name: "Prof. Mekar Dwi Anggraeni, S.Kep. Ners., M.Kep. Ph.D", title: "Kepala Pusat Audit Mutu Akademik Internal", order: 1 },
         { role: "MEMBER", name: "Dr. Ervina Mela, S.T., M.Si", title: "", order: 2 },
         { role: "MEMBER", name: "Dr. Laeli Budiarti, SE, M.Si Ak.", title: "", order: 3 },
       ]
@@ -145,7 +145,7 @@ async function main() {
       description: "Mengoordinasi kesiapan perguruan tinggi dan program-program studi dalam akreditasi nasional; Menyelenggarakan pendampingan dalam proses akreditasi nasional; dan Mengoordinasi persiapan pendirian program studi baru.",
       order: 3,
       members: [
-        { role: "COORDINATOR", name: "Dra. Gratiana E. Wijayanti., M.Rep.Sc., Ph.D", title: "Koordinator Pusat Akreditasi Nasional", order: 1 },
+        { role: "COORDINATOR", name: "Dra. Gratiana E. Wijayanti., M.Rep.Sc., Ph.D", title: "Kepala Pusat Akreditasi Nasional", order: 1 },
         { role: "MEMBER", name: "Prof. Dr. Sofa Marwah., S.IP., M.Si", title: "", order: 2 },
         { role: "MEMBER", name: "Dr. Arif Setyo Upoyo, S.Kep. Ners M.Kep", title: "", order: 3 },
       ]
@@ -156,7 +156,7 @@ async function main() {
       description: "Mengoordinasi kesiapan program-program studi dalam akreditasi internasional; dan Menyelenggarakan pendampingan dalam proses akreditasi internasional.",
       order: 4,
       members: [
-        { role: "COORDINATOR", name: "Dr. Sidik Awaludin, SKep., M.Kep. Ns. Sp.Kep.MB", title: "Koordinator Pusat Akreditasi Internasional", order: 1 },
+        { role: "COORDINATOR", name: "Dr. Sidik Awaludin, SKep., M.Kep. Ns. Sp.Kep.MB", title: "Kepala Pusat Akreditasi Internasional", order: 1 },
         { role: "MEMBER", name: "Dian Ramawati, SKep., Ns. M.Kep., Ph.D", title: "", order: 2 },
       ]
     },
@@ -166,7 +166,7 @@ async function main() {
       description: "Mengoordinasi ketersediaan dan keterjaminan data kegiatan pendidikan dalam rangka penjaminan mutu; Melaksanakan kegiatan monitoring dan analisis penjaminan mutu; dan Mengoordinasi kegiatan kerja sama penjamiman mutu dan pengembangan pembelajaran.",
       order: 5,
       members: [
-        { role: "COORDINATOR", name: "Dr. Muhamad Yamin, S.IP., M.Si.", title: "Koordinator Pusat Analisis Pembelajaran dan Penjaminan Mutu", order: 1 },
+        { role: "COORDINATOR", name: "Dr. Muhamad Yamin, S.IP., M.Si.", title: "Kepala Pusat Analisis Pembelajaran dan Penjaminan Mutu", order: 1 },
         { role: "MEMBER", name: "Merryafinola Ifani, S.Pt., M.Pt.", title: "", order: 2 },
         { role: "MEMBER", name: "Kilau Riksaning Ayu, S.I.Kom., M.I.Kom.", title: "", order: 3 },
       ]
@@ -177,7 +177,7 @@ async function main() {
       description: "Melaksanakan kegiatan pengembangan keterampilan pembelajaran; Melaksanakan kegiatan pengembangan penyusunan bahan ajar; dan Memberikan layanan pelatihan pengembangan keterampilan pembelajaran dan penyusunan bahan ajar.",
       order: 6,
       members: [
-        { role: "COORDINATOR", name: "Prof. Dr. Abdul Azis Nasihudin, S.H., M.M., M.H", title: "Koordinator Pusat Inovasi Pembelajaran", order: 1 },
+        { role: "COORDINATOR", name: "Prof. Dr. Abdul Azis Nasihudin, S.H., M.M., M.H", title: "Kepala Pusat Inovasi Pembelajaran", order: 1 },
         { role: "MEMBER", name: "dr. Miko Ferine, M.Med.Ed", title: "", order: 2 },
         { role: "MEMBER", name: "Laxmi Mustika Cakrawati, S.Pd., M.Pd", title: "", order: 3 },
       ]
@@ -188,7 +188,7 @@ async function main() {
       description: "Melaksanakan kegiatan pengkajian dan pengembangan kurikulum; Melaksanakan kegiatan evaluasi kurikulum; dan Memberikan layanan pelatihan pengembangan kurikulum.",
       order: 7,
       members: [
-        { role: "COORDINATOR", name: "Tri Nugroho Adi. S.Sos. M.Si", title: "Koordinator Pusat Pengembangan Kurikulum", order: 1 },
+        { role: "COORDINATOR", name: "Tri Nugroho Adi. S.Sos. M.Si", title: "Kepala Pusat Pengembangan Kurikulum", order: 1 },
         { role: "MEMBER", name: "Dr. dr. VM. Wahyu Siswandari, Sp.PK., M.Si.Med", title: "", order: 2 },
         { role: "MEMBER", name: "Indah Nuraeni, S.TP., M.Sc", title: "", order: 3 },
       ]
@@ -199,7 +199,7 @@ async function main() {
       description: "Melaksanakan kegiatan integrasi pengembangan karakter dalam kurikulum dan pembelajaran; Mengoordinasi penyelenggaraan mata kuliah wajib kurikulum; dan Melaksanakan layanan pelatihan integrasi karakter dalam pembelajaran.",
       order: 8,
       members: [
-        { role: "COORDINATOR", name: "Prof. Dr. Ir. Heru Adi Djatmiko, M.P.", title: "Koordinator Pusat Pengembangan Karakter dan Mata Kuliah Wajib Kurikulum", order: 1 },
+        { role: "COORDINATOR", name: "Prof. Dr. Ir. Heru Adi Djatmiko, M.P.", title: "Kepala Pusat Pengembangan Karakter dan Mata Kuliah Wajib Kurikulum", order: 1 },
         { role: "MEMBER", name: "Muhammad Riza Chamadi, S.Pd.I., M.Pd.I", title: "", order: 2 },
         { role: "MEMBER", name: "Dr. Ir. Rosidi, M.P., IPU", title: "", order: 3 },
         { role: "MEMBER", name: "Luthfi Makhasin, S.IP., M.A., Ph.D.", title: "", order: 4 },
@@ -211,7 +211,7 @@ async function main() {
       description: "Memberikan layanan dan fasilitasi pembelajaran berbasis teknologi informasi; Melaksanakan kegiatan pengembangan konten dan media pembelajaran berbasis teknologi informasi; dan Melaksanakan layanan pelatihan pemanfaatan teknologi informasi dalam pembelajaran.",
       order: 9,
       members: [
-        { role: "COORDINATOR", name: "Ardiansyah, S.TP., M.Si., Ph.D", title: "Koordinator Pusat Pembelajaran Berbasis Teknologi Informasi", order: 1 },
+        { role: "COORDINATOR", name: "Ardiansyah, S.TP., M.Si., Ph.D", title: "Kepala Pusat Pembelajaran Berbasis Teknologi Informasi", order: 1 },
         { role: "MEMBER", name: "Dr. Mulki Indana Zulfa, S.T., M.T", title: "", order: 2 },
         { role: "MEMBER", name: "Ir. Eko Murdyantoro Atmojo, S.T., M.T", title: "", order: 3 },
       ]
@@ -222,7 +222,7 @@ async function main() {
       description: "Melaksanakan kegiatan pembelajaran khusus, seperti vokasi, dan pembelajaran di luar kampus; Melaksanakan kegiatan audit asesmen rekognisi pembelajaran lampau.",
       order: 10,
       members: [
-        { role: "COORDINATOR", name: "Dr. Zaroh Irayani, S.Si., M.Si", title: "Koordinator Pusat MBKM", order: 1 },
+        { role: "COORDINATOR", name: "Dr. Zaroh Irayani, S.Si., M.Si", title: "Kepala Pusat MBKM", order: 1 },
         { role: "MEMBER", name: "Prof. Ahadiyat Yugi Rahayu, S.P., M.Si., D.Tech.Sc", title: "", order: 2 },
         { role: "MEMBER", name: "Ratri Noorhidayah, S.P., M.Sc", title: "", order: 3 },
         { role: "MEMBER", name: "Okti Herliana, S.P., M.P", title: "", order: 4 },
@@ -250,11 +250,11 @@ async function main() {
     }
   }
 
-    console.log(`Created ${centersData.length} centers with their members`);
+  console.log(`Created ${centersData.length} centers with their members`);
 
   // Create sample documents
   await prisma.document.deleteMany({});
-  
+
   const sampleDocs = [
     // Dokumen SPMI
     {
@@ -302,7 +302,7 @@ async function main() {
 
   // Create Fakultas (Master Data) - 12 Fakultas UNSOED
   await prisma.faculty.deleteMany({});
-  
+
   const faculties = [
     { name: "Fakultas Pertanian", shortName: "Faperta", code: "FP", order: 1 },
     { name: "Fakultas Biologi", shortName: "Fabio", code: "FB", order: 2 },
@@ -330,7 +330,7 @@ async function main() {
 
   // Create sample Quality Assurance Groups
   await prisma.qualityAssuranceGroup.deleteMany({});
-  
+
   const sampleGPM = [
     {
       facultyId: createdFaculties[8].id, // FIKES (index 8 - Fakultas Ilmu-ilmu Kesehatan)
@@ -356,8 +356,8 @@ async function main() {
 
   // Create SPMI About data
   const spmiAbout = await prisma.spmiAbout.upsert({
-    where: { 
-      id: (await prisma.spmiAbout.findFirst())?.id || "new-spmi" 
+    where: {
+      id: (await prisma.spmiAbout.findFirst())?.id || "new-spmi"
     },
     update: {
       title: "SPM Unsoed",
@@ -458,13 +458,13 @@ async function main() {
       { studyProgram: "Administrasi Perkantoran", level: "D3", skNumber: "11176/SK/BAN-PT/Ak-PNB/Dipl-III/IX/2021", skYear: 2021, rank: "B", order: 8 },
       { studyProgram: "Perencanaan Sumber Daya Lahan", level: "D3", skNumber: "4142/SK/BAN-PT/Akred/Dipl-III/VII/2020", skYear: 2020, rank: "B", order: 9 },
       { studyProgram: "Bahasa Mandarin", level: "D3", skNumber: "7238/SK/BAN-PT/Akred/Dipl-III/XI/2020", skYear: 2020, rank: "A", order: 10 },
-      
+
       { studyProgram: "APOTEKER", level: "PROFESI", skNumber: "0063/LAM-PTKes/Akr/Pro/I/2023", skYear: 2023, rank: "BAIK_SEKALI", order: 11 },
       { studyProgram: "DOKTER GIGI", level: "PROFESI", skNumber: "0094/LAM-PTKes/Akr/Pro/II/2023", skYear: 2023, rank: "BAIK_SEKALI", order: 12 },
       { studyProgram: "PENDIDIKAN PROFESI DOKTER", level: "PROFESI", skNumber: "0547/LAM-PTKes/Akr/Pro/VII/2022", skYear: 2022, rank: "UNGGUL", order: 13 },
       { studyProgram: "NERS", level: "PROFESI", skNumber: "0511/LAM-PTKes/Akr/SAR/IV/2025", skYear: 2025, rank: "UNGGUL", order: 14 },
       { studyProgram: "Pendidikan Profesi Akuntan", level: "PROFESI", skNumber: "2239/DE/A.5/AR.10/IV/2025", skYear: 2025, rank: "UNGGUL", order: 15 },
-      
+
       { studyProgram: "Sastra Indonesia", level: "S1", skNumber: "451/SK/BAN-PT/Ak.Ppj/S/III/2025", skYear: 2025, rank: "UNGGUL", order: 16 },
       { studyProgram: "Teknik Komputer", level: "S1", skNumber: "020/SK/LAM-INFOKOM/Ak.Min/S/III/2024", skYear: 2024, rank: "BAIK", order: 17 },
       { studyProgram: "Teknik Mesin", level: "S1", skNumber: "0058/SK/LAM Teknik/PB.AS/III/2024", skYear: 2024, rank: "BAIK", order: 18 },
@@ -511,7 +511,7 @@ async function main() {
       { studyProgram: "Kimia", level: "S1", skNumber: "071/SK/LAMSAMA/Akred/S/V/2025", skYear: 2025, rank: "UNGGUL", order: 59 },
       { studyProgram: "Matematika", level: "S1", skNumber: "", skYear: 2025, rank: "UNGGUL", order: 60 },
       { studyProgram: "Hukum", level: "S1", skNumber: "6626/SK/BAN-PT/Ak-PPJ/S/X/2020", skYear: 2020, rank: "A", order: 61 },
-      
+
       { studyProgram: "Biologi", level: "S2", skNumber: "010/SK/LAMSAMA/Akred/M/III/2024", skYear: 2024, rank: "UNGGUL", order: 62 },
       { studyProgram: "Ilmu Politik", level: "S2", skNumber: "7118/SK/BAN-PT/Ak/M/XII/2024", skYear: 2024, rank: "BAIK_SEKALI", order: 63 },
       { studyProgram: "Bioteknologi Pertanian", level: "S2", skNumber: "7217/SK/BAN-PT/Ak/M/XII/2024", skYear: 2024, rank: "BAIK_SEKALI", order: 64 },
@@ -539,7 +539,7 @@ async function main() {
       { studyProgram: "Ilmu Kelautan", level: "S2", skNumber: "063/SK/LAMSAMA/Akred/M/IV/2025", skYear: 2025, rank: "UNGGUL", order: 86 },
       { studyProgram: "Farmasi", level: "S2", skNumber: "SK Pendirian", skYear: 2025, rank: null, order: 87 },
       { studyProgram: "Linguistik", level: "S2", skNumber: "SK Pendirian 291/B/O/2025", skYear: 2025, rank: null, order: 88 },
-      
+
       { studyProgram: "Ilmu Akuntansi", level: "S3", skNumber: "2163/DE/A.5/AR.10/III/2025", skYear: 2025, rank: "BAIK_SEKALI", order: 89 },
       { studyProgram: "Ekonomi", level: "S3", skNumber: "1957/DE/A.5/AR.10/I/2025", skYear: 2025, rank: "UNGGUL", order: 90 },
       { studyProgram: "Ilmu Pertanian", level: "S3", skNumber: "648/SK/BAN-PT/Ak.Ppj/D/II/2024", skYear: 2024, rank: "B", order: 91 },
@@ -548,7 +548,7 @@ async function main() {
       { studyProgram: "Hukum", level: "S3", skNumber: "", skYear: 2025, rank: "BAIK_SEKALI", order: 94 },
       { studyProgram: "Ilmu Manajemen", level: "S3", skNumber: "10927/SK/BAN-PT/Akred/D/IX/2021", skYear: 2021, rank: "UNGGUL", order: 95 },
       { studyProgram: "Biologi", level: "S3", skNumber: "13836/SK/BAN-PT/Ak-PPJ/D/XII/2021", skYear: 2021, rank: "B", order: 96 },
-      
+
       { studyProgram: "ANESTESIOLOGI DAN TERAPI INTENSIF", level: "SPESIALIS", skNumber: "0070/LAM-PTKes/Akr/Spe/II/2024", skYear: 2024, rank: "BAIK_SEKALI", order: 97 },
       { studyProgram: "NEUROLOGI", level: "SPESIALIS", skNumber: "0246/LAM-PTKes/Akr.PB/Spe/VIII/2024", skYear: 2024, rank: "BAIK", order: 98 },
       { studyProgram: "OBSTETRIK DAN GINEKOLOGI", level: "SPESIALIS", skNumber: "0247/LAM-PTKes/Akr.PB/Spe/VIII/2024", skYear: 2024, rank: "BAIK", order: 99 },

@@ -24,7 +24,7 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const session = await auth();
-    
+
     if (!session || session.user?.role !== "ADMIN") {
       return NextResponse.json(
         { error: "Unauthorized" },
@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
     }
 
     const data = await request.json();
-    
+
     const accreditation = await prisma.studyProgramAccreditation.create({
       data: {
         studyProgram: data.studyProgram || data.programName,
@@ -41,6 +41,9 @@ export async function POST(request: NextRequest) {
         skNumber: data.skNumber || null,
         skYear: data.skYear ? parseInt(data.skYear) : null,
         rank: data.rank || data.rating || null,
+        validFrom: data.validFrom ? new Date(data.validFrom) : null,
+        validUntil: data.validUntil ? new Date(data.validUntil) : null,
+        certificateUrl: data.certificateUrl || null,
         order: data.order || 0,
         isActive: data.isActive !== undefined ? data.isActive : true,
       },
@@ -60,7 +63,7 @@ export async function POST(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   try {
     const session = await auth();
-    
+
     if (!session || session.user?.role !== "ADMIN") {
       return NextResponse.json(
         { error: "Unauthorized" },
@@ -69,7 +72,7 @@ export async function PUT(request: NextRequest) {
     }
 
     const data = await request.json();
-    
+
     if (!data.id) {
       return NextResponse.json(
         { error: "ID is required" },
@@ -85,6 +88,9 @@ export async function PUT(request: NextRequest) {
         skNumber: data.skNumber || null,
         skYear: data.skYear ? parseInt(data.skYear) : null,
         rank: data.rank || data.rating || null,
+        validFrom: data.validFrom ? new Date(data.validFrom) : null,
+        validUntil: data.validUntil ? new Date(data.validUntil) : null,
+        certificateUrl: data.certificateUrl || null,
         order: data.order,
         isActive: data.isActive,
       },
@@ -104,7 +110,7 @@ export async function PUT(request: NextRequest) {
 export async function DELETE(request: NextRequest) {
   try {
     const session = await auth();
-    
+
     if (!session || session.user?.role !== "ADMIN") {
       return NextResponse.json(
         { error: "Unauthorized" },

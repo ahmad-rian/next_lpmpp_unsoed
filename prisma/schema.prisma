@@ -304,6 +304,9 @@ model StudyProgramAccreditation {
   skNumber     String? // Nomor SK
   skYear       Int? // Tahun SK
   rank         AccreditationRank? // Peringkat
+  validFrom    DateTime? // Tanggal mulai berlaku
+  validUntil   DateTime? // Tanggal selesai berlaku
+  certificateUrl String? @db.Text // URL dokumen sertifikat akreditasi
   order        Int                @default(0) // Urutan tampilan
   isActive     Boolean            @default(true)
   createdAt    DateTime           @default(now())
@@ -364,6 +367,7 @@ enum ExpertiseType {
   FASILITATOR_PEKERTI // Fasilitator Pekerti/AA
   AUDITOR_SPMI // Auditor SPMI
   ASESOR_BKD // Asesor BKD
+  ASESOR_SERDOS // Asesor Serdos
 }
 
 // Model untuk Kepakaran (Fasilitator, Auditor, Asesor)
@@ -483,4 +487,22 @@ model SpmiAbout {
   fungsi    String   @db.Text // Fungsi SPMI
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+// Model untuk Agenda Kegiatan
+model Agenda {
+  id          String   @id @default(cuid())
+  title       String   @db.Text // Judul kegiatan
+  date        DateTime // Tanggal kegiatan
+  startTime   String   // Waktu mulai (format: HH:mm)
+  endTime     String   // Waktu selesai (format: HH:mm)
+  location    String   @db.Text // Lokasi kegiatan
+  description String?  @db.Text // Deskripsi kegiatan (opsional)
+  color       String   @default("#f59e0b") // Warna untuk display (default: orange)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([date])
+  @@index([isActive])
 }

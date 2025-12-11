@@ -85,7 +85,7 @@ interface DashboardClientProps {
     month: string;
     Berita: number;
     Program: number;
-    Kepakaran: number;
+    Supervisor: number;
     Unduhan: number;
     Tautan: number;
     total: number;
@@ -129,7 +129,7 @@ export function DashboardClient({ stats, contentStats, trendData, quickActions, 
   const LINE_COLORS = {
     Berita: '#10b981',
     Program: '#a855f7',
-    Kepakaran: '#f59e0b',
+    Supervisor: '#f59e0b',
     Unduhan: '#ec4899',
     Tautan: '#3b82f6',
   };
@@ -183,25 +183,25 @@ export function DashboardClient({ stats, contentStats, trendData, quickActions, 
             <ResponsiveContainer width="100%" height={300}>
               <BarChart data={barChartData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                <XAxis 
-                  dataKey="name" 
+                <XAxis
+                  dataKey="name"
                   tick={{ fontSize: 12 }}
                   stroke="#6b7280"
                 />
-                <YAxis 
+                <YAxis
                   tick={{ fontSize: 12 }}
                   stroke="#6b7280"
                 />
-                <Tooltip 
-                  contentStyle={{ 
+                <Tooltip
+                  contentStyle={{
                     backgroundColor: '#fff',
                     border: '1px solid #e5e7eb',
                     borderRadius: '8px',
                     padding: '8px'
                   }}
                 />
-                <Bar 
-                  dataKey="count" 
+                <Bar
+                  dataKey="count"
                   fill="#3b82f6"
                   radius={[8, 8, 0, 0]}
                 />
@@ -222,62 +222,62 @@ export function DashboardClient({ stats, contentStats, trendData, quickActions, 
             <ResponsiveContainer width="100%" height={300}>
               <LineChart data={trendData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                <XAxis 
-                  dataKey="month" 
+                <XAxis
+                  dataKey="month"
                   tick={{ fontSize: 12 }}
                   stroke="#6b7280"
                 />
-                <YAxis 
+                <YAxis
                   tick={{ fontSize: 12 }}
                   stroke="#6b7280"
                 />
-                <Tooltip 
-                  contentStyle={{ 
+                <Tooltip
+                  contentStyle={{
                     backgroundColor: '#fff',
                     border: '1px solid #e5e7eb',
                     borderRadius: '8px',
                     padding: '8px'
                   }}
                 />
-                <Legend 
+                <Legend
                   wrapperStyle={{ fontSize: '12px' }}
                   iconType="line"
                 />
-                <Line 
-                  type="monotone" 
-                  dataKey="Berita" 
+                <Line
+                  type="monotone"
+                  dataKey="Berita"
                   stroke={LINE_COLORS.Berita}
                   strokeWidth={2}
                   dot={{ r: 3 }}
                   activeDot={{ r: 5 }}
                 />
-                <Line 
-                  type="monotone" 
-                  dataKey="Program" 
+                <Line
+                  type="monotone"
+                  dataKey="Program"
                   stroke={LINE_COLORS.Program}
                   strokeWidth={2}
                   dot={{ r: 3 }}
                   activeDot={{ r: 5 }}
                 />
-                <Line 
-                  type="monotone" 
-                  dataKey="Kepakaran" 
-                  stroke={LINE_COLORS.Kepakaran}
+                <Line
+                  type="monotone"
+                  dataKey="Supervisor"
+                  stroke={LINE_COLORS.Supervisor}
                   strokeWidth={2}
                   dot={{ r: 3 }}
                   activeDot={{ r: 5 }}
                 />
-                <Line 
-                  type="monotone" 
-                  dataKey="Unduhan" 
+                <Line
+                  type="monotone"
+                  dataKey="Unduhan"
                   stroke={LINE_COLORS.Unduhan}
                   strokeWidth={2}
                   dot={{ r: 3 }}
                   activeDot={{ r: 5 }}
                 />
-                <Line 
-                  type="monotone" 
-                  dataKey="Tautan" 
+                <Line
+                  type="monotone"
+                  dataKey="Tautan"
                   stroke={LINE_COLORS.Tautan}
                   strokeWidth={2}
                   dot={{ r: 3 }}

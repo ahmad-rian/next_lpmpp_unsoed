@@ -525,7 +525,7 @@ export default function Home() {
 
 
 
-      {/* Sambutan Kepala Lembaga - Redesigned */}
+      {/* Sambutan Ketua Lembaga - Redesigned */}
       <div className="w-full py-16 md:py-24">
         <div className="container mx-auto px-4">
           <motion.div
@@ -536,7 +536,7 @@ export default function Home() {
             className="max-w-6xl mx-auto"
           >
             <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
-              {/* Foto Kepala - Left Side */}
+              {/* Foto Ketua - Left Side */}
               <div className="md:col-span-4 flex justify-center md:justify-start">
                 {headLeader?.photo ? (
                   <div className="relative group">
@@ -557,7 +557,7 @@ export default function Home() {
                 )}
               </div>
 
-              {/* Nama & Pesan Kepala - Right Side */}
+              {/* Nama & Pesan Ketua - Right Side */}
               <div className="md:col-span-8 space-y-6">
                 {headLeader && (
                   <div className="space-y-2">
@@ -580,7 +580,7 @@ export default function Home() {
                   </p>
                 ) : (
                   <p className="text-sm text-default-500 italic">
-                    Pesan Kepala Lembaga belum dikonfigurasi. Silakan atur di Admin → Site Config.
+                    Pesan Ketua Lembaga belum dikonfigurasi. Silakan atur di Admin → Site Config.
                   </p>
                 )}
               </div>
@@ -850,7 +850,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Tenaga Kependidikan (dipindah di bawah Galeri) */}
+      {/* Staff Pendukung (dipindah di bawah Galeri) */}
       {config?.gambarStaff && (
         <motion.section
           initial={{ opacity: 0, y: 20 }}
@@ -861,7 +861,7 @@ export default function Home() {
         >
           <img
             src={config.gambarStaff}
-            alt="Tenaga Kependidikan LPMPP UNSOED"
+            alt="Staff Pendukung LPMPP UNSOED"
             className="w-full h-auto object-cover"
             loading="lazy"
           />

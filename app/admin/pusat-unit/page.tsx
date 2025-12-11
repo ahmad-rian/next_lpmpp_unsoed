@@ -312,8 +312,8 @@ export default function PusatUnitPage() {
             Kelola seluruh pusat dan unit di LPMPP UNSOED beserta anggotanya
           </p>
         </div>
-        <Button 
-          color="primary" 
+        <Button
+          color="primary"
           onPress={handleAddCenter}
           startContent={<PlusIcon className="w-4 h-4" />}
         >
@@ -340,7 +340,7 @@ export default function PusatUnitPage() {
               >
                 <CardBody className="p-3">
                   <div className="flex justify-between items-start gap-2">
-                    <div 
+                    <div
                       className="flex-1 min-w-0 cursor-pointer"
                       onClick={() => setSelectedCenter(center)}
                     >
@@ -391,9 +391,9 @@ export default function PusatUnitPage() {
                       {selectedCenter.description}
                     </p>
                   </div>
-                  <Button 
-                    color="primary" 
-                    size="sm" 
+                  <Button
+                    color="primary"
+                    size="sm"
                     onPress={handleAddMember}
                     startContent={<PlusIcon className="w-4 h-4" />}
                   >
@@ -575,7 +575,7 @@ export default function PusatUnitPage() {
               onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                 setMemberFormData({ ...memberFormData, title: e.target.value })
               }
-              placeholder="Contoh: Koordinator Pusat..."
+              placeholder="Contoh: Kepala Pusat..."
             />
             <ImageUpload
               value={memberFormData.photo}
