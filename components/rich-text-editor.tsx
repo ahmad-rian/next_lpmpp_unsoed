@@ -204,14 +204,14 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
       }
     };
 
-    editorElement.addEventListener("click", handleImageClick);
-    editorElement.addEventListener("mousedown", handleMouseDown);
+    editorElement.addEventListener("click", handleImageClick as EventListener);
+    editorElement.addEventListener("mousedown", handleMouseDown as EventListener);
     document.addEventListener("mousemove", handleMouseMove);
     document.addEventListener("mouseup", handleMouseUp);
 
     return () => {
-      editorElement.removeEventListener("click", handleImageClick);
-      editorElement.removeEventListener("mousedown", handleMouseDown);
+      editorElement.removeEventListener("click", handleImageClick as EventListener);
+      editorElement.removeEventListener("mousedown", handleMouseDown as EventListener);
       document.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseup", handleMouseUp);
     };

@@ -139,14 +139,6 @@ export default async function PeraturanPage() {
                               </span>
                             </>
                           )}
-                          {document.version && (
-                            <>
-                              <span className="text-xs text-gray-400">•</span>
-                              <span className="text-xs text-gray-500">
-                                v{document.version}
-                              </span>
-                            </>
-                          )}
                         </div>
                       </div>
                     </div>

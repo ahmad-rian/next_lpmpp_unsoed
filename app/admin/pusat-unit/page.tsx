@@ -10,7 +10,6 @@ import { Chip } from "@heroui/chip";
 import { Avatar } from "@heroui/avatar";
 import { Select, SelectItem } from "@heroui/select";
 import { Divider } from "@heroui/divider";
-import type { Selection } from "@heroui/select";
 import { ImageUpload } from "@/components/image-upload";
 
 // Heroicons
@@ -548,16 +547,16 @@ export default function PusatUnitPage() {
             <Select
               label="Peran"
               selectedKeys={memberFormData.role ? [memberFormData.role] : []}
-              onSelectionChange={(keys: Selection) => {
+              onSelectionChange={(keys) => {
                 const role = Array.from(keys)[0] as CenterMemberRole;
                 setMemberFormData({ ...memberFormData, role });
               }}
               isRequired
             >
-              <SelectItem key="COORDINATOR" value="COORDINATOR">
+              <SelectItem key="COORDINATOR">
                 Koordinator
               </SelectItem>
-              <SelectItem key="MEMBER" value="MEMBER">
+              <SelectItem key="MEMBER">
                 Anggota
               </SelectItem>
             </Select>

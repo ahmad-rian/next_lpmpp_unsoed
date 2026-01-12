@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
 
     // Convert file to buffer
     const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
+    const buffer = new Uint8Array(bytes);
 
     // Generate unique filename
     const timestamp = Date.now();

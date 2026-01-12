@@ -386,19 +386,16 @@ export default function AkreditasiProdiPage() {
               label="Filter Strata"
               placeholder="Semua Strata"
               selectedKeys={filterLevel === "all" ? [] : [filterLevel]}
-              onChange={(e) => {
-                setFilterLevel(e.target.value || "all");
+              onSelectionChange={(keys) => {
+                const selected = Array.from(keys)[0] as string;
+                setFilterLevel(selected || "all");
                 setPage(1);
               }}
               className="w-[200px]"
               size="sm"
+              items={[{ key: "all", label: "Semua Strata" }, ...LEVEL_OPTIONS]}
             >
-              <SelectItem key="all" value="all">Semua Strata</SelectItem>
-              {LEVEL_OPTIONS.map((level) => (
-                <SelectItem key={level.key} value={level.key}>
-                  {level.label}
-                </SelectItem>
-              ))}
+              {(item) => <SelectItem key={item.key}>{item.label}</SelectItem>}
             </Select>
           </div>
           <div className="flex gap-2">
@@ -702,10 +699,11 @@ export default function AkreditasiProdiPage() {
 
                 {/* File Upload for Certificate */}
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">
+                  <label htmlFor="certificate-file" className="text-sm font-medium">
                     Upload Sertifikat Akreditasi
                   </label>
                   <input
+                    id="certificate-file"
                     type="file"
                     accept=".pdf,.doc,.docx"
                     onChange={(e) => {

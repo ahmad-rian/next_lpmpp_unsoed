@@ -4,11 +4,12 @@ import { prisma } from "@/lib/prisma";
 // Public API: get one active book by id
 export async function GET(
   _req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const book = await prisma.dataBuku.findUnique({
-      where: { id: params.id },
+      where: { id },
       select: {
         id: true,
         judul: true,

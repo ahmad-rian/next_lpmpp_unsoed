@@ -103,16 +103,16 @@ export default function AkreditasiInternasionalPage() {
   const handleCloseModal = () => {
     setEditingItem(null);
     setFormData({
-      facultyName: "",
-      programName: "",
-      agency: "",
+      faculty: "",
+      studyProgram: "",
+      accreditationBody: "",
       order: 0,
     });
     onClose();
   };
 
   const handleSubmit = async () => {
-    if (!formData.facultyName || !formData.programName || !formData.agency) {
+    if (!formData.faculty || !formData.studyProgram || !formData.accreditationBody) {
       alert("Semua field harus diisi");
       return;
     }

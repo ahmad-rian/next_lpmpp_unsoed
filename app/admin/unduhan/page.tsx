@@ -262,7 +262,7 @@ export default function DownloadsPage() {
       icon={<DocumentIcon />}
       title="Unduhan"
       description="Kelola file dokumen yang dapat diunduh"
-      actions={
+      action={
         <Button
           color="primary"
           startContent={<PlusIcon className="w-5 h-5" />}
@@ -271,9 +271,7 @@ export default function DownloadsPage() {
           Tambah Unduhan
         </Button>
       }
-      stats={[
-        { label: "Total Dokumen", value: downloads.length.toString() },
-      ]}
+      badge={{ label: "Dokumen", value: downloads.length }}
     >
       <Table aria-label="Tabel Unduhan">
         <TableHeader>

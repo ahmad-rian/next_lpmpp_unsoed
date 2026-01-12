@@ -100,7 +100,7 @@ export default async function GpmFakultasPage() {
                           {/* GPM Info */}
                           <div>
                             <h3 className="text-lg font-semibold mb-2">
-                              {gpm.name || `Gugus Penjaminan Mutu ${faculty.name}`}
+                              Gugus Penjaminan Mutu {faculty.name}
                             </h3>
                             {gpm.ketuaGpm && (
                               <p className="text-sm text-default-700 mb-2 flex items-center gap-2">

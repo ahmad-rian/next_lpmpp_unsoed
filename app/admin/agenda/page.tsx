@@ -387,7 +387,7 @@ export default function AgendaPage() {
 
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="space-y-2">
-                                        <label className="text-sm font-medium">Warna</label>
+                                        <span className="text-sm font-medium">Warna</span>
                                         <div className="flex gap-2 flex-wrap">
                                             {COLOR_OPTIONS.map((color) => (
                                                 <button
@@ -408,7 +408,7 @@ export default function AgendaPage() {
                                     </div>
 
                                     <div className="space-y-2">
-                                        <label className="text-sm font-medium">Status</label>
+                                        <span className="text-sm font-medium">Status</span>
                                         <div className="flex gap-4">
                                             <label className="flex items-center gap-2 cursor-pointer">
                                                 <input

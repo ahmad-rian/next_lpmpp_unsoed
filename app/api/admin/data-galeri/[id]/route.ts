@@ -81,7 +81,7 @@ export async function PUT(
 
     // Update data
     const updatedDataGaleri = await prisma.dataGaleri.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         ...(judul !== undefined && { judul: judul?.trim() || null }),
         ...(gambar !== undefined && { gambar: gambar.trim() }),
@@ -119,7 +119,7 @@ export async function DELETE(
 
     // Cek apakah data galeri ada
     const existingDataGaleri = await prisma.dataGaleri.findUnique({
-      where: { id: params.id }
+      where: { id }
     });
 
     if (!existingDataGaleri) {
@@ -130,7 +130,7 @@ export async function DELETE(
     }
 
     await prisma.dataGaleri.delete({
-      where: { id: params.id }
+      where: { id }
     });
 
     return NextResponse.json(

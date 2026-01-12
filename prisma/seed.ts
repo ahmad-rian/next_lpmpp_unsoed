@@ -3,16 +3,41 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 async function main() {
+  // Ensure ADMIN role exists first
+  const adminRole = await prisma.role.upsert({
+    where: { name: "admin" },
+    update: {},
+    create: {
+      name: "admin",
+      displayName: "Administrator",
+      description: "Full system access",
+      color: "#ef4444",
+      isSystem: true,
+    },
+  });
+
   // Create admin user
   const admin = await prisma.user.upsert({
     where: { email: "alriansr@gmail.com" },
-    update: {
-      role: "ADMIN",
-    },
+    update: {},
     create: {
       email: "alriansr@gmail.com",
       name: "Admin User",
-      role: "ADMIN",
+    },
+  });
+
+  // Assign admin role to user if not already assigned
+  await prisma.userRole.upsert({
+    where: {
+      userId_roleId: {
+        userId: admin.id,
+        roleId: adminRole.id,
+      },
+    },
+    update: {},
+    create: {
+      userId: admin.id,
+      roleId: adminRole.id,
     },
   });
 

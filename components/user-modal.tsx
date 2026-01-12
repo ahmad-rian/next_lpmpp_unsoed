@@ -226,9 +226,9 @@ export function UserModal({
 
             {/* Roles Selection */}
             <div className="space-y-2">
-              <label className="text-sm font-medium">
+              <span className="text-sm font-medium">
                 Roles <span className="text-danger">*</span>
-              </label>
+              </span>
               {loadingRoles ? (
                 <div className="text-sm text-default-500">Loading roles...</div>
               ) : (

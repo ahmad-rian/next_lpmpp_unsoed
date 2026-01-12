@@ -9,7 +9,6 @@ import { Card, CardBody, CardHeader } from "@heroui/card";
 import { Chip } from "@heroui/chip";
 import { Select, SelectItem } from "@heroui/select";
 import { Tabs, Tab } from "@heroui/tabs";
-import type { Selection } from "@heroui/select";
 import { DocumentUpload } from "@/components/document-upload";
 
 // Heroicons

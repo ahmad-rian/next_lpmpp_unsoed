@@ -7,6 +7,19 @@ async function addAdmin() {
   console.log("🔧 Adding admin to database...");
   
   try {
+    // Ensure admin role exists
+    const adminRole = await prisma.role.upsert({
+      where: { name: "admin" },
+      update: {},
+      create: {
+        name: "admin",
+        displayName: "Administrator",
+        description: "Full system access",
+        color: "#ef4444",
+        isSystem: true,
+      },
+    });
+
     // Check if user already exists
     const existing = await prisma.user.findUnique({
       where: { email: adminEmail }
@@ -18,18 +31,41 @@ async function addAdmin() {
         where: { email: adminEmail },
         data: {
           name: adminName,
-          role: "ADMIN",
         }
       });
+      
+      // Ensure user has admin role
+      await prisma.userRole.upsert({
+        where: {
+          userId_roleId: {
+            userId: updated.id,
+            roleId: adminRole.id,
+          },
+        },
+        update: {},
+        create: {
+          userId: updated.id,
+          roleId: adminRole.id,
+        },
+      });
+      
       console.log("✅ Admin updated:", updated.email);
     } else {
       const newUser = await prisma.user.create({
         data: {
           email: adminEmail,
           name: adminName,
-          role: "ADMIN",
         }
       });
+      
+      // Assign admin role to new user
+      await prisma.userRole.create({
+        data: {
+          userId: newUser.id,
+          roleId: adminRole.id,
+        },
+      });
+      
       console.log("✅ Admin created:", newUser.email);
     }
     

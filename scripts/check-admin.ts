@@ -5,10 +5,30 @@ async function checkAndFixAdmin() {
   
   console.log("🔍 Checking database for:", adminEmail);
   
-  // Get user with accounts
+  // Ensure admin role exists
+  const adminRole = await prisma.role.upsert({
+    where: { name: "admin" },
+    update: {},
+    create: {
+      name: "admin",
+      displayName: "Administrator",
+      description: "Full system access",
+      color: "#ef4444",
+      isSystem: true,
+    },
+  });
+  
+  // Get user with accounts and roles
   const user = await prisma.user.findUnique({
     where: { email: adminEmail },
-    include: { accounts: true }
+    include: { 
+      accounts: true,
+      roles: {
+        include: {
+          role: true,
+        },
+      },
+    }
   });
   
   if (!user) {
@@ -17,10 +37,13 @@ async function checkAndFixAdmin() {
     return;
   }
   
+  const userRoles = user.roles.map(r => r.role.name);
+  const isAdmin = userRoles.includes("admin");
+  
   console.log("\n📊 User Data:");
   console.log("- Email:", user.email);
   console.log("- Name:", user.name);
-  console.log("- Role:", user.role);
+  console.log("- Roles:", userRoles.join(", ") || "none");
   console.log("- Accounts:", user.accounts.length);
   
   if (user.accounts.length > 0) {
@@ -55,14 +78,23 @@ async function checkAndFixAdmin() {
     }
   }
   
-  // Ensure role is ADMIN
-  if (user.role !== "ADMIN") {
-    console.log("\n🔧 Updating role to ADMIN...");
-    await prisma.user.update({
-      where: { email: adminEmail },
-      data: { role: "ADMIN" }
+  // Ensure user has admin role
+  if (!isAdmin) {
+    console.log("\n🔧 Adding admin role...");
+    await prisma.userRole.upsert({
+      where: {
+        userId_roleId: {
+          userId: user.id,
+          roleId: adminRole.id,
+        },
+      },
+      update: {},
+      create: {
+        userId: user.id,
+        roleId: adminRole.id,
+      },
     });
-    console.log("✅ Role updated to ADMIN");
+    console.log("✅ Admin role assigned");
   }
   
   console.log("\n✅ Database check complete!");
