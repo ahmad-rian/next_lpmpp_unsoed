@@ -38,6 +38,7 @@ export async function POST(request: NextRequest) {
       data: {
         studyProgram: data.studyProgram || data.programName,
         level: data.level,
+        korprodi: data.korprodi || null,
         skNumber: data.skNumber || null,
         skYear: data.skYear ? parseInt(data.skYear) : null,
         rank: data.rank || data.rating || null,
@@ -85,6 +86,7 @@ export async function PUT(request: NextRequest) {
       data: {
         studyProgram: data.studyProgram || data.programName,
         level: data.level,
+        korprodi: data.korprodi || null,
         skNumber: data.skNumber || null,
         skYear: data.skYear ? parseInt(data.skYear) : null,
         rank: data.rank || data.rating || null,

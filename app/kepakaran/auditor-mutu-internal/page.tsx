@@ -9,6 +9,7 @@ import { Chip } from "@heroui/chip";
 interface ExpertiseItem {
   id: string;
   name: string;
+  profileUrl: string | null;
   order?: number;
 }
 
@@ -25,10 +26,10 @@ export default function AuditorMutuInternalPage() {
   async function fetchData() {
     try {
       setLoading(true);
-      const params = new URLSearchParams({ 
-        type: "AUDITOR_SPMI", 
-        page: String(page), 
-        pageSize: String(pageSize) 
+      const params = new URLSearchParams({
+        type: "AUDITOR_SPMI",
+        page: String(page),
+        pageSize: String(pageSize)
       });
       if (q.trim()) params.set("q", q.trim());
       const res = await fetch(`/api/expertise?${params.toString()}`);
@@ -62,9 +63,9 @@ export default function AuditorMutuInternalPage() {
       <div className="max-w-5xl mx-auto space-y-6">
         {/* Search & Stats */}
         <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
-          <Chip 
-            size="lg" 
-            variant="flat" 
+          <Chip
+            size="lg"
+            variant="flat"
             color="primary"
             startContent={
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
@@ -74,7 +75,7 @@ export default function AuditorMutuInternalPage() {
           >
             {total} Auditor
           </Chip>
-          
+
           <Input
             type="text"
             placeholder="Cari nama auditor..."
@@ -128,13 +129,27 @@ export default function AuditorMutuInternalPage() {
                         </p>
                       </div>
 
-                      {/* Icon */}
-                      <div className="flex-shrink-0 hidden sm:block">
-                        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                          <svg className="w-5 h-5 text-primary" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
-                          </svg>
-                        </div>
+                      {/* Icon / Profile Link */}
+                      <div className="flex-shrink-0 hidden sm:flex items-center gap-2">
+                        {item.profileUrl ? (
+                          <a
+                            href={item.profileUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="w-10 h-10 rounded-full bg-primary/10 hover:bg-primary/20 flex items-center justify-center transition-colors group"
+                            title="Lihat Profile"
+                          >
+                            <svg className="w-5 h-5 text-primary group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+                            </svg>
+                          </a>
+                        ) : (
+                          <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                            <svg className="w-5 h-5 text-primary" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
+                            </svg>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </CardBody>
@@ -169,7 +184,7 @@ export default function AuditorMutuInternalPage() {
                 {q ? "Tidak Ada Hasil" : "Belum Ada Data"}
               </h3>
               <p className="text-default-500">
-                {q 
+                {q
                   ? `Tidak ditemukan hasil untuk "${q}"`
                   : "Data auditor belum tersedia saat ini"}
               </p>

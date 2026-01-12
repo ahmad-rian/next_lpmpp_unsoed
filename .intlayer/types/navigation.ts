@@ -1,0 +1,57 @@
+/* eslint-disable */
+export default {
+  "key": "navigation",
+  "content": {
+    "nodeType": "translation",
+    "translation": {
+      "id": {
+        "home": "Beranda",
+        "about": "Profil LPMPP",
+        "aboutUs": "Tentang Kami",
+        "leadership": "Pimpinan Lembaga",
+        "administration": "Tata Usaha",
+        "workUnits": "Unit Kerja",
+        "spmi": "SPMI",
+        "accreditation": "Akreditasi",
+        "supervisor": "Supervisor",
+        "featuredPrograms": "Program Unggulan",
+        "news": "Berita",
+        "downloads": "Unduhan",
+        "gallery": "Galeri"
+      },
+      "en": {
+        "home": "Home",
+        "about": "About LPMPP",
+        "aboutUs": "About Us",
+        "leadership": "Leadership",
+        "administration": "Administration",
+        "workUnits": "Work Units",
+        "spmi": "SPMI",
+        "accreditation": "Accreditation",
+        "supervisor": "Supervisors",
+        "featuredPrograms": "Featured Programs",
+        "news": "News",
+        "downloads": "Downloads",
+        "gallery": "Gallery"
+      },
+      "zh": {
+        "home": "主页",
+        "about": "关于LPMPP",
+        "aboutUs": "关于我们",
+        "leadership": "领导团队",
+        "administration": "行政管理",
+        "workUnits": "工作单位",
+        "spmi": "SPMI",
+        "accreditation": "认证",
+        "supervisor": "督导员",
+        "featuredPrograms": "特色项目",
+        "news": "新闻",
+        "downloads": "下载",
+        "gallery": "画廊"
+      }
+    }
+  },
+  "localIds": [
+    "navigation::local::content/navigation.content.ts"
+  ]
+} as const;

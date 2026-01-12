@@ -55,6 +55,7 @@ interface StudyProgramAccreditation {
   id: string;
   studyProgram: string;
   level: string;
+  korprodi: string | null;
   skNumber: string | null;
   skYear: number | null;
   rank: string | null;
@@ -124,6 +125,7 @@ export default function AkreditasiProdiPage() {
   const [formData, setFormData] = useState({
     studyProgram: "",
     level: "",
+    korprodi: "",
     skNumber: "",
     skYear: "",
     rank: "",
@@ -184,6 +186,7 @@ export default function AkreditasiProdiPage() {
       setFormData({
         studyProgram: item.studyProgram,
         level: item.level,
+        korprodi: item.korprodi || "",
         skNumber: item.skNumber || "",
         skYear: item.skYear?.toString() || "",
         rank: item.rank || "",
@@ -197,6 +200,7 @@ export default function AkreditasiProdiPage() {
       setFormData({
         studyProgram: "",
         level: "",
+        korprodi: "",
         skNumber: "",
         skYear: "",
         rank: "",
@@ -215,6 +219,7 @@ export default function AkreditasiProdiPage() {
     setFormData({
       studyProgram: "",
       level: "",
+      korprodi: "",
       skNumber: "",
       skYear: "",
       rank: "",
@@ -263,6 +268,7 @@ export default function AkreditasiProdiPage() {
           id: editingItem.id,
           studyProgram: formData.studyProgram,
           level: formData.level,
+          korprodi: formData.korprodi || null,
           skNumber: formData.skNumber || null,
           skYear: formData.skYear ? parseInt(formData.skYear) : null,
           rank: formData.rank,
@@ -274,6 +280,7 @@ export default function AkreditasiProdiPage() {
         : {
           studyProgram: formData.studyProgram,
           level: formData.level,
+          korprodi: formData.korprodi || null,
           skNumber: formData.skNumber || null,
           skYear: formData.skYear ? parseInt(formData.skYear) : null,
           rank: formData.rank,
@@ -478,6 +485,7 @@ export default function AkreditasiProdiPage() {
           <TableHeader>
             <TableColumn>NO</TableColumn>
             <TableColumn>PROGRAM STUDI</TableColumn>
+            <TableColumn>KORPRODI</TableColumn>
             <TableColumn>STRATA</TableColumn>
             <TableColumn>PERINGKAT</TableColumn>
             <TableColumn>MASA BERLAKU</TableColumn>
@@ -502,6 +510,7 @@ export default function AkreditasiProdiPage() {
                       )}
                     </div>
                   </TableCell>
+                  <TableCell>{item.korprodi || "-"}</TableCell>
                   <TableCell>
                     <Chip size="sm" variant="flat" color="primary">
                       {LEVEL_OPTIONS.find(l => l.key === item.level)?.label || item.level}
@@ -626,6 +635,14 @@ export default function AkreditasiProdiPage() {
                     </SelectItem>
                   ))}
                 </Select>
+                <Input
+                  label="Koordinator Program Studi"
+                  placeholder="Masukkan nama koordinator prodi (opsional)"
+                  value={formData.korprodi}
+                  onChange={(e: any) =>
+                    setFormData({ ...formData, korprodi: e.target.value })
+                  }
+                />
                 <Input
                   label="No. SK"
                   placeholder="Masukkan nomor SK (opsional)"

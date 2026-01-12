@@ -53,6 +53,12 @@ export const siteConfig = {
           icon: "clipboard",
         },
         {
+          label: "Sistem Informasi Pendukung",
+          href: "/spmi/sistem-informasi-pendukung",
+          description: "Daftar sistem informasi pendukung SPMI",
+          icon: "computer",
+        },
+        {
           label: "Dokumen SPMI & Audit",
           href: "/spmi/dokumen",
           description: "Sistem Penjaminan Mutu Internal & Audit Mutu Internal",
@@ -87,6 +93,12 @@ export const siteConfig = {
           href: "/akreditasi/internasional",
           description: "Akreditasi tingkat internasional",
           icon: "globe",
+        },
+        {
+          label: "Peringkat PT",
+          href: "/akreditasi/peringkat",
+          description: "Peringkat Perguruan Tinggi (Webometrics, QS, THE, dll)",
+          icon: "trophy",
         },
       ],
     },

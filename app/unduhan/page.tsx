@@ -76,7 +76,7 @@ export default function UnduhanPage() {
     await fetchDownloads(1, true, q);
   };
 
-  const loadMore = async () => {
+  const handleLoadMore = async () => {
     if (hasMore && !loading) {
       await fetchDownloads(page + 1, false);
     }
@@ -186,7 +186,7 @@ export default function UnduhanPage() {
 
           {hasMore && (
             <div className="flex justify-center mt-8">
-              <Button onPress={loadMore} isLoading={loading} variant="flat" color="primary">
+              <Button onPress={handleLoadMore} isLoading={loading} variant="flat" color="primary">
                 Muat Lebih Banyak
               </Button>
             </div>

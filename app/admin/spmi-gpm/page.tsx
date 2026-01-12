@@ -59,6 +59,7 @@ interface QualityAssuranceGroup {
   id: string;
   facultyId: string;
   faculty: Faculty;
+  ketuaGpm: string | null;
   description: string | null;
   contactInfo: string | null;
   directUrl: string | null;
@@ -79,6 +80,7 @@ export default function SpmiGpmPage() {
   const [formData, setFormData] = useState({
     id: "",
     facultyId: "",
+    ketuaGpm: "",
     description: "",
     contactInfo: "",
     directUrl: "",
@@ -177,6 +179,7 @@ export default function SpmiGpmPage() {
     setFormData({
       id: "",
       facultyId: "",
+      ketuaGpm: "",
       description: "",
       contactInfo: "",
       directUrl: "",
@@ -189,6 +192,7 @@ export default function SpmiGpmPage() {
     setFormData({
       id: group.id,
       facultyId: group.facultyId,
+      ketuaGpm: group.ketuaGpm || "",
       description: group.description || "",
       contactInfo: group.contactInfo || "",
       directUrl: group.directUrl || "",
@@ -364,6 +368,7 @@ export default function SpmiGpmPage() {
           <Table aria-label="Tabel GPM Fakultas">
             <TableHeader>
               <TableColumn>FAKULTAS</TableColumn>
+              <TableColumn>KETUA GPM</TableColumn>
               <TableColumn>DESKRIPSI</TableColumn>
               <TableColumn>KONTAK</TableColumn>
               <TableColumn>LINK LANGSUNG</TableColumn>
@@ -388,6 +393,7 @@ export default function SpmiGpmPage() {
                       </Button>
                     </div>
                   </TableCell>
+                  <TableCell>{group.ketuaGpm || "-"}</TableCell>
                   <TableCell>{group.description || "-"}</TableCell>
                   <TableCell>{group.contactInfo || "-"}</TableCell>
                   <TableCell>
@@ -549,6 +555,15 @@ export default function SpmiGpmPage() {
                   </SelectItem>
                 ))}
               </Select>
+
+              <Input
+                label="Ketua GPM"
+                placeholder="Nama Ketua GPM"
+                value={formData.ketuaGpm}
+                onChange={(e) =>
+                  setFormData({ ...formData, ketuaGpm: e.target.value })
+                }
+              />
 
               <Textarea
                 label="Deskripsi"

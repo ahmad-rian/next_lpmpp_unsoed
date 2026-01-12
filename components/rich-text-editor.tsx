@@ -83,6 +83,31 @@ const CodeIcon = () => (
   </svg>
 );
 
+// Text Alignment Icons
+const AlignLeftIcon = () => (
+  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+    <path d="M15 15H3v2h12v-2zm0-8H3v2h12V7zM3 13h18v-2H3v2zm0 8h18v-2H3v2zM3 3v2h18V3H3z" />
+  </svg>
+);
+
+const AlignCenterIcon = () => (
+  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+    <path d="M7 15v2h10v-2H7zm-4 6h18v-2H3v2zm0-8h18v-2H3v2zm4-6v2h10V7H7zM3 3v2h18V3H3z" />
+  </svg>
+);
+
+const AlignRightIcon = () => (
+  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+    <path d="M3 21h18v-2H3v2zm6-4h12v-2H9v2zm-6-4h18v-2H3v2zm6-4h12V7H9v2zM3 3v2h18V3H3z" />
+  </svg>
+);
+
+const AlignJustifyIcon = () => (
+  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+    <path d="M3 21h18v-2H3v2zm0-4h18v-2H3v2zm0-4h18v-2H3v2zm0-4h18V7H3v2zm0-6v2h18V3H3z" />
+  </svg>
+);
+
 export const RichTextEditor: React.FC<RichTextEditorProps> = ({
   value,
   onChange,
@@ -469,6 +494,50 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
           title="Large (100%)"
         >
           L
+        </button>
+
+        <div className="w-px h-8 bg-default-300 mx-1" />
+
+        {/* Text Alignment */}
+        <button
+          type="button"
+          onClick={() => editor.chain().focus().setTextAlign('left').run()}
+          className={`p-2 rounded hover:bg-default-200 ${
+            editor.isActive({ textAlign: 'left' }) ? "bg-primary text-white" : ""
+          }`}
+          title="Rata Kiri"
+        >
+          <AlignLeftIcon />
+        </button>
+        <button
+          type="button"
+          onClick={() => editor.chain().focus().setTextAlign('center').run()}
+          className={`p-2 rounded hover:bg-default-200 ${
+            editor.isActive({ textAlign: 'center' }) ? "bg-primary text-white" : ""
+          }`}
+          title="Rata Tengah"
+        >
+          <AlignCenterIcon />
+        </button>
+        <button
+          type="button"
+          onClick={() => editor.chain().focus().setTextAlign('right').run()}
+          className={`p-2 rounded hover:bg-default-200 ${
+            editor.isActive({ textAlign: 'right' }) ? "bg-primary text-white" : ""
+          }`}
+          title="Rata Kanan"
+        >
+          <AlignRightIcon />
+        </button>
+        <button
+          type="button"
+          onClick={() => editor.chain().focus().setTextAlign('justify').run()}
+          className={`p-2 rounded hover:bg-default-200 ${
+            editor.isActive({ textAlign: 'justify' }) ? "bg-primary text-white" : ""
+          }`}
+          title="Rata Kiri Kanan (Justify)"
+        >
+          <AlignJustifyIcon />
         </button>
       </div>
 

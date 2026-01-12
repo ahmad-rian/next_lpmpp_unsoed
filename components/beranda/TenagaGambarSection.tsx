@@ -119,7 +119,7 @@ export default function TenagaGambarSection() {
                         transition={{ duration: 0.6, delay: 0.2 }}
                         className="max-w-7xl mx-auto"
                     >
-                        {/* Title with Batik Ornament */}
+                        {/* Title with Batik Ornament
                         <div className="text-center mb-8 md:mb-12">
                             <div className="flex items-center justify-center gap-4 mb-4">
                                 <div className="h-px w-12 md:w-24 bg-gradient-to-r from-transparent to-amber-800" />
@@ -128,9 +128,7 @@ export default function TenagaGambarSection() {
                                     <circle cx="9" cy="9" r="2" />
                                     <path d="M15.5 11L12 15l-2.5-3L6 16h12z" />
                                 </svg>
-                                <h2 className="text-2xl md:text-3xl font-bold text-amber-900 dark:text-amber-600">
-                                    Informasi Tambahan
-                                </h2>
+
                                 <svg className="w-6 h-6 text-amber-800" viewBox="0 0 24 24" fill="currentColor">
                                     <path d="M21 3H3c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H3V5h18v14z" />
                                     <circle cx="9" cy="9" r="2" />
@@ -138,7 +136,7 @@ export default function TenagaGambarSection() {
                                 </svg>
                                 <div className="h-px w-12 md:w-24 bg-gradient-to-l from-transparent to-amber-800" />
                             </div>
-                        </div>
+                        </div> */}
 
                         {/* Image with Batik Frame */}
                         <div className="relative group">

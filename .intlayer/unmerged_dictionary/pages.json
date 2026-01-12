@@ -1,0 +1,410 @@
+[
+  {
+    "key": "pages",
+    "content": {
+      "aboutTitle": {
+        "nodeType": "translation",
+        "translation": {
+          "id": "Tentang Kami",
+          "en": "About Us",
+          "zh": "关于我们"
+        }
+      },
+      "vision": {
+        "nodeType": "translation",
+        "translation": {
+          "id": "Visi",
+          "en": "Vision",
+          "zh": "愿景"
+        }
+      },
+      "mission": {
+        "nodeType": "translation",
+        "translation": {
+          "id": "Misi",
+          "en": "Mission",
+          "zh": "使命"
+        }
+      },
+      "tasks": {
+        "nodeType": "translation",
+        "translation": {
+          "id": "Tugas",
+          "en": "Tasks",
+          "zh": "任务"
+        }
+      },
+      "functions": {
+        "nodeType": "translation",
+        "translation": {
+          "id": "Fungsi",
+          "en": "Functions",
+          "zh": "功能"
+        }
+      },
+      "logoPhilosophy": {
+        "nodeType": "translation",
+        "translation": {
+          "id": "Filosofi Logo",
+          "en": "Logo Philosophy",
+          "zh": "标志哲学"
+        }
+      },
+      "logoPhilosophyDesc": {
+        "nodeType": "translation",
+        "translation": {
+          "id": "Makna di balik setiap elemen logo LPMPP UNSOED",
+          "en": "The meaning behind each element of the LPMPP UNSOED logo",
+          "zh": "LPMPP UNSOED标志各元素的含义"
+        }
+      },
+      "address": {
+        "nodeType": "translation",
+        "translation": {
+          "id": "Alamat",
+          "en": "Address",
+          "zh": "地址"
+        }
+      },
+      "viewOnMaps": {
+        "nodeType": "translation",
+        "translation": {
+          "id": "Lihat di Google Maps",
+          "en": "View on Google Maps",
+          "zh": "在谷歌地图上查看"
+        }
+      },
+      "newsTitle": {
+        "nodeType": "translation",
+        "translation": {
+          "id": "Berita",
+          "en": "News",
+          "zh": "新闻"
+        }
+      },
+      "newsSubtitle": {
+        "nodeType": "translation",
+        "translation": {
+          "id": "Informasi dan kabar terbaru dari LPMPP Unsoed",
+          "en": "Latest information and news from LPMPP Unsoed",
+          "zh": "LPMPP Unsoed最新新闻和动态"
+        }
+      },
+      "loadingNews": {
+        "nodeType": "translation",
+        "translation": {
+          "id": "Memuat berita...",
+          "en": "Loading news...",
+          "zh": "加载新闻中..."
+        }
+      },
+      "noNews": {
+        "nodeType": "translation",
+        "translation": {
+          "id": "Belum ada berita",
+          "en": "No news yet",
+          "zh": "暂无新闻"
+        }
+      },
+      "checkBack": {
+        "nodeType": "translation",
+        "translation": {
+          "id": "Silakan kembali lagi nanti.",
+          "en": "Please check back later.",
+          "zh": "请稍后再来查看。"
+        }
+      },
+      "downloadsTitle": {
+        "nodeType": "translation",
+        "translation": {
+          "id": "Unduhan",
+          "en": "Downloads",
+          "zh": "下载"
+        }
+      },
+      "downloadsSubtitle": {
+        "nodeType": "translation",
+        "translation": {
+          "id": "Kumpulan dokumen PDF/DOCS yang dapat diunduh",
+          "en": "Collection of downloadable PDF/DOCS documents",
+          "zh": "可下载的PDF/DOCS文档集合"
+        }
+      },
+      "searchDocs": {
+        "nodeType": "translation",
+        "translation": {
+          "id": "Cari dokumen...",
+          "en": "Search documents...",
+          "zh": "搜索文档..."
+        }
+      },
+      "loadingDownloads": {
+        "nodeType": "translation",
+        "translation": {
+          "id": "Memuat data unduhan...",
+          "en": "Loading download data...",
+          "zh": "加载下载数据中..."
+        }
+      },
+      "noDocuments": {
+        "nodeType": "translation",
+        "translation": {
+          "id": "Belum ada dokumen unduhan",
+          "en": "No download documents yet",
+          "zh": "暂无下载文档"
+        }
+      },
+      "programsTitle": {
+        "nodeType": "translation",
+        "translation": {
+          "id": "Program Unggulan",
+          "en": "Featured Programs",
+          "zh": "特色项目"
+        }
+      },
+      "programsSubtitle": {
+        "nodeType": "translation",
+        "translation": {
+          "id": "Kumpulan program unggulan LPMPP UNSOED",
+          "en": "LPMPP UNSOED featured programs collection",
+          "zh": "LPMPP UNSOED特色项目集合"
+        }
+      },
+      "loadingPrograms": {
+        "nodeType": "translation",
+        "translation": {
+          "id": "Memuat program...",
+          "en": "Loading programs...",
+          "zh": "加载项目中..."
+        }
+      },
+      "noPrograms": {
+        "nodeType": "translation",
+        "translation": {
+          "id": "Belum Ada Program",
+          "en": "No Programs Yet",
+          "zh": "暂无项目"
+        }
+      },
+      "noProgramsDesc": {
+        "nodeType": "translation",
+        "translation": {
+          "id": "Program unggulan belum tersedia saat ini",
+          "en": "Featured programs are not available at this time",
+          "zh": "特色项目目前暂不可用"
+        }
+      },
+      "programList": {
+        "nodeType": "translation",
+        "translation": {
+          "id": "DAFTAR PROGRAM",
+          "en": "PROGRAM LIST",
+          "zh": "项目列表"
+        }
+      },
+      "viewDocument": {
+        "nodeType": "translation",
+        "translation": {
+          "id": "Lihat Dokumen",
+          "en": "View Document",
+          "zh": "查看文档"
+        }
+      },
+      "noDescription": {
+        "nodeType": "translation",
+        "translation": {
+          "id": "Belum ada deskripsi untuk program ini",
+          "en": "No description available for this program",
+          "zh": "该项目暂无描述"
+        }
+      },
+      "galleryTitle": {
+        "nodeType": "translation",
+        "translation": {
+          "id": "Galeri Foto",
+          "en": "Photo Gallery",
+          "zh": "照片画廊"
+        }
+      },
+      "gallerySubtitle": {
+        "nodeType": "translation",
+        "translation": {
+          "id": "Kumpulan foto kegiatan LPMPP UNSOED",
+          "en": "LPMPP UNSOED activity photo collection",
+          "zh": "LPMPP UNSOED活动照片集"
+        }
+      },
+      "loadingGallery": {
+        "nodeType": "translation",
+        "translation": {
+          "id": "Memuat galeri...",
+          "en": "Loading gallery...",
+          "zh": "加载画廊中..."
+        }
+      },
+      "noPhotos": {
+        "nodeType": "translation",
+        "translation": {
+          "id": "Belum ada foto",
+          "en": "No photos yet",
+          "zh": "暂无照片"
+        }
+      },
+      "leadershipTitle": {
+        "nodeType": "translation",
+        "translation": {
+          "id": "Struktur Pimpinan Lembaga",
+          "en": "Leadership Structure",
+          "zh": "领导架构"
+        }
+      },
+      "headOfInstitution": {
+        "nodeType": "translation",
+        "translation": {
+          "id": "Kepala Lembaga",
+          "en": "Head of Institution",
+          "zh": "机构负责人"
+        }
+      },
+      "secretary": {
+        "nodeType": "translation",
+        "translation": {
+          "id": "Sekretaris",
+          "en": "Secretary",
+          "zh": "秘书"
+        }
+      },
+      "centerHead": {
+        "nodeType": "translation",
+        "translation": {
+          "id": "Kepala Pusat",
+          "en": "Head of Center",
+          "zh": "中心主任"
+        }
+      },
+      "staffTitle": {
+        "nodeType": "translation",
+        "translation": {
+          "id": "Staff Tata Usaha",
+          "en": "Administrative Staff",
+          "zh": "行政人员"
+        }
+      },
+      "staffSubtitle": {
+        "nodeType": "translation",
+        "translation": {
+          "id": "Kumpulan staff tata usaha LPMPP UNSOED",
+          "en": "LPMPP UNSOED administrative staff collection",
+          "zh": "LPMPP UNSOED行政人员"
+        }
+      },
+      "headWelcome": {
+        "nodeType": "translation",
+        "translation": {
+          "id": "Sambutan Kepala Lembaga",
+          "en": "Head of Institution's Welcome",
+          "zh": "机构负责人欢迎词"
+        }
+      },
+      "infoServices": {
+        "nodeType": "translation",
+        "translation": {
+          "id": "Informasi dan Layanan",
+          "en": "Information and Services",
+          "zh": "信息与服务"
+        }
+      },
+      "trusted": {
+        "nodeType": "translation",
+        "translation": {
+          "id": "Terpercaya",
+          "en": "Trusted",
+          "zh": "值得信赖"
+        }
+      },
+      "qualityService": {
+        "nodeType": "translation",
+        "translation": {
+          "id": "Layanan berkualitas",
+          "en": "Quality service",
+          "zh": "优质服务"
+        }
+      },
+      "fast": {
+        "nodeType": "translation",
+        "translation": {
+          "id": "Cepat",
+          "en": "Fast",
+          "zh": "快速"
+        }
+      },
+      "optimalResponse": {
+        "nodeType": "translation",
+        "translation": {
+          "id": "Respon optimal",
+          "en": "Optimal response",
+          "zh": "最佳响应"
+        }
+      },
+      "infoAgenda": {
+        "nodeType": "translation",
+        "translation": {
+          "id": "Informasi & Agenda",
+          "en": "Information & Events",
+          "zh": "信息与日程"
+        }
+      },
+      "infoAgendaDesc": {
+        "nodeType": "translation",
+        "translation": {
+          "id": "Status akreditasi dan jadwal kegiatan LPMPP UNSOED",
+          "en": "Accreditation status and LPMPP UNSOED activity schedule",
+          "zh": "LPMPP UNSOED认证状态和活动日程"
+        }
+      },
+      "needsReaccreditation": {
+        "nodeType": "translation",
+        "translation": {
+          "id": "Perlu Reakreditasi",
+          "en": "Needs Re-accreditation",
+          "zh": "需要重新认证"
+        }
+      },
+      "allProgramsGood": {
+        "nodeType": "translation",
+        "translation": {
+          "id": "Semua prodi status baik",
+          "en": "All programs status good",
+          "zh": "所有专业状态良好"
+        }
+      },
+      "rankDistribution": {
+        "nodeType": "translation",
+        "translation": {
+          "id": "Distribusi Peringkat",
+          "en": "Rank Distribution",
+          "zh": "等级分布"
+        }
+      },
+      "activitySchedule": {
+        "nodeType": "translation",
+        "translation": {
+          "id": "Agenda Kegiatan",
+          "en": "Activity Schedule",
+          "zh": "活动日程"
+        }
+      },
+      "noEvents": {
+        "nodeType": "translation",
+        "translation": {
+          "id": "Tidak ada agenda",
+          "en": "No events",
+          "zh": "暂无日程"
+        }
+      }
+    },
+    "localId": "pages::local::content/pages.content.ts",
+    "location": "local",
+    "filePath": "content/pages.content.ts"
+  }
+]

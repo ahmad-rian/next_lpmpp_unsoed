@@ -1,0 +1,114 @@
+[
+  {
+    "key": "navigation",
+    "content": {
+      "home": {
+        "nodeType": "translation",
+        "translation": {
+          "id": "Beranda",
+          "en": "Home",
+          "zh": "主页"
+        }
+      },
+      "about": {
+        "nodeType": "translation",
+        "translation": {
+          "id": "Profil LPMPP",
+          "en": "About LPMPP",
+          "zh": "关于LPMPP"
+        }
+      },
+      "aboutUs": {
+        "nodeType": "translation",
+        "translation": {
+          "id": "Tentang Kami",
+          "en": "About Us",
+          "zh": "关于我们"
+        }
+      },
+      "leadership": {
+        "nodeType": "translation",
+        "translation": {
+          "id": "Pimpinan Lembaga",
+          "en": "Leadership",
+          "zh": "领导团队"
+        }
+      },
+      "administration": {
+        "nodeType": "translation",
+        "translation": {
+          "id": "Tata Usaha",
+          "en": "Administration",
+          "zh": "行政管理"
+        }
+      },
+      "workUnits": {
+        "nodeType": "translation",
+        "translation": {
+          "id": "Unit Kerja",
+          "en": "Work Units",
+          "zh": "工作单位"
+        }
+      },
+      "spmi": {
+        "nodeType": "translation",
+        "translation": {
+          "id": "SPMI",
+          "en": "SPMI",
+          "zh": "SPMI"
+        }
+      },
+      "accreditation": {
+        "nodeType": "translation",
+        "translation": {
+          "id": "Akreditasi",
+          "en": "Accreditation",
+          "zh": "认证"
+        }
+      },
+      "supervisor": {
+        "nodeType": "translation",
+        "translation": {
+          "id": "Supervisor",
+          "en": "Supervisors",
+          "zh": "督导员"
+        }
+      },
+      "featuredPrograms": {
+        "nodeType": "translation",
+        "translation": {
+          "id": "Program Unggulan",
+          "en": "Featured Programs",
+          "zh": "特色项目"
+        }
+      },
+      "news": {
+        "nodeType": "translation",
+        "translation": {
+          "id": "Berita",
+          "en": "News",
+          "zh": "新闻"
+        }
+      },
+      "downloads": {
+        "nodeType": "translation",
+        "translation": {
+          "id": "Unduhan",
+          "en": "Downloads",
+          "zh": "下载"
+        }
+      },
+      "gallery": {
+        "nodeType": "translation",
+        "translation": {
+          "id": "Galeri",
+          "en": "Gallery",
+          "zh": "画廊"
+        }
+      }
+    },
+    "localId": "navigation::local::content/navigation.content.ts",
+    "location": "local",
+    "filePath": "content/navigation.content.ts"
+  }
+]

@@ -13,6 +13,7 @@ interface StudyProgramAccreditation {
   id: string;
   studyProgram: string;
   level: string;
+  korprodi: string | null;
   skNumber: string | null;
   skYear: number | null;
   rank: string | null;
@@ -310,6 +311,7 @@ export default function AkreditasiProgramStudiPage() {
                   <tr className="border-b border-default-200">
                     <th className="text-left py-3 px-4 text-sm font-semibold text-default-600">No</th>
                     <th className="text-left py-3 px-4 text-sm font-semibold text-default-600">Program Studi</th>
+                    <th className="text-left py-3 px-4 text-sm font-semibold text-default-600">Korprodi</th>
                     <th className="text-left py-3 px-4 text-sm font-semibold text-default-600">Strata</th>
                     <th className="text-left py-3 px-4 text-sm font-semibold text-default-600">No. SK</th>
                     <th className="text-left py-3 px-4 text-sm font-semibold text-default-600">Tahun SK</th>
@@ -322,6 +324,7 @@ export default function AkreditasiProgramStudiPage() {
                       <tr key={acc.id} className="border-b border-default-100 hover:bg-default-50 transition-colors">
                         <td className="py-3 px-4 text-sm">{(page - 1) * rowsPerPage + index + 1}</td>
                         <td className="py-3 px-4 text-sm font-medium">{acc.studyProgram}</td>
+                        <td className="py-3 px-4 text-sm">{acc.korprodi || "-"}</td>
                         <td className="py-3 px-4 text-sm">
                           <Chip size="sm" variant="flat" color="primary">
                             {LEVEL_LABELS[acc.level] || acc.level}
@@ -338,7 +341,7 @@ export default function AkreditasiProgramStudiPage() {
                     ))
                   ) : (
                     <tr>
-                      <td colSpan={6} className="py-8 text-center text-default-400">
+                      <td colSpan={7} className="py-8 text-center text-default-400">
                         {searchQuery || filterLevel !== "all" 
                           ? "Tidak ada data yang sesuai dengan pencarian" 
                           : "Tidak ada data yang ditemukan"}
@@ -368,6 +371,11 @@ export default function AkreditasiProgramStudiPage() {
                           <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100 leading-tight">
                             {acc.studyProgram}
                           </h4>
+                          {acc.korprodi && (
+                            <p className="text-xs text-default-600 mt-1">
+                              Korprodi: {acc.korprodi}
+                            </p>
+                          )}
                         </div>
                         <Chip size="sm" variant="flat" color={getRankChipColor(acc.rank)}>
                           {acc.rank ? RANK_LABELS[acc.rank] || acc.rank : "-"}

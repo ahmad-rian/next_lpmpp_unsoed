@@ -295,7 +295,7 @@ export default function InfoSection() {
                                                         labelLine={true}
                                                         label={({ value }) => {
                                                             const total = rankDistribution.reduce((sum, item) => sum + item.value, 0);
-                                                            const percentage = ((value / total) * 100).toFixed(1);
+                                                            const percentage = (((value as number) / total) * 100).toFixed(1);
                                                             return `${percentage}%`;
                                                         }}
                                                         outerRadius={60}

@@ -12,8 +12,6 @@ export const authConfig: NextAuthConfig = {
       allowDangerousEmailAccountLinking: true,
     }),
   ],
-  // Izinkan auto-linking account dengan email yang sama
-  // PENTING: Ini untuk allow admin login dengan provider berbeda
   trustHost: true,
   callbacks: {
     async signIn({ user, account, profile }) {
@@ -25,6 +23,13 @@ export const authConfig: NextAuthConfig = {
         // Cek apakah user sudah ada di database
         const existingUser = await prisma.user.findUnique({
           where: { email: user.email },
+          include: {
+            roles: {
+              include: {
+                role: true,
+              },
+            },
+          },
         });
 
         // SECURITY: Hanya izinkan user yang SUDAH TERDAFTAR di database
@@ -33,9 +38,15 @@ export const authConfig: NextAuthConfig = {
           return false;
         }
 
-        // Hanya izinkan user dengan role ADMIN
-        if (existingUser.role !== "ADMIN") {
-          console.log(`❌ Login ditolak: ${user.email} bukan ADMIN`);
+        // Check if user is active
+        if (!existingUser.isActive) {
+          console.log(`❌ Login ditolak: ${user.email} tidak aktif`);
+          return false;
+        }
+
+        // Check if user has any role (at least one role required to login)
+        if (existingUser.roles.length === 0) {
+          console.log(`❌ Login ditolak: ${user.email} tidak memiliki role`);
           return false;
         }
 
@@ -43,7 +54,7 @@ export const authConfig: NextAuthConfig = {
         if (existingUser.name !== user.name || existingUser.image !== user.image) {
           await prisma.user.update({
             where: { email: user.email },
-            data: { 
+            data: {
               name: user.name,
               image: user.image,
             },
@@ -58,36 +69,64 @@ export const authConfig: NextAuthConfig = {
       }
     },
     async redirect({ url, baseUrl }) {
-      console.log("NextAuth redirect:", { url, baseUrl });
-      
       // Redirect ke admin panel setelah login sukses
       if (url.startsWith("/auth/signin")) {
         return `${baseUrl}/admin`;
       }
-      
+
       // Jika URL adalah baseUrl (homepage), biarkan redirect ke homepage
       if (url === baseUrl || url === `${baseUrl}/`) {
         return baseUrl;
       }
-      
+
       // Jika URL internal lainnya, izinkan
       if (url.startsWith(baseUrl)) {
         return url;
       }
-      
+
       // Fallback ke admin untuk URL external
       return `${baseUrl}/admin`;
     },
     async session({ session, user }) {
-      // Tambahkan role ke session
+      // Tambahkan roles dan permissions ke session
       if (session.user) {
         const dbUser = await prisma.user.findUnique({
           where: { email: session.user.email! },
+          include: {
+            roles: {
+              include: {
+                role: {
+                  include: {
+                    permissions: {
+                      include: {
+                        permission: true,
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
         });
-        
+
         if (dbUser) {
-          session.user.role = dbUser.role;
           session.user.id = dbUser.id;
+          session.user.isActive = dbUser.isActive;
+
+          // Extract role names
+          session.user.roles = dbUser.roles.map(ur => ur.role.name);
+
+          // Extract unique permissions
+          const permissions = new Set<string>();
+          dbUser.roles.forEach(ur => {
+            ur.role.permissions.forEach(rp => {
+              permissions.add(rp.permission.name);
+            });
+          });
+          session.user.permissions = Array.from(permissions);
+
+          // Backward compatibility: set role to "ADMIN" if user has any role
+          session.user.role = dbUser.roles.length > 0 ? "ADMIN" : "USER";
         }
       }
       return session;
@@ -96,11 +135,18 @@ export const authConfig: NextAuthConfig = {
       if (user) {
         const dbUser = await prisma.user.findUnique({
           where: { email: user.email! },
+          include: {
+            roles: {
+              include: {
+                role: true,
+              },
+            },
+          },
         });
-        
+
         if (dbUser) {
-          token.role = dbUser.role;
           token.id = dbUser.id;
+          token.roles = dbUser.roles.map(ur => ur.role.name);
         }
       }
       return token;

@@ -56,10 +56,8 @@ export const Footer = () => {
   return (
     <footer className="bg-gray-50 dark:bg-black px-4 py-8 transition-colors">
       <div className="max-w-7xl mx-auto bg-gradient-to-br from-red-600 via-red-700 to-rose-700 dark:from-gray-900 dark:via-black dark:to-gray-950 rounded-2xl px-8 py-12 shadow-xl text-white">
-        {/* Main Footer Content */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 mb-10">
 
-          {/* Brand Section */}
           <div className="space-y-5">
             <div className="flex items-center space-x-3">
               {config?.logoApp && (
@@ -79,24 +77,19 @@ export const Footer = () => {
               Lembaga Pengembangan Pembelajaran dan Penjaminan Mutu
             </p>
 
-            {/* University Logo */}
             {config?.logoUnsoed && (
-              <div className="flex items-center space-x-2">
+              <div className="pt-2">
                 <Image
                   src={config.logoUnsoed}
-                  alt="Logo Universitas Jenderal Soedirman"
-                  width={28}
-                  height={28}
-                  className="object-contain opacity-80 dark:opacity-70"
+                  alt="Logo Unsoed"
+                  width={100}
+                  height={100}
+                  className="object-contain opacity-90"
                 />
-                <span className="text-xs text-red-100 dark:text-red-200">
-                  Universitas Jenderal Soedirman
-                </span>
               </div>
             )}
           </div>
 
-          {/* Navigation Links */}
           <div className="space-y-4">
             <h4 className="text-sm font-medium text-white">Navigasi</h4>
             <ul className="space-y-2.5">
@@ -113,7 +106,6 @@ export const Footer = () => {
             </ul>
           </div>
 
-          {/* Service Links */}
           <div className="space-y-4">
             <h4 className="text-sm font-medium text-white">Layanan</h4>
             <ul className="space-y-2.5">
@@ -130,7 +122,6 @@ export const Footer = () => {
             </ul>
           </div>
 
-          {/* Contact & Social */}
           <div className="space-y-4">
             <h4 className="text-sm font-medium text-white">Hubungi Kami</h4>
             <div className="space-y-3">
@@ -150,7 +141,6 @@ export const Footer = () => {
               )}
             </div>
 
-            {/* Social Media */}
             {config?.instagramUrl && (
               <div className="pt-2">
                 <p className="text-xs text-red-100 dark:text-red-200 mb-2">Ikuti Kami</p>
@@ -171,12 +161,11 @@ export const Footer = () => {
           </div>
         </div>
 
-        <Divider className="bg-red-400 dark:bg-gray-700 opacity-20 dark:opacity-40" />
+        <Divider className="bg-red-300/30 dark:bg-red-800/30" />
 
-        {/* Bottom Footer */}
         <div className="pt-8 text-center">
           <p className="text-sm text-red-50 dark:text-red-100">
-            © {currentYear} {config?.siteName || "LPMPP UNSOED"}™. All rights reserved.
+            &copy; {currentYear} {config?.siteName || "LPMPP UNSOED"}. All rights reserved.
           </p>
         </div>
       </div>

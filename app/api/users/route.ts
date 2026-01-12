@@ -2,14 +2,19 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { hash } from "bcryptjs";
+import { hasPermission, syncRoles } from "@/lib/authorization";
 
-// GET - Get all users (already handled in page.tsx via Prisma)
+// GET - Get all users with their roles
 export async function GET() {
   try {
     const session = await auth();
-
-    if (!session || session.user.role !== "ADMIN") {
+    if (!session?.user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const canView = await hasPermission(session.user.id, "users.view");
+    if (!canView) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
     const users = await prisma.user.findMany({
@@ -18,10 +23,22 @@ export async function GET() {
         name: true,
         email: true,
         image: true,
-        role: true,
+        isActive: true,
         emailVerified: true,
         createdAt: true,
         updatedAt: true,
+        roles: {
+          include: {
+            role: {
+              select: {
+                id: true,
+                name: true,
+                displayName: true,
+                color: true,
+              },
+            },
+          },
+        },
       },
       orderBy: {
         createdAt: "desc",
@@ -42,13 +59,17 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const session = await auth();
-
-    if (!session || session.user.role !== "ADMIN") {
+    if (!session?.user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const canCreate = await hasPermission(session.user.id, "users.create");
+    if (!canCreate) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+
     const body = await request.json();
-    const { name, email, password, role } = body;
+    const { name, email, password, isActive, roleIds } = body;
 
     // Validation
     if (!name || !email || !password) {
@@ -68,6 +89,13 @@ export async function POST(request: NextRequest) {
     if (password.length < 6) {
       return NextResponse.json(
         { error: "Password must be at least 6 characters" },
+        { status: 400 }
+      );
+    }
+
+    if (!roleIds || !Array.isArray(roleIds) || roleIds.length === 0) {
+      return NextResponse.json(
+        { error: "At least one role is required" },
         { status: 400 }
       );
     }
@@ -93,21 +121,41 @@ export async function POST(request: NextRequest) {
         name,
         email,
         password: hashedPassword,
-        role: role || "USER",
+        isActive: isActive ?? true,
       },
+    });
+
+    // Assign roles
+    await syncRoles(user.id, roleIds);
+
+    // Return user with roles
+    const userWithRoles = await prisma.user.findUnique({
+      where: { id: user.id },
       select: {
         id: true,
         name: true,
         email: true,
         image: true,
-        role: true,
+        isActive: true,
         emailVerified: true,
         createdAt: true,
         updatedAt: true,
+        roles: {
+          include: {
+            role: {
+              select: {
+                id: true,
+                name: true,
+                displayName: true,
+                color: true,
+              },
+            },
+          },
+        },
       },
     });
 
-    return NextResponse.json(user, { status: 201 });
+    return NextResponse.json(userWithRoles, { status: 201 });
   } catch (error) {
     console.error("Error creating user:", error);
     return NextResponse.json(
@@ -121,13 +169,17 @@ export async function POST(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   try {
     const session = await auth();
-
-    if (!session || session.user.role !== "ADMIN") {
+    if (!session?.user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const canUpdate = await hasPermission(session.user.id, "users.update");
+    if (!canUpdate) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+
     const body = await request.json();
-    const { id, name, email, password, role } = body;
+    const { id, name, email, password, isActive, roleIds } = body;
 
     if (!id) {
       return NextResponse.json(
@@ -161,30 +213,52 @@ export async function PUT(request: NextRequest) {
 
     // Prepare update data
     const updateData: any = {};
-    if (name) updateData.name = name;
-    if (email) updateData.email = email;
-    if (role) updateData.role = role;
+    if (name !== undefined) updateData.name = name;
+    if (email !== undefined) updateData.email = email;
+    if (isActive !== undefined) updateData.isActive = isActive;
     if (password && password.length >= 6) {
       updateData.password = await hash(password, 12);
     }
 
     // Update user
-    const user = await prisma.user.update({
+    await prisma.user.update({
       where: { id },
       data: updateData,
+    });
+
+    // Update roles if provided
+    if (roleIds !== undefined && Array.isArray(roleIds)) {
+      await syncRoles(id, roleIds);
+    }
+
+    // Return updated user with roles
+    const userWithRoles = await prisma.user.findUnique({
+      where: { id },
       select: {
         id: true,
         name: true,
         email: true,
         image: true,
-        role: true,
+        isActive: true,
         emailVerified: true,
         createdAt: true,
         updatedAt: true,
+        roles: {
+          include: {
+            role: {
+              select: {
+                id: true,
+                name: true,
+                displayName: true,
+                color: true,
+              },
+            },
+          },
+        },
       },
     });
 
-    return NextResponse.json(user);
+    return NextResponse.json(userWithRoles);
   } catch (error) {
     console.error("Error updating user:", error);
     return NextResponse.json(
@@ -198,9 +272,13 @@ export async function PUT(request: NextRequest) {
 export async function DELETE(request: NextRequest) {
   try {
     const session = await auth();
-
-    if (!session || session.user.role !== "ADMIN") {
+    if (!session?.user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const canDelete = await hasPermission(session.user.id, "users.delete");
+    if (!canDelete) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
     const { searchParams } = new URL(request.url);
@@ -230,7 +308,7 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    // Delete user (will cascade delete accounts and sessions)
+    // Delete user (will cascade delete roles, accounts and sessions)
     await prisma.user.delete({
       where: { id },
     });

@@ -1,0 +1,137 @@
+{
+  "internationalization": {
+    "locales": [
+      "id",
+      "en",
+      "zh"
+    ],
+    "requiredLocales": [
+      "id",
+      "en",
+      "zh"
+    ],
+    "strictMode": "inclusive",
+    "defaultLocale": "id"
+  },
+  "routing": {
+    "mode": "prefix-no-default",
+    "storage": [
+      "cookie",
+      "header"
+    ],
+    "basePath": ""
+  },
+  "content": {
+    "fileExtensions": [
+      ".content.ts",
+      ".content.js",
+      ".content.cjs",
+      ".content.cjx",
+      ".content.mjs",
+      ".content.mjx",
+      ".content.json",
+      ".content.tsx",
+      ".content.jsx"
+    ],
+    "baseDir": "/Users/mac/Herd/lpmpp_unsoed",
+    "excludedPath": [
+      "./app/admin",
+      "./app/api",
+      "./app/auth"
+    ],
+    "watch": true,
+    "contentDir": [
+      "/Users/mac/Herd/lpmpp_unsoed/content"
+    ],
+    "moduleAugmentationDir": "/Users/mac/Herd/lpmpp_unsoed/.intlayer/types",
+    "unmergedDictionariesDir": "/Users/mac/Herd/lpmpp_unsoed/.intlayer/unmerged_dictionary",
+    "remoteDictionariesDir": "/Users/mac/Herd/lpmpp_unsoed/.intlayer/remote_dictionary",
+    "dictionariesDir": "/Users/mac/Herd/lpmpp_unsoed/.intlayer/dictionary",
+    "dynamicDictionariesDir": "/Users/mac/Herd/lpmpp_unsoed/.intlayer/dynamic_dictionary",
+    "fetchDictionariesDir": "/Users/mac/Herd/lpmpp_unsoed/.intlayer/fetch_dictionary",
+    "typesDir": "/Users/mac/Herd/lpmpp_unsoed/.intlayer/types",
+    "mainDir": "/Users/mac/Herd/lpmpp_unsoed/.intlayer/main",
+    "configDir": "/Users/mac/Herd/lpmpp_unsoed/.intlayer/config",
+    "cacheDir": "/Users/mac/Herd/lpmpp_unsoed/.intlayer/cache",
+    "watchedFilesPattern": [
+      "/**/*.content.ts",
+      "/**/*.content.js",
+      "/**/*.content.cjs",
+      "/**/*.content.cjx",
+      "/**/*.content.mjs",
+      "/**/*.content.mjx",
+      "/**/*.content.json",
+      "/**/*.content.tsx",
+      "/**/*.content.jsx"
+    ],
+    "watchedFilesPatternWithPath": [
+      "/Users/mac/Herd/lpmpp_unsoed/content/**/*.content.ts",
+      "/Users/mac/Herd/lpmpp_unsoed/content/**/*.content.js",
+      "/Users/mac/Herd/lpmpp_unsoed/content/**/*.content.cjs",
+      "/Users/mac/Herd/lpmpp_unsoed/content/**/*.content.cjx",
+      "/Users/mac/Herd/lpmpp_unsoed/content/**/*.content.mjs",
+      "/Users/mac/Herd/lpmpp_unsoed/content/**/*.content.mjx",
+      "/Users/mac/Herd/lpmpp_unsoed/content/**/*.content.json",
+      "/Users/mac/Herd/lpmpp_unsoed/content/**/*.content.tsx",
+      "/Users/mac/Herd/lpmpp_unsoed/content/**/*.content.jsx"
+    ],
+    "outputFilesPatternWithPath": "/Users/mac/Herd/lpmpp_unsoed/.intlayer/dictionary/**/*.json"
+  },
+  "editor": {
+    "applicationURL": "",
+    "editorURL": "http://localhost:8000",
+    "cmsURL": "https://intlayer.org",
+    "backendURL": "https://back.intlayer.org",
+    "port": 8000,
+    "enabled": true,
+    "dictionaryPriorityStrategy": "local_first",
+    "liveSync": true,
+    "liveSyncPort": 4000,
+    "liveSyncURL": "http://localhost:4000"
+  },
+  "log": {
+    "mode": "default",
+    "prefix": "\u001b[38;5;239m[intlayer] \u001b[0m"
+  },
+  "ai": {},
+  "build": {
+    "mode": "auto",
+    "importMode": "static",
+    "traversePattern": [
+      "**/*.{tsx,ts,js,mjs,cjs,jsx,mjx,cjx,vue,svelte,svte}",
+      "!**/node_modules/**"
+    ],
+    "outputFormat": [
+      "cjs",
+      "esm"
+    ],
+    "cache": true
+  },
+  "compiler": {
+    "enabled": true,
+    "transformPattern": [
+      "**/*.{ts,tsx,jsx,js,cjs,mjs,mjx,cjx,svelte,vue}"
+    ],
+    "excludePattern": [
+      "**/node_modules/**",
+      "**/dist/**",
+      "**/.next/**",
+      "**/.nuxt/**",
+      "**/.expo/**",
+      "**/.vercel/**",
+      "**/.turbo/**",
+      "**/.tanstack/**",
+      "**/*.stories.ts",
+      "**/*.test.ts"
+    ],
+    "outputDir": "./compiler"
+  },
+  "dictionary": {
+    "fill": true
+  },
+  "metadata": {
+    "name": "Intlayer",
+    "version": "7.5.6",
+    "doc": "https://intlayer.org/docs"
+  }
+}

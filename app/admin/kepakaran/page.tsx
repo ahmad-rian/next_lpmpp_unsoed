@@ -46,6 +46,7 @@ interface Expertise {
   id: string;
   type: string;
   name: string;
+  profileUrl: string | null;
   order: number;
   isActive: boolean;
   createdAt: string;
@@ -74,6 +75,7 @@ export default function KepakaranPage() {
     id: "",
     type: selectedType,
     name: "",
+    profileUrl: "",
     order: 0,
   });
 
@@ -125,6 +127,7 @@ export default function KepakaranPage() {
       id: "",
       type: selectedType,
       name: "",
+      profileUrl: "",
       order: expertise.length + 1,
     });
     onOpen();
@@ -136,6 +139,7 @@ export default function KepakaranPage() {
       id: exp.id,
       type: exp.type,
       name: exp.name,
+      profileUrl: exp.profileUrl || "",
       order: exp.order,
     });
     onOpen();
@@ -233,6 +237,7 @@ export default function KepakaranPage() {
             <TableHeader>
               <TableColumn>NO</TableColumn>
               <TableColumn>NAMA</TableColumn>
+              <TableColumn>LINK PROFILE</TableColumn>
               <TableColumn>STATUS</TableColumn>
               <TableColumn>AKSI</TableColumn>
             </TableHeader>
@@ -242,6 +247,23 @@ export default function KepakaranPage() {
                   <TableCell>{(page - 1) * rowsPerPage + index + 1}</TableCell>
                   <TableCell>
                     <div className="font-medium">{exp.name}</div>
+                  </TableCell>
+                  <TableCell>
+                    {exp.profileUrl ? (
+                      <a
+                        href={exp.profileUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 text-primary hover:text-primary/80 hover:underline transition-colors"
+                      >
+                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+                        </svg>
+                        <span className="text-sm">Lihat Profile</span>
+                      </a>
+                    ) : (
+                      <span className="text-default-400 text-sm">-</span>
+                    )}
                   </TableCell>
                   <TableCell>
                     <Chip
@@ -312,6 +334,16 @@ export default function KepakaranPage() {
                   setFormData({ ...formData, name: e.target.value })
                 }
                 isRequired
+              />
+
+              <Input
+                label="Link Profile (SINTA/Google Scholar/dll)"
+                placeholder="https://sinta.kemdikbud.go.id/authors/..."
+                value={formData.profileUrl}
+                onChange={(e: any) =>
+                  setFormData({ ...formData, profileUrl: e.target.value })
+                }
+                description="Masukkan URL lengkap ke profil SINTA, Google Scholar, Scopus, atau platform lainnya"
               />
 
               <Input

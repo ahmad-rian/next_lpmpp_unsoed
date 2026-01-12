@@ -6,6 +6,7 @@ import {
     useScroll,
     useMotionValueEvent,
 } from "framer-motion";
+import Link from "next/link";
 
 import React, { useRef, useState } from "react";
 
@@ -130,7 +131,7 @@ export const NavItems = ({ items, className, onItemClick }: NavItemsProps) => {
         >
             {items.map((item, idx) => (
                 <div key={`nav-item-${idx}`} className="relative group">
-                    <a
+                    <Link
                         onMouseEnter={() => setHovered(idx)}
                         onClick={onItemClick}
                         className="relative px-4 py-2 text-neutral-600 dark:text-neutral-300 flex items-center gap-1 group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors"
@@ -158,7 +159,7 @@ export const NavItems = ({ items, className, onItemClick }: NavItemsProps) => {
                                 />
                             </svg>
                         )}
-                    </a>
+                    </Link>
 
                     {/* Dropdown Menu */}
                     {item.children && item.children.length > 0 && (
@@ -166,7 +167,7 @@ export const NavItems = ({ items, className, onItemClick }: NavItemsProps) => {
                             <div className="bg-white dark:bg-zinc-800 rounded-xl shadow-xl border border-red-200 dark:border-red-900/50 p-4 min-w-[280px] backdrop-blur-sm">
                                 <div className="grid gap-2">
                                     {item.children.map((child, childIdx) => (
-                                        <a
+                                        <Link
                                             key={`child-${idx}-${childIdx}`}
                                             href={child.href}
                                             className="group/item flex items-start gap-3 p-3 rounded-lg transition-all duration-200 border border-transparent hover:bg-red-50 dark:hover:bg-red-950/30 hover:border-red-200 dark:hover:border-red-900/50"
@@ -188,7 +189,7 @@ export const NavItems = ({ items, className, onItemClick }: NavItemsProps) => {
                                                     </div>
                                                 )}
                                             </div>
-                                        </a>
+                                        </Link>
                                     ))}
                                 </div>
                             </div>
@@ -310,7 +311,7 @@ export const NavbarLogo = ({
     visible?: boolean;
 }) => {
     return (
-        <a
+        <Link
             href="/"
             className="relative z-20 mr-4 flex items-center space-x-2 px-2 py-1 text-sm font-normal text-black"
         >
@@ -327,7 +328,7 @@ export const NavbarLogo = ({
                     {siteName || "LPMPP UNSOED"}
                 </span>
             )}
-        </a>
+        </Link>
     );
 };
 

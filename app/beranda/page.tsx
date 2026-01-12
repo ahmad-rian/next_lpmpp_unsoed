@@ -5,9 +5,6 @@ import HeroSection from "@/components/beranda/HeroSection";
 import AdditionalImagesSection from "@/components/beranda/AdditionalImagesSection";
 import InfoSection from "@/components/beranda/InfoSection";
 import LayananTautanSection from "@/components/beranda/LayananTautanSection";
-import SambutanInformasiSection from "@/components/beranda/SambutanInformasiSection";
-import BukuBeritaGaleriSection from "@/components/beranda/BukuBeritaGaleriSection";
-import TenagaGambarSection from "@/components/beranda/TenagaGambarSection";
 
 interface SiteConfig {
     siteName: string;
@@ -99,21 +96,14 @@ export default function BerandaPage() {
             {/* Info Section - Accreditation Status & Agenda */}
             <InfoSection />
 
+
+
             {/* Layanan & Tautan Section with Bento Grid */}
             <LayananTautanSection
                 config={config}
                 serviceLinks={serviceLinks}
                 loading={loadingLinks}
             />
-
-            {/* Sambutan Kepala & Informasi Layanan */}
-            <SambutanInformasiSection />
-
-            {/* Buku Ajar, Berita, dan Galeri */}
-            <BukuBeritaGaleriSection />
-
-            {/* Tenaga Kependidikan & Gambar Tambahan */}
-            <TenagaGambarSection />
         </main>
     );
 }

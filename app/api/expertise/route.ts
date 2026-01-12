@@ -63,7 +63,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { type, name, order } = body;
+    const { type, name, order, profileUrl } = body;
 
     if (!type || !name) {
       return NextResponse.json(
@@ -76,6 +76,7 @@ export async function POST(request: NextRequest) {
       data: {
         type,
         name,
+        profileUrl: profileUrl || null,
         order: order || 0,
       },
     });
@@ -100,7 +101,7 @@ export async function PUT(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { id, type, name, order, isActive } = body;
+    const { id, type, name, order, isActive, profileUrl } = body;
 
     if (!id) {
       return NextResponse.json(
@@ -114,6 +115,7 @@ export async function PUT(request: NextRequest) {
       data: {
         type,
         name,
+        profileUrl: profileUrl?.trim() || null,
         order,
         isActive,
       },

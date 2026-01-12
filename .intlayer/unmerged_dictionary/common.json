@@ -1,0 +1,194 @@
+[
+  {
+    "key": "common",
+    "content": {
+      "welcomeTo": {
+        "nodeType": "translation",
+        "translation": {
+          "id": "Selamat Datang di",
+          "en": "Welcome to",
+          "zh": "欢迎来到"
+        }
+      },
+      "subtitle": {
+        "nodeType": "translation",
+        "translation": {
+          "id": "Lembaga Penjaminan Mutu dan Pengembangan Pembelajaran",
+          "en": "Quality Assurance and Learning Development Institution",
+          "zh": "质量保证与学习发展机构"
+        }
+      },
+      "motto": {
+        "nodeType": "translation",
+        "translation": {
+          "id": "Unggul dalam Mutu, Inovatif dalam Pembelajaran",
+          "en": "Excellence in Quality, Innovation in Learning",
+          "zh": "卓越品质，创新学习"
+        }
+      },
+      "readMore": {
+        "nodeType": "translation",
+        "translation": {
+          "id": "Baca Selengkapnya",
+          "en": "Read More",
+          "zh": "阅读更多"
+        }
+      },
+      "viewAll": {
+        "nodeType": "translation",
+        "translation": {
+          "id": "Lihat Semua",
+          "en": "View All",
+          "zh": "查看全部"
+        }
+      },
+      "loadMore": {
+        "nodeType": "translation",
+        "translation": {
+          "id": "Muat Lebih Banyak",
+          "en": "Load More",
+          "zh": "加载更多"
+        }
+      },
+      "search": {
+        "nodeType": "translation",
+        "translation": {
+          "id": "Cari",
+          "en": "Search",
+          "zh": "搜索"
+        }
+      },
+      "filter": {
+        "nodeType": "translation",
+        "translation": {
+          "id": "Filter",
+          "en": "Filter",
+          "zh": "筛选"
+        }
+      },
+      "download": {
+        "nodeType": "translation",
+        "translation": {
+          "id": "Unduh",
+          "en": "Download",
+          "zh": "下载"
+        }
+      },
+      "back": {
+        "nodeType": "translation",
+        "translation": {
+          "id": "Kembali",
+          "en": "Back",
+          "zh": "返回"
+        }
+      },
+      "save": {
+        "nodeType": "translation",
+        "translation": {
+          "id": "Simpan",
+          "en": "Save",
+          "zh": "保存"
+        }
+      },
+      "cancel": {
+        "nodeType": "translation",
+        "translation": {
+          "id": "Batal",
+          "en": "Cancel",
+          "zh": "取消"
+        }
+      },
+      "send": {
+        "nodeType": "translation",
+        "translation": {
+          "id": "Kirim",
+          "en": "Send",
+          "zh": "发送"
+        }
+      },
+      "loading": {
+        "nodeType": "translation",
+        "translation": {
+          "id": "Memuat...",
+          "en": "Loading...",
+          "zh": "加载中..."
+        }
+      },
+      "noData": {
+        "nodeType": "translation",
+        "translation": {
+          "id": "Belum ada data",
+          "en": "No data yet",
+          "zh": "暂无数据"
+        }
+      },
+      "by": {
+        "nodeType": "translation",
+        "translation": {
+          "id": "Oleh",
+          "en": "By",
+          "zh": "作者"
+        }
+      },
+      "views": {
+        "nodeType": "translation",
+        "translation": {
+          "id": "views",
+          "en": "views",
+          "zh": "浏览"
+        }
+      },
+      "downloads": {
+        "nodeType": "translation",
+        "translation": {
+          "id": "unduhan",
+          "en": "downloads",
+          "zh": "下载"
+        }
+      },
+      "navigation": {
+        "nodeType": "translation",
+        "translation": {
+          "id": "Navigasi",
+          "en": "Navigation",
+          "zh": "导航"
+        }
+      },
+      "services": {
+        "nodeType": "translation",
+        "translation": {
+          "id": "Layanan",
+          "en": "Services",
+          "zh": "服务"
+        }
+      },
+      "contactUs": {
+        "nodeType": "translation",
+        "translation": {
+          "id": "Hubungi Kami",
+          "en": "Contact Us",
+          "zh": "联系我们"
+        }
+      },
+      "followUs": {
+        "nodeType": "translation",
+        "translation": {
+          "id": "Ikuti Kami",
+          "en": "Follow Us",
+          "zh": "关注我们"
+        }
+      },
+      "institution": {
+        "nodeType": "translation",
+        "translation": {
+          "id": "Lembaga Pengembangan Pembelajaran dan Penjaminan Mutu",
+          "en": "Learning Development and Quality Assurance Institution",
+          "zh": "学习发展与质量保证机构"
+        }
+      }
+    },
+    "localId": "common::local::content/common.content.ts",
+    "location": "local",
+    "filePath": "content/common.content.ts"
+  }
+]

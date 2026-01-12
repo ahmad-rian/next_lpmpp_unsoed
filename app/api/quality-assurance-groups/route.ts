@@ -36,6 +36,7 @@ export async function POST(request: NextRequest) {
     const group = await prisma.qualityAssuranceGroup.create({
       data: {
         facultyId: data.facultyId,
+        ketuaGpm: data.ketuaGpm || null,
         description: data.description || null,
         contactInfo: data.contactInfo || null,
         order: data.order || 0,

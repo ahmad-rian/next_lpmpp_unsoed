@@ -42,15 +42,23 @@ const TrashIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
+interface Role {
+  id: string;
+  name: string;
+  displayName: string;
+  color: string;
+}
+
 interface User {
   id: string;
   name: string | null;
   email: string;
   image: string | null;
-  role: string;
+  isActive: boolean;
   emailVerified: Date | null;
   createdAt: Date;
   updatedAt: Date;
+  roles: { role: Role }[];
 }
 
 export default function UsersPage() {
@@ -105,7 +113,7 @@ export default function UsersPage() {
       setIsSubmitting(true);
       const isUpdate = !!userData.id;
       const method = isUpdate ? "PUT" : "POST";
-      
+
       const response = await fetch("/api/users", {
         method,
         headers: { "Content-Type": "application/json" },
@@ -215,17 +223,15 @@ export default function UsersPage() {
         {/* Message Alert */}
         {message && (
           <Card
-            className={`mb-4 ${
-              message.type === "success"
+            className={`mb-4 ${message.type === "success"
                 ? "bg-success-50 border-success"
                 : "bg-danger-50 border-danger"
-            }`}
+              }`}
           >
             <CardBody>
               <p
-                className={`text-sm ${
-                  message.type === "success" ? "text-success" : "text-danger"
-                }`}
+                className={`text-sm ${message.type === "success" ? "text-success" : "text-danger"
+                  }`}
               >
                 {message.text}
               </p>
@@ -247,7 +253,8 @@ export default function UsersPage() {
               <TableHeader>
                 <TableColumn>USER</TableColumn>
                 <TableColumn>EMAIL</TableColumn>
-                <TableColumn>ROLE</TableColumn>
+                <TableColumn>ROLES</TableColumn>
+                <TableColumn>STATUS</TableColumn>
                 <TableColumn>JOINED</TableColumn>
                 <TableColumn align="center">ACTIONS</TableColumn>
               </TableHeader>
@@ -276,12 +283,30 @@ export default function UsersPage() {
                       <span className="text-default-600">{user.email}</span>
                     </TableCell>
                     <TableCell>
+                      <div className="flex flex-wrap gap-1">
+                        {user.roles.map(({ role }) => (
+                          <Chip
+                            key={role.id}
+                            size="sm"
+                            style={{ backgroundColor: role.color, color: "#fff" }}
+                          >
+                            {role.displayName}
+                          </Chip>
+                        ))}
+                        {user.roles.length === 0 && (
+                          <Chip size="sm" variant="flat" color="default">
+                            No roles
+                          </Chip>
+                        )}
+                      </div>
+                    </TableCell>
+                    <TableCell>
                       <Chip
-                        color={user.role === "ADMIN" ? "success" : "default"}
+                        color={user.isActive ? "success" : "danger"}
                         variant="flat"
                         size="sm"
                       >
-                        {user.role}
+                        {user.isActive ? "Active" : "Inactive"}
                       </Chip>
                     </TableCell>
                     <TableCell>

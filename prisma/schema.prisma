@@ -10,23 +10,78 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Role {
-  USER
-  ADMIN
+// Model untuk Role (seperti Spatie)
+model Role {
+  id          String           @id @default(cuid())
+  name        String           @unique // e.g., "admin", "editor", "viewer"
+  displayName String // e.g., "Administrator", "Editor", "Viewer"
+  description String?          @db.Text
+  color       String           @default("#6366f1") // Warna untuk badge
+  isSystem    Boolean          @default(false) // Role bawaan sistem tidak bisa dihapus
+  permissions RolePermission[]
+  users       UserRole[]
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  @@index([name])
+}
+
+// Model untuk Permission (seperti Spatie)
+model Permission {
+  id          String           @id @default(cuid())
+  name        String           @unique // e.g., "users.create", "users.read", "news.publish"
+  displayName String // e.g., "Create Users", "Read Users", "Publish News"
+  module      String // e.g., "users", "news", "settings" - untuk grouping
+  description String?          @db.Text
+  roles       RolePermission[]
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  @@index([name])
+  @@index([module])
+}
+
+// Pivot table Role <-> Permission (many-to-many)
+model RolePermission {
+  id           String     @id @default(cuid())
+  roleId       String
+  permissionId String
+  role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+  createdAt    DateTime   @default(now())
+
+  @@unique([roleId, permissionId])
+  @@index([roleId])
+  @@index([permissionId])
+}
+
+// Pivot table User <-> Role (many-to-many) - User bisa punya multiple roles
+model UserRole {
+  id        String   @id @default(cuid())
+  userId    String
+  roleId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role      Role     @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, roleId])
+  @@index([userId])
+  @@index([roleId])
 }
 
 model User {
-  id            String    @id @default(cuid())
+  id            String     @id @default(cuid())
   name          String?
-  email         String    @unique
+  email         String     @unique
   emailVerified DateTime?
   image         String?
   password      String?
-  role          Role      @default(USER)
+  isActive      Boolean    @default(true)
+  roles         UserRole[]
   accounts      Account[]
   sessions      Session[]
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
 }
 
 model Account {
@@ -233,6 +288,7 @@ model QualityAssuranceGroup {
   id          String                     @id @default(cuid())
   facultyId   String // Foreign key ke Faculty
   faculty     Faculty                    @relation(fields: [facultyId], references: [id], onDelete: Cascade)
+  ketuaGpm    String? // Nama Ketua GPM
   description String?                    @db.Text
   contactInfo String?                    @db.Text
   directUrl   String?                    @db.Text // URL langsung ke halaman GPM fakultas
@@ -260,6 +316,57 @@ model QualityAssuranceDocument {
   updatedAt DateTime              @updatedAt
 
   @@index([groupId, order])
+}
+
+// Model untuk Sistem Informasi Pendukung SPMI
+model SpmiInformationSystem {
+  id          String   @id @default(cuid())
+  name        String // Nama sistem informasi
+  shortName   String? // Singkatan/akronim
+  description String?  @db.Text // Deskripsi sistem
+  logoUrl     String?  @db.Text // URL logo aplikasi
+  websiteUrl  String?  @db.Text // URL website sistem informasi
+  category    String? // Kategori sistem (e.g., "Akademik", "Kepegawaian", "Keuangan")
+  order       Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([order])
+  @@index([isActive])
+  @@index([category])
+}
+
+// Enum untuk lembaga pemeringkat PT
+enum RankingInstitution {
+  WEBOMETRICS
+  QS
+  APPLIEDHE
+  THE_WUR
+  SCOPUS
+}
+
+// Model untuk Peringkat Perguruan Tinggi berdasarkan Lembaga
+model UniversityRanking {
+  id           String             @id @default(cuid())
+  institution  RankingInstitution // Lembaga pemeringkat
+  year         Int // Tahun pemeringkatan
+  rankNational Int? // Peringkat nasional
+  rankWorld    Int? // Peringkat dunia
+  rankAsia     Int? // Peringkat asia (opsional)
+  score        Float? // Skor (jika ada)
+  badge        String? // Badge/kategori (e.g., "Rising Star", "Impact Rankings")
+  description  String?            @db.Text // Deskripsi tambahan
+  sourceUrl    String?            @db.Text // URL sumber
+  logoUrl      String?            @db.Text // Logo lembaga
+  isActive     Boolean            @default(true)
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+
+  @@unique([institution, year])
+  @@index([institution])
+  @@index([year])
+  @@index([isActive])
 }
 
 enum AccreditationLevel {
@@ -298,19 +405,20 @@ model InternationalAccreditation {
 
 // Model untuk Akreditasi Program Studi
 model StudyProgramAccreditation {
-  id           String             @id @default(cuid())
-  studyProgram String // Nama Program Studi
-  level        AccreditationLevel // Strata (D-III, S1, S2, S3, Profesi, Spesialis)
-  skNumber     String? // Nomor SK
-  skYear       Int? // Tahun SK
-  rank         AccreditationRank? // Peringkat
-  validFrom    DateTime? // Tanggal mulai berlaku
-  validUntil   DateTime? // Tanggal selesai berlaku
-  certificateUrl String? @db.Text // URL dokumen sertifikat akreditasi
-  order        Int                @default(0) // Urutan tampilan
-  isActive     Boolean            @default(true)
-  createdAt    DateTime           @default(now())
-  updatedAt    DateTime           @updatedAt
+  id             String             @id @default(cuid())
+  studyProgram   String // Nama Program Studi
+  level          AccreditationLevel // Strata (D-III, S1, S2, S3, Profesi, Spesialis)
+  korprodi       String? // Nama Koordinator Program Studi
+  skNumber       String? // Nomor SK
+  skYear         Int? // Tahun SK
+  rank           AccreditationRank? // Peringkat
+  validFrom      DateTime? // Tanggal mulai berlaku
+  validUntil     DateTime? // Tanggal selesai berlaku
+  certificateUrl String?            @db.Text // URL dokumen sertifikat akreditasi
+  order          Int                @default(0) // Urutan tampilan
+  isActive       Boolean            @default(true)
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
 
   @@index([level])
   @@index([rank])
@@ -372,13 +480,14 @@ enum ExpertiseType {
 
 // Model untuk Kepakaran (Fasilitator, Auditor, Asesor)
 model Expertise {
-  id        String        @id @default(cuid())
-  type      ExpertiseType // Jenis kepakaran
-  name      String // Nama lengkap dengan gelar
-  order     Int           @default(0) // Nomor urut
-  isActive  Boolean       @default(true)
-  createdAt DateTime      @default(now())
-  updatedAt DateTime      @updatedAt
+  id         String        @id @default(cuid())
+  type       ExpertiseType // Jenis kepakaran
+  name       String // Nama lengkap dengan gelar
+  profileUrl String?       @db.Text // Link profile (SINTA, Google Scholar, dll)
+  order      Int           @default(0) // Nomor urut
+  isActive   Boolean       @default(true)
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
 
   @@index([type, order])
 }
@@ -494,8 +603,8 @@ model Agenda {
   id          String   @id @default(cuid())
   title       String   @db.Text // Judul kegiatan
   date        DateTime // Tanggal kegiatan
-  startTime   String   // Waktu mulai (format: HH:mm)
-  endTime     String   // Waktu selesai (format: HH:mm)
+  startTime   String // Waktu mulai (format: HH:mm)
+  endTime     String // Waktu selesai (format: HH:mm)
   location    String   @db.Text // Lokasi kegiatan
   description String?  @db.Text // Deskripsi kegiatan (opsional)
   color       String   @default("#f59e0b") // Warna untuk display (default: orange)

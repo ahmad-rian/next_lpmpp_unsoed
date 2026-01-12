@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { usePathname } from "next/navigation";
-import Image from "next/image";
+import Link from "next/link";
 
 import {
   Navbar as ResizableNavbar,
@@ -10,7 +10,6 @@ import {
   NavItems,
   MobileNav,
   NavbarLogo,
-  NavbarButton,
   MobileNavHeader,
   MobileNavToggle,
   MobileNavMenu,
@@ -19,6 +18,7 @@ import { siteConfig } from "@/config/site";
 import { ThemeSwitch } from "@/components/theme-switch";
 import { AuthButtons } from "./auth-buttons";
 import { MenuIcons, IconName } from "@/components/menu-icons";
+import { GoogleTranslateWidget } from "@/components/google-translate-widget";
 
 interface SiteConfigData {
   id: string;
@@ -50,7 +50,6 @@ export const Navbar = () => {
     fetchConfig();
   }, []);
 
-  // Auto-close mobile menu on route change
   useEffect(() => {
     setIsMobileMenuOpen(false);
   }, [pathname]);
@@ -62,31 +61,23 @@ export const Navbar = () => {
     return pathname.startsWith(href);
   };
 
-  // Transform siteConfig.navItems to match NavItems format
-  const navItems: {
-    name: string;
-    link: string;
-    children?: Array<{
-      label: string;
-      href: string;
-      description?: string;
-      icon?: React.ReactNode;
-    }>;
-  }[] = siteConfig.navItems.slice(0, 6).map((item) => ({
-    name: item.label,
-    link: item.href,
-    children: item.children?.map((child) => ({
-      label: child.label,
-      href: child.href,
-      description: child.description,
-      icon: child.icon ? MenuIcons[child.icon as IconName] : undefined,
-    })),
-  }));
+  // Build nav items with translations
+  const navItems = useMemo(() => {
+    return siteConfig.navItems.slice(0, 6).map((item) => ({
+      name: item.label, // Keep original for now, translate in content
+      link: item.href,
+      children: item.children?.map((child) => ({
+        label: child.label,
+        href: child.href,
+        description: child.description || '',
+        icon: child.icon ? MenuIcons[child.icon as IconName] : undefined,
+      })),
+    }));
+  }, []);
 
   return (
     <div className="relative w-full">
       <ResizableNavbar>
-        {/* Desktop Navigation */}
         <NavBody>
           {(visible) => (
             <>
@@ -97,7 +88,8 @@ export const Navbar = () => {
                 visible={visible}
               />
               <NavItems items={navItems} />
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-3">
+                <GoogleTranslateWidget />
                 <ThemeSwitch />
                 <AuthButtons />
               </div>
@@ -105,7 +97,6 @@ export const Navbar = () => {
           )}
         </NavBody>
 
-        {/* Mobile Navigation */}
         <MobileNav>
           <MobileNavHeader>
             <NavbarLogo
@@ -113,7 +104,8 @@ export const Navbar = () => {
               logoAlt={configData?.siteName || "Logo LPMPP"}
               siteName={configData?.siteName || "LPMPP UNSOED"}
             />
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
+              <GoogleTranslateWidget />
               <ThemeSwitch />
               <MobileNavToggle
                 isOpen={isMobileMenuOpen}
@@ -143,24 +135,19 @@ export const Navbar = () => {
                     >
                       <span>{item.name}</span>
                       <svg
-                        className={`w-4 h-4 transition-transform ${openDropdowns[idx] ? "rotate-180" : ""
-                          }`}
+                        className={`w-4 h-4 transition-transform ${openDropdowns[idx] ? "rotate-180" : ""}`}
                         fill="none"
                         viewBox="0 0 24 24"
                         strokeWidth={1.5}
                         stroke="currentColor"
                       >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M19.5 8.25l-7.5 7.5-7.5-7.5"
-                        />
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
                       </svg>
                     </button>
                     {openDropdowns[idx] && (
                       <div className="ml-4 mt-2 flex flex-col gap-2">
                         {item.children.map((child, childIdx) => (
-                          <a
+                          <Link
                             key={`mobile-child-${idx}-${childIdx}`}
                             href={child.href}
                             onClick={() => setIsMobileMenuOpen(false)}
@@ -175,13 +162,13 @@ export const Navbar = () => {
                               </span>
                             )}
                             {child.label}
-                          </a>
+                          </Link>
                         ))}
                       </div>
                     )}
                   </div>
                 ) : (
-                  <a
+                  <Link
                     href={item.link}
                     onClick={() => setIsMobileMenuOpen(false)}
                     className={`block font-semibold transition-colors py-2 ${isActive(item.link)
@@ -190,7 +177,7 @@ export const Navbar = () => {
                       }`}
                   >
                     {item.name}
-                  </a>
+                  </Link>
                 )}
               </div>
             ))}
@@ -201,7 +188,6 @@ export const Navbar = () => {
         </MobileNav>
       </ResizableNavbar>
 
-      {/* Spacer to prevent content from going under fixed navbar - Minimal */}
       <div className="h-14 md:h-16" />
     </div>
   );

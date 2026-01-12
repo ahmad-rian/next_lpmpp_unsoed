@@ -12,18 +12,26 @@ declare module "next-auth" {
       email: string;
       name?: string | null;
       image?: string | null;
+      isActive: boolean;
+      roles: string[];
+      permissions: string[];
+      // Backward compatibility: computed "role" that returns "ADMIN" if user has any role
       role: "USER" | "ADMIN";
     };
   }
 
   interface User {
-    role: "USER" | "ADMIN";
+    isActive?: boolean;
+    roles?: string[];
+    permissions?: string[];
+    role?: "USER" | "ADMIN";
   }
 }
 
 declare module "next-auth/jwt" {
   interface JWT {
     id: string;
-    role: "USER" | "ADMIN";
+    roles: string[];
+    role?: "USER" | "ADMIN";
   }
 }

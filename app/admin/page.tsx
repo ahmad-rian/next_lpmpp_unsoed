@@ -14,8 +14,8 @@ const LayoutDashboardIcon = ({ className }: { className?: string }) => (
 export default async function AdminDashboard() {
   const session = await auth();
 
-  // Redirect if not authenticated or not an admin
-  if (!session?.user || session.user.role !== "ADMIN") {
+  // Redirect if not authenticated or has no roles
+  if (!session?.user || !session.user.roles || session.user.roles.length === 0) {
     redirect("/auth/signin");
   }
 

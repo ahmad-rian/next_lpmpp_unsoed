@@ -146,18 +146,21 @@ export function AdminNavbar() {
     { key: "tata-usaha", label: "Tata Usaha", href: "/admin/tata-usaha", icon: UsersIcon },
     { key: "pusat-unit", label: "Pusat & Unit", href: "/admin/pusat-unit", icon: FileTextIcon },
     { key: "users", label: "User Management", href: "/admin/users", icon: UsersIcon },
+    { key: "roles", label: "Role & Permission", href: "/admin/roles", icon: CogIcon },
   ];
 
   const spmiItems = [
     { key: "spmi", label: "Tentang SPMI", href: "/admin/spmi", icon: FileTextIcon },
     { key: "spmi-dokumen", label: "Dokumen SPMI", href: "/admin/spmi-dokumen", icon: FileTextIcon },
     { key: "spmi-gpm", label: "GPM Fakultas", href: "/admin/spmi-gpm", icon: UsersIcon },
+    { key: "spmi-sistem-informasi", label: "Sistem Informasi Pendukung", href: "/admin/spmi-sistem-informasi", icon: FileTextIcon },
   ];
 
   const akreditasiItems = [
     { key: "akreditasi-internasional", label: "Akreditasi Internasional", href: "/admin/akreditasi-internasional", icon: FileTextIcon },
     { key: "akreditasi-prodi", label: "Akreditasi Program Studi", href: "/admin/akreditasi-prodi", icon: FileTextIcon },
     { key: "akreditasi-pt", label: "Akreditasi Perguruan Tinggi", href: "/admin/akreditasi-pt", icon: FileTextIcon },
+    { key: "peringkat-pt", label: "Peringkat PT", href: "/admin/peringkat-pt", icon: FileTextIcon },
   ];
 
   const programUnggulanItems = [
@@ -465,7 +468,7 @@ export function AdminNavbar() {
                   />
                   <div className="hidden md:block text-left">
                     <p className="text-sm font-semibold">{session.user.name || "Admin"}</p>
-                    <p className="text-xs text-default-500 uppercase">{session.user.role || "Admin"}</p>
+                    <p className="text-xs text-default-500 uppercase">{session.user.roles?.[0] || "Admin"}</p>
                   </div>
                 </button>
               </DropdownTrigger>
@@ -496,7 +499,7 @@ export function AdminNavbar() {
                 >
                   <div className="flex flex-col">
                     <span className="text-sm font-medium">{session.user.name || "No Name"}</span>
-                    <span className="text-xs text-default-500 capitalize">{session.user.role || "Admin"}</span>
+                    <span className="text-xs text-default-500 capitalize">{session.user.roles?.[0] || "Admin"}</span>
                   </div>
                 </DropdownItem>
 

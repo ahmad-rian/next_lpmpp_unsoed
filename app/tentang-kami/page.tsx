@@ -134,7 +134,7 @@ export default function TentangKamiPage() {
                   </p>
                 </div>
               )}
-              
+
               {config?.misiUnsoed && (
                 <div>
                   <h4 className="text-base md:text-lg font-bold text-rose-600 dark:text-rose-400 mb-2 md:mb-3">
@@ -198,7 +198,7 @@ export default function TentangKamiPage() {
                   </p>
                 </div>
               )}
-              
+
               {config?.misi && (
                 <div>
                   <h4 className="text-base md:text-lg font-bold text-rose-600 dark:text-rose-400 mb-2 md:mb-3">
