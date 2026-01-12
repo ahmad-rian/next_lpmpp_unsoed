@@ -315,10 +315,11 @@ export default function InfoSection() {
                                                             borderRadius: "8px",
                                                             boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
                                                         }}
-                                                        formatter={(value: number) => {
+                                                        formatter={(value) => {
+                                                            const numValue = typeof value === 'number' ? value : 0;
                                                             const total = rankDistribution.reduce((sum, item) => sum + item.value, 0);
-                                                            const percentage = ((value / total) * 100).toFixed(1);
-                                                            return [`${value} Prodi (${percentage}%)`, "Jumlah"];
+                                                            const percentage = ((numValue / total) * 100).toFixed(1);
+                                                            return [`${numValue} Prodi (${percentage}%)`, "Jumlah"];
                                                         }}
                                                     />
                                                 </PieChart>

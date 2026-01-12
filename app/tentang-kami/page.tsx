@@ -274,7 +274,7 @@ export default function TentangKamiPage() {
                 {
                   num: "04",
                   title: "Dimensi Visi UNSOED",
-                  desc: "Merdeka, Maju, dan Mendunia"
+                  desc: "Melesat, Berdampak, dan Mendunia"
                 },
                 {
                   num: "05",
