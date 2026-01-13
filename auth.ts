@@ -87,11 +87,23 @@ export const authConfig: NextAuthConfig = {
       // Fallback ke admin untuk URL external
       return `${baseUrl}/admin`;
     },
-    async session({ session, user }) {
-      // Tambahkan roles dan permissions ke session
-      if (session.user) {
+    async session({ session, token }) {
+      // Tambahkan data dari token ke session (JWT strategy)
+      if (session.user && token) {
+        session.user.id = token.id as string;
+        session.user.isActive = token.isActive as boolean;
+        session.user.roles = (token.roles as string[]) || [];
+        session.user.permissions = (token.permissions as string[]) || [];
+
+        // Backward compatibility: set role to "ADMIN" if user has any role
+        session.user.role = session.user.roles.length > 0 ? "ADMIN" : "USER";
+      }
+      return session;
+    },
+    async jwt({ token, user }) {
+      if (user) {
         const dbUser = await prisma.user.findUnique({
-          where: { email: session.user.email! },
+          where: { email: user.email! },
           include: {
             roles: {
               include: {
@@ -110,11 +122,9 @@ export const authConfig: NextAuthConfig = {
         });
 
         if (dbUser) {
-          session.user.id = dbUser.id;
-          session.user.isActive = dbUser.isActive;
-
-          // Extract role names
-          session.user.roles = dbUser.roles.map(ur => ur.role.name);
+          token.id = dbUser.id;
+          token.isActive = dbUser.isActive;
+          token.roles = dbUser.roles.map(ur => ur.role.name);
 
           // Extract unique permissions
           const permissions = new Set<string>();
@@ -123,30 +133,7 @@ export const authConfig: NextAuthConfig = {
               permissions.add(rp.permission.name);
             });
           });
-          session.user.permissions = Array.from(permissions);
-
-          // Backward compatibility: set role to "ADMIN" if user has any role
-          session.user.role = dbUser.roles.length > 0 ? "ADMIN" : "USER";
-        }
-      }
-      return session;
-    },
-    async jwt({ token, user }) {
-      if (user) {
-        const dbUser = await prisma.user.findUnique({
-          where: { email: user.email! },
-          include: {
-            roles: {
-              include: {
-                role: true,
-              },
-            },
-          },
-        });
-
-        if (dbUser) {
-          token.id = dbUser.id;
-          token.roles = dbUser.roles.map(ur => ur.role.name);
+          token.permissions = Array.from(permissions);
         }
       }
       return token;
@@ -157,7 +144,7 @@ export const authConfig: NextAuthConfig = {
     error: "/auth/error",
   },
   session: {
-    strategy: "database",
+    strategy: "jwt",
   },
 };
 
