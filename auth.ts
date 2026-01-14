@@ -4,6 +4,7 @@ import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "@/lib/prisma";
 
 export const authConfig: NextAuthConfig = {
+  debug: true,
   adapter: PrismaAdapter(prisma) as any,
   providers: [
     GoogleProvider({
@@ -15,12 +16,14 @@ export const authConfig: NextAuthConfig = {
   trustHost: true,
   callbacks: {
     async signIn({ user, account, profile }) {
+      console.log("🔐 SignIn callback started for:", user.email);
+
       if (!user.email) {
+        console.log("❌ No email provided");
         return false;
       }
 
       try {
-        // Cek apakah user sudah ada di database
         const existingUser = await prisma.user.findUnique({
           where: { email: user.email },
           include: {
@@ -32,25 +35,21 @@ export const authConfig: NextAuthConfig = {
           },
         });
 
-        // SECURITY: Hanya izinkan user yang SUDAH TERDAFTAR di database
         if (!existingUser) {
           console.log(`❌ Login ditolak: ${user.email} tidak terdaftar di database`);
           return false;
         }
 
-        // Check if user is active
         if (!existingUser.isActive) {
           console.log(`❌ Login ditolak: ${user.email} tidak aktif`);
           return false;
         }
 
-        // Check if user has any role (at least one role required to login)
         if (existingUser.roles.length === 0) {
           console.log(`❌ Login ditolak: ${user.email} tidak memiliki role`);
           return false;
         }
 
-        // Update user info (nama dan foto) jika berubah
         if (existingUser.name !== user.name || existingUser.image !== user.image) {
           await prisma.user.update({
             where: { email: user.email },
@@ -64,76 +63,71 @@ export const authConfig: NextAuthConfig = {
         console.log(`✅ Login berhasil: ${user.email}`);
         return true;
       } catch (error) {
-        console.error("SignIn error:", error);
+        console.error("❌ SignIn error:", error);
         return false;
       }
     },
     async redirect({ url, baseUrl }) {
-      // Redirect ke admin panel setelah login sukses
       if (url.startsWith("/auth/signin")) {
         return `${baseUrl}/admin`;
       }
-
-      // Jika URL adalah baseUrl (homepage), biarkan redirect ke homepage
       if (url === baseUrl || url === `${baseUrl}/`) {
         return baseUrl;
       }
-
-      // Jika URL internal lainnya, izinkan
       if (url.startsWith(baseUrl)) {
         return url;
       }
-
-      // Fallback ke admin untuk URL external
       return `${baseUrl}/admin`;
     },
     async session({ session, token }) {
-      // Tambahkan data dari token ke session (JWT strategy)
       if (session.user && token) {
         session.user.id = token.id as string;
         session.user.isActive = token.isActive as boolean;
         session.user.roles = (token.roles as string[]) || [];
         session.user.permissions = (token.permissions as string[]) || [];
-
-        // Backward compatibility: set role to "ADMIN" if user has any role
         session.user.role = session.user.roles.length > 0 ? "ADMIN" : "USER";
       }
       return session;
     },
     async jwt({ token, user }) {
       if (user) {
-        const dbUser = await prisma.user.findUnique({
-          where: { email: user.email! },
-          include: {
-            roles: {
-              include: {
-                role: {
-                  include: {
-                    permissions: {
-                      include: {
-                        permission: true,
+        console.log("🔑 JWT callback for user:", user.email);
+        try {
+          const dbUser = await prisma.user.findUnique({
+            where: { email: user.email! },
+            include: {
+              roles: {
+                include: {
+                  role: {
+                    include: {
+                      permissions: {
+                        include: {
+                          permission: true,
+                        },
                       },
                     },
                   },
                 },
               },
             },
-          },
-        });
-
-        if (dbUser) {
-          token.id = dbUser.id;
-          token.isActive = dbUser.isActive;
-          token.roles = dbUser.roles.map(ur => ur.role.name);
-
-          // Extract unique permissions
-          const permissions = new Set<string>();
-          dbUser.roles.forEach(ur => {
-            ur.role.permissions.forEach(rp => {
-              permissions.add(rp.permission.name);
-            });
           });
-          token.permissions = Array.from(permissions);
+
+          if (dbUser) {
+            token.id = dbUser.id;
+            token.isActive = dbUser.isActive;
+            token.roles = dbUser.roles.map(ur => ur.role.name);
+
+            const permissions = new Set<string>();
+            dbUser.roles.forEach(ur => {
+              ur.role.permissions.forEach(rp => {
+                permissions.add(rp.permission.name);
+              });
+            });
+            token.permissions = Array.from(permissions);
+            console.log("✅ JWT token created for:", user.email);
+          }
+        } catch (error) {
+          console.error("❌ JWT callback error:", error);
         }
       }
       return token;
@@ -145,6 +139,17 @@ export const authConfig: NextAuthConfig = {
   },
   session: {
     strategy: "jwt",
+  },
+  logger: {
+    error(code, ...message) {
+      console.error("🔴 AUTH ERROR:", code, message);
+    },
+    warn(code, ...message) {
+      console.warn("🟡 AUTH WARN:", code, message);
+    },
+    debug(code, ...message) {
+      console.log("🔵 AUTH DEBUG:", code, message);
+    },
   },
 };
 

@@ -1,23 +1,17 @@
-import {
-  Fira_Code as FontMono,
-  Inter as FontSans,
-  Playfair_Display as FontPlayfair,
-} from "next/font/google";
-
-export const fontSans = FontSans({
-  subsets: ["latin"],
+export const fontSans = {
+  className: "",
   variable: "--font-sans",
-});
+  style: { fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' },
+};
 
-export const fontMono = FontMono({
-  subsets: ["latin"],
-  variable: "--font-mono",
-});
+export const fontMono = {
+  className: "",
+  variable: "--font-mono", 
+  style: { fontFamily: 'ui-monospace, Menlo, Monaco, "Cascadia Mono", "Courier New", monospace' },
+};
 
-// Playfair Display for headings
-export const fontPlayfair = FontPlayfair({
-  subsets: ["latin"],
+export const fontPlayfair = {
+  className: "",
   variable: "--font-playfair",
-  // You can adjust weight/styles as needed
-  weight: ["400", "500", "600", "700", "800"],
-});
+  style: { fontFamily: 'Georgia, "Times New Roman", serif' },
+};

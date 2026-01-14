@@ -5,10 +5,21 @@ const nextConfig = {
       bodySizeLimit: '2mb',
     },
   },
-  // Reduce aggressive revalidation during development
   onDemandEntries: {
     maxInactiveAge: 60 * 1000,
     pagesBufferLength: 5,
+  },
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'lpmpp.unsoed.ac.id',
+      },
+      {
+        protocol: 'https',
+        hostname: 'lh3.googleusercontent.com',
+      },
+    ],
   },
 };
 
