@@ -109,7 +109,7 @@ export default async function AdminDashboard() {
       month: monthName,
       Berita: newsCount,
       Program: programCount,
-      Supervisor: expertiseCount,
+      Layanan: expertiseCount,
       Unduhan: downloadCount,
       Tautan: linkCount,
       total: newsCount + programCount + expertiseCount + downloadCount + linkCount,
@@ -136,7 +136,7 @@ export default async function AdminDashboard() {
       color: "bg-purple-500",
     },
     {
-      title: "Supervisor",
+      title: "Layanan",
       value: totalExpertise,
       color: "bg-orange-500",
     },

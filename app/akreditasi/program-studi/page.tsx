@@ -24,7 +24,7 @@ const RANK_LABELS: Record<string, string> = {
   UNGGUL: "UNGGUL",
   BAIK_SEKALI: "BAIK SEKALI",
   BAIK: "BAIK",
-  TERAKREDITASI_SEMENTARA: "TERAKREDITASI SEMENTARA",
+  TERAKREDITASI: "TERAKREDITASI",
   A: "A",
   B: "B",
   C: "C",
@@ -74,7 +74,7 @@ const getRankChipColor = (rank: string | null) => {
     UNGGUL: "success",
     BAIK_SEKALI: "primary",
     BAIK: "warning",
-    TERAKREDITASI_SEMENTARA: "danger",
+    TERAKREDITASI: "default",
     A: "success",
     B: "primary",
     C: "warning",
@@ -110,7 +110,7 @@ export default function AkreditasiProgramStudiPage() {
   // Filter by level, then by search query
   const filteredAccreditations = accreditations
     .filter((acc) => filterLevel === "all" || acc.level === filterLevel)
-    .filter((acc) => 
+    .filter((acc) =>
       acc.studyProgram.toLowerCase().includes(searchQuery.toLowerCase()) ||
       (acc.skNumber && acc.skNumber.toLowerCase().includes(searchQuery.toLowerCase())) ||
       (acc.rank && RANK_LABELS[acc.rank].toLowerCase().includes(searchQuery.toLowerCase()))
@@ -127,7 +127,7 @@ export default function AkreditasiProgramStudiPage() {
     { name: 'UNGGUL', value: accreditations.filter(item => item.rank === 'UNGGUL').length },
     { name: 'BAIK SEKALI', value: accreditations.filter(item => item.rank === 'BAIK_SEKALI').length },
     { name: 'BAIK', value: accreditations.filter(item => item.rank === 'BAIK').length },
-    { name: 'TERAKREDITASI SEMENTARA', value: accreditations.filter(item => item.rank === 'TERAKREDITASI_SEMENTARA').length },
+    { name: 'TERAKREDITASI', value: accreditations.filter(item => item.rank === 'TERAKREDITASI').length },
     { name: 'A', value: accreditations.filter(item => item.rank === 'A').length },
     { name: 'B', value: accreditations.filter(item => item.rank === 'B').length },
     { name: 'C', value: accreditations.filter(item => item.rank === 'C').length },
@@ -215,20 +215,20 @@ export default function AkreditasiProgramStudiPage() {
             {chartData.length > 0 ? (
               <div className="w-full overflow-x-auto">
                 <ResponsiveContainer width="100%" height={300} minWidth={300}>
-                  <BarChart 
-                    data={chartData} 
-                    layout="vertical" 
+                  <BarChart
+                    data={chartData}
+                    layout="vertical"
                     margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
                   >
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis type="number" />
-                    <YAxis 
-                      type="category" 
-                      dataKey="name" 
+                    <YAxis
+                      type="category"
+                      dataKey="name"
                       width={100}
                       tick={{ fontSize: 10 }}
                     />
-                    <Tooltip 
+                    <Tooltip
                       contentStyle={{ fontSize: '12px' }}
                       labelStyle={{ fontSize: '12px' }}
                     />
@@ -283,7 +283,7 @@ export default function AkreditasiProgramStudiPage() {
                 </Select>
               </div>
             </div>
-            
+
             {/* Search Bar */}
             <div className="w-full">
               <Input
@@ -302,7 +302,7 @@ export default function AkreditasiProgramStudiPage() {
               />
             </div>
           </CardHeader>
-          
+
           <CardBody className="overflow-x-auto px-0">
             {/* Desktop Table */}
             <div className="hidden md:block">
@@ -342,8 +342,8 @@ export default function AkreditasiProgramStudiPage() {
                   ) : (
                     <tr>
                       <td colSpan={7} className="py-8 text-center text-default-400">
-                        {searchQuery || filterLevel !== "all" 
-                          ? "Tidak ada data yang sesuai dengan pencarian" 
+                        {searchQuery || filterLevel !== "all"
+                          ? "Tidak ada data yang sesuai dengan pencarian"
                           : "Tidak ada data yang ditemukan"}
                       </td>
                     </tr>
@@ -391,8 +391,8 @@ export default function AkreditasiProgramStudiPage() {
                 ))
               ) : (
                 <div className="py-8 text-center text-default-400">
-                  {searchQuery || filterLevel !== "all" 
-                    ? "Tidak ada data yang sesuai dengan pencarian" 
+                  {searchQuery || filterLevel !== "all"
+                    ? "Tidak ada data yang sesuai dengan pencarian"
                     : "Tidak ada data yang ditemukan"}
                 </div>
               )}

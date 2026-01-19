@@ -84,7 +84,7 @@ const RANK_OPTIONS = [
   { key: "UNGGUL", label: "UNGGUL", color: "success" },
   { key: "BAIK_SEKALI", label: "BAIK SEKALI", color: "primary" },
   { key: "BAIK", label: "BAIK", color: "warning" },
-  { key: "TERAKREDITASI_SEMENTARA", label: "TERAKREDITASI SEMENTARA", color: "default" },
+  { key: "TERAKREDITASI", label: "TERAKREDITASI", color: "default" },
   { key: "A", label: "A", color: "success" },
   { key: "B", label: "B", color: "primary" },
   { key: "C", label: "C", color: "warning" },
@@ -120,6 +120,7 @@ export default function AkreditasiProdiPage() {
   // Pagination & Filter states
   const [page, setPage] = useState(1);
   const [filterLevel, setFilterLevel] = useState<string>("all");
+  const [searchQuery, setSearchQuery] = useState<string>("");
   const rowsPerPage = 10;
 
   const [formData, setFormData] = useState({
@@ -170,9 +171,20 @@ export default function AkreditasiProdiPage() {
   };
 
   // Filter and pagination logic
-  const filteredAccreditations = filterLevel === "all"
-    ? accreditations
-    : accreditations.filter(acc => acc.level === filterLevel);
+  const filteredAccreditations = accreditations.filter(acc => {
+    // Filter by level
+    const levelMatch = filterLevel === "all" || acc.level === filterLevel;
+
+    // Filter by search query
+    const searchLower = searchQuery.toLowerCase().trim();
+    const searchMatch = searchLower === "" ||
+      acc.studyProgram.toLowerCase().includes(searchLower) ||
+      (acc.korprodi && acc.korprodi.toLowerCase().includes(searchLower)) ||
+      (acc.skNumber && acc.skNumber.toLowerCase().includes(searchLower)) ||
+      (acc.rank && acc.rank.toLowerCase().includes(searchLower));
+
+    return levelMatch && searchMatch;
+  });
 
   const totalPages = Math.ceil(filteredAccreditations.length / rowsPerPage);
   const paginatedAccreditations = filteredAccreditations.slice(
@@ -381,7 +393,24 @@ export default function AkreditasiProdiPage() {
       <div className="space-y-6">
         {/* Header dengan tombol */}
         <div className="flex flex-col sm:flex-row justify-between gap-4">
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-wrap">
+            <Input
+              placeholder="Cari program studi, korprodi..."
+              value={searchQuery}
+              onValueChange={(value) => {
+                setSearchQuery(value);
+                setPage(1);
+              }}
+              className="w-[250px]"
+              size="sm"
+              isClearable
+              onClear={() => setSearchQuery("")}
+              startContent={
+                <svg className="w-4 h-4 text-default-400" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                </svg>
+              }
+            />
             <Select
               label="Filter Strata"
               placeholder="Semua Strata"

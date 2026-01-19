@@ -4,8 +4,8 @@ import { useEffect, useState } from "react";
 import HeroSection from "@/components/beranda/HeroSection";
 import AdditionalImagesSection from "@/components/beranda/AdditionalImagesSection";
 import InfoSection from "@/components/beranda/InfoSection";
-import LayananTautanSection from "@/components/beranda/LayananTautanSection";
-import SambutanInformasiSection from "@/components/beranda/SambutanInformasiSection";
+// import LayananTautanSection from "@/components/beranda/LayananTautanSection";
+// import SambutanInformasiSection from "@/components/beranda/SambutanInformasiSection";
 import BukuBeritaGaleriSection from "@/components/beranda/BukuBeritaGaleriSection";
 import TenagaGambarSection from "@/components/beranda/TenagaGambarSection";
 
@@ -35,12 +35,12 @@ interface TautanLayananItem {
 export default function Home() {
   const [config, setConfig] = useState<SiteConfig | null>(null);
   const [loading, setLoading] = useState(true);
-  const [serviceLinks, setServiceLinks] = useState<TautanLayananItem[]>([]);
-  const [loadingLinks, setLoadingLinks] = useState(true);
+  // const [serviceLinks, setServiceLinks] = useState<TautanLayananItem[]>([]);
+  // const [loadingLinks, setLoadingLinks] = useState(true);
 
   useEffect(() => {
     fetchSiteConfig();
-    fetchServiceLinks();
+    // fetchServiceLinks();
   }, []);
 
   const fetchSiteConfig = async () => {
@@ -55,17 +55,17 @@ export default function Home() {
     }
   };
 
-  const fetchServiceLinks = async () => {
-    try {
-      const response = await fetch("/api/tautan-layanan");
-      const data = await response.json();
-      setServiceLinks(data.filter((item: TautanLayananItem) => item.isActive));
-    } catch (error) {
-      console.error("Error fetching service links:", error);
-    } finally {
-      setLoadingLinks(false);
-    }
-  };
+  // const fetchServiceLinks = async () => {
+  //   try {
+  //     const response = await fetch("/api/tautan-layanan");
+  //     const data = await response.json();
+  //     setServiceLinks(data.filter((item: TautanLayananItem) => item.isActive));
+  //   } catch (error) {
+  //     console.error("Error fetching service links:", error);
+  //   } finally {
+  //     setLoadingLinks(false);
+  //   }
+  // };
 
   // Parse carousel images
   const carouselImages = config?.carouselImages
@@ -90,29 +90,31 @@ export default function Home() {
         carouselImages={carouselImages}
       />
 
-
+      {/* Gambar Slogan dan Partner - Tanpa gambarTeam (sudah dipindah ke Pengelola) */}
       <AdditionalImagesSection
         gambarSlogan={config?.gambarSlogan}
-        gambarTeam={config?.gambarTeam}
         gambarPartner={config?.gambarPartner}
       />
+
       {/* Info Section - Accreditation Status & Agenda */}
       <InfoSection />
 
-      {/* Layanan & Tautan Section with Bento Grid */}
+      {/* Layanan & Tautan Section with Bento Grid - COMMENTED OUT
       <LayananTautanSection
         config={config}
         serviceLinks={serviceLinks}
         loading={loadingLinks}
       />
+      */}
 
-      {/* Sambutan Kepala & Informasi Layanan */}
+      {/* Sambutan Kepala & Informasi Layanan - COMMENTED OUT
       <SambutanInformasiSection />
+      */}
 
-      {/* Buku Ajar, Berita, dan Galeri */}
+      {/* Buku Ajar, Berita, dan Galeri (Buku Ajar & Galeri sudah di-comment di component) */}
       <BukuBeritaGaleriSection />
 
-      {/* Tenaga Kependidikan & Gambar Tambahan */}
+      {/* Pengelola - Menampilkan Gambar Team, Staff, dan Tambahan secara sejajar */}
       <TenagaGambarSection />
     </main>
   );

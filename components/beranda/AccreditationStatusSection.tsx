@@ -25,7 +25,7 @@ const RANK_COLORS = {
     A: "#22c55e",
     B: "#3b82f6",
     C: "#eab308",
-    TERAKREDITASI_SEMENTARA: "#6b7280",
+    TERAKREDITASI: "#6b7280",
 };
 
 const LEVEL_LABELS: Record<string, string> = {

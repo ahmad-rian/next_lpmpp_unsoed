@@ -85,7 +85,7 @@ interface DashboardClientProps {
     month: string;
     Berita: number;
     Program: number;
-    Supervisor: number;
+    Layanan: number;
     Unduhan: number;
     Tautan: number;
     total: number;
@@ -129,7 +129,7 @@ export function DashboardClient({ stats, contentStats, trendData, quickActions, 
   const LINE_COLORS = {
     Berita: '#10b981',
     Program: '#a855f7',
-    Supervisor: '#f59e0b',
+    Layanan: '#f59e0b',
     Unduhan: '#ec4899',
     Tautan: '#3b82f6',
   };
@@ -261,8 +261,8 @@ export function DashboardClient({ stats, contentStats, trendData, quickActions, 
                 />
                 <Line
                   type="monotone"
-                  dataKey="Supervisor"
-                  stroke={LINE_COLORS.Supervisor}
+                  dataKey="Layanan"
+                  stroke={LINE_COLORS.Layanan}
                   strokeWidth={2}
                   dot={{ r: 3 }}
                   activeDot={{ r: 5 }}

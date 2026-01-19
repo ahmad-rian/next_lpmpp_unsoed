@@ -21,7 +21,7 @@ const newsData = [
 </blockquote>
 
 <p>Kegiatan ini merupakan bagian dari komitmen LPMPP Unsoed dalam mendukung pendidikan vokasi di wilayah Banyumas dan sekitarnya.</p>`,
-    author: "Admin LP3M",
+    author: "Admin LPMPP",
     publishedAt: new Date("2025-09-17"),
     isPublished: true,
     viewCount: 245,
@@ -59,7 +59,7 @@ const newsData = [
 </blockquote>
 
 <p>Fakultas Kedokteran menyambut baik kegiatan ini dan berkomitmen untuk menindaklanjuti seluruh rekomendasi hasil audit.</p>`,
-    author: "Admin LP3M",
+    author: "Admin LPMPP",
     publishedAt: new Date("2025-08-14"),
     isPublished: true,
     viewCount: 189,

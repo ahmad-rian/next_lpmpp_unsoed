@@ -22,7 +22,7 @@ export async function GET() {
       { name: 'UNGGUL', value: stats['UNGGUL'] || 0 },
       { name: 'BAIK SEKALI', value: stats['BAIK_SEKALI'] || 0 },
       { name: 'BAIK', value: stats['BAIK'] || 0 },
-      { name: 'TERAKREDITASI SEMENTARA', value: stats['TERAKREDITASI_SEMENTARA'] || 0 },
+      { name: 'TERAKREDITASI', value: stats['TERAKREDITASI'] || 0 },
       { name: 'A', value: stats['A'] || 0 },
       { name: 'B', value: stats['B'] || 0 },
       { name: 'C', value: stats['C'] || 0 },

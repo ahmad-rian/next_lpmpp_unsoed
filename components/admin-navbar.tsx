@@ -168,7 +168,7 @@ export function AdminNavbar() {
   ];
 
   const kepakaranItems = [
-    { key: "kepakaran", label: "Supervisor", href: "/admin/kepakaran", icon: FileTextIcon },
+    { key: "kepakaran", label: "Layanan", href: "/admin/kepakaran", icon: FileTextIcon },
   ];
 
   const tautanItems = [
@@ -373,7 +373,7 @@ export function AdminNavbar() {
           </NextLink>
         </NavbarItem>
 
-        {/* Supervisor */}
+        {/* Layanan */}
         <NavbarItem>
           <NextLink
             href="/admin/kepakaran"
@@ -385,7 +385,7 @@ export function AdminNavbar() {
             )}
           >
             <FileTextIcon className="w-4 h-4" />
-            Supervisor
+            Layanan
           </NextLink>
         </NavbarItem>
 
@@ -688,7 +688,7 @@ export function AdminNavbar() {
                 onClick={() => setIsMenuOpen(false)}
               >
                 <FileTextIcon className="w-5 h-5" />
-                Supervisor
+                Layanan
               </NextLink>
             </NavbarMenuItem>
 

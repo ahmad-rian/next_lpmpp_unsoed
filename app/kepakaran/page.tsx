@@ -14,7 +14,7 @@ export default function KepakaranIndexPage() {
       {/* Hero Section */}
       <div className="text-center mb-6 md:mb-16 space-y-3 md:space-y-4">
         <h1 className="text-3xl md:text-5xl font-bold text-red-600 dark:text-red-400 tracking-tight">
-          Supervisor
+          Layanan
         </h1>
         <p className="text-base md:text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto px-4">
           Pilih kategori untuk melihat daftar fasilitator, auditor, dan asesor dengan fitur pencarian serta pagination.

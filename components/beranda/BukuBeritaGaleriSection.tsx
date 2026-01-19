@@ -112,7 +112,7 @@ export default function BukuBeritaGaleriSection() {
             <div className="absolute bottom-0 right-0 w-96 h-96 bg-orange-200/10 dark:bg-orange-800/5 rounded-full blur-3xl" />
 
             <div className="relative z-10">
-                {/* Buku Ajar */}
+                {/* Buku Ajar - Commented Out
                 <div className="w-full py-16 md:py-24">
                     <div className="container mx-auto px-4">
                         <motion.div
@@ -254,6 +254,7 @@ export default function BukuBeritaGaleriSection() {
                         </div>
                     </div>
                 </div>
+                */}
 
                 {/* Berita */}
                 <div className="w-full py-16 md:py-24">
@@ -364,7 +365,7 @@ export default function BukuBeritaGaleriSection() {
                     </div>
                 </div>
 
-                {/* Galeri */}
+                {/* Galeri - Commented Out
                 <div className="w-full py-16 md:py-24">
                     <div className="container mx-auto px-4">
                         <motion.div
@@ -443,6 +444,7 @@ export default function BukuBeritaGaleriSection() {
                         </div>
                     </div>
                 </div>
+                */}
             </div>
         </section>
     );

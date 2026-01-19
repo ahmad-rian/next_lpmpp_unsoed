@@ -199,7 +199,7 @@ export default function KepakaranPage() {
 
   return (
     <AdminPageLayout
-      title="Supervisor"
+      title="Layanan"
       description="Kelola data Fasilitator, Auditor, dan Asesor"
       icon={<AcademicCapIcon />}
     >
@@ -233,7 +233,7 @@ export default function KepakaranPage() {
         <div className="text-center py-8">Loading...</div>
       ) : (
         <>
-          <Table aria-label="Tabel Supervisor">
+          <Table aria-label="Tabel Layanan">
             <TableHeader>
               <TableColumn>NO</TableColumn>
               <TableColumn>NAMA</TableColumn>

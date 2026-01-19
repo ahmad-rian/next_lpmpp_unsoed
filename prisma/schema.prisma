@@ -579,7 +579,7 @@ enum AccreditationRank {
   UNGGUL
   BAIK_SEKALI
   BAIK
-  TERAKREDITASI_SEMENTARA
+  TERAKREDITASI
   A
   B
   C

@@ -33,7 +33,7 @@ export const siteConfig = {
       ],
     },
     {
-      label: "Unit Kerja",
+      label: "Pusat",
       href: "/pusat-unit",
     },
     {
@@ -103,7 +103,7 @@ export const siteConfig = {
       ],
     },
     {
-      label: "Supervisor",
+      label: "Layanan",
       href: "/kepakaran/fasilitator-pekerti",
       children: [
         {

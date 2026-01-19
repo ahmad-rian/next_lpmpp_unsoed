@@ -4,17 +4,15 @@ import { motion } from "framer-motion";
 
 interface AdditionalImagesSectionProps {
     gambarSlogan?: string;
-    gambarTeam?: string;
     gambarPartner?: string;
 }
 
 export default function AdditionalImagesSection({
     gambarSlogan,
-    gambarTeam,
     gambarPartner,
 }: AdditionalImagesSectionProps) {
     // Jika tidak ada gambar sama sekali, jangan render section
-    if (!gambarSlogan && !gambarTeam && !gambarPartner) {
+    if (!gambarSlogan && !gambarPartner) {
         return null;
     }
 
@@ -24,7 +22,7 @@ export default function AdditionalImagesSection({
             <div className="absolute inset-0 z-0">
                 {/* Base gradient yang halus */}
                 <div className="absolute inset-0 bg-gradient-to-b from-white via-red-50/20 to-white dark:from-zinc-950 dark:via-zinc-900 dark:to-zinc-950" />
-                
+
                 {/* Wave SVG - Top (Natural) */}
                 <svg
                     className="absolute top-0 left-0 w-full h-20 md:h-28 lg:h-36"
@@ -64,25 +62,6 @@ export default function AdditionalImagesSection({
                             <img
                                 src={gambarSlogan}
                                 alt="Visi dan Misi LPMPP UNSOED"
-                                className="w-full h-auto object-cover rounded-xl md:rounded-2xl"
-                                loading="lazy"
-                            />
-                        </div>
-                    </motion.div>
-                )}
-
-                {gambarTeam && (
-                    <motion.div
-                        initial={{ opacity: 0, y: 30 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true, margin: "-50px" }}
-                        transition={{ duration: 0.5, ease: "easeOut" }}
-                        className="w-full px-4 md:px-8 lg:px-12 xl:px-16"
-                    >
-                        <div className="max-w-7xl mx-auto">
-                            <img
-                                src={gambarTeam}
-                                alt="Tim LPMPP UNSOED"
                                 className="w-full h-auto object-cover rounded-xl md:rounded-2xl"
                                 loading="lazy"
                             />

@@ -84,7 +84,7 @@ export default function BeritaPage() {
     content: "",
     coverImage: "",
     galleryImages: [] as string[],
-    author: "Admin LP3M",
+    author: "Admin LPMPP",
     isPublished: false,
     publishedAt: new Date().toISOString().slice(0, 16), // Add custom timestamp
   });
@@ -111,11 +111,11 @@ export default function BeritaPage() {
       // Gunakan parameter admin=true agar API mengembalikan semua field yang diperlukan admin (content, galleryImages, isPublished)
       const response = await fetch("/api/news?admin=true&limit=1000");
       const data = await response.json();
-      
+
       if (!response.ok) {
         throw new Error(data.error || "Failed to fetch news");
       }
-      
+
       // Handle paginated response format
       if (data.news && Array.isArray(data.news)) {
         setNews(data.news);
@@ -143,7 +143,7 @@ export default function BeritaPage() {
       content: "",
       coverImage: "",
       galleryImages: [],
-      author: "Admin LP3M",
+      author: "Admin LPMPP",
       isPublished: false,
       publishedAt: new Date().toISOString().slice(0, 16),
     });
@@ -160,7 +160,7 @@ export default function BeritaPage() {
       content: newsItem.content ?? "",
       coverImage: newsItem.coverImage || "",
       galleryImages: gallery,
-      author: newsItem.author || "Admin LP3M",
+      author: newsItem.author || "Admin LPMPP",
       isPublished: newsItem.isPublished,
       publishedAt: new Date(newsItem.publishedAt).toISOString().slice(0, 16),
     });
@@ -291,7 +291,7 @@ export default function BeritaPage() {
         content,
         coverImage: safeTrim(formData.coverImage) || null,
         galleryImages: JSON.stringify(Array.isArray(formData.galleryImages) ? formData.galleryImages.filter(Boolean) : []),
-        author: safeTrim(formData.author) || "Admin LP3M",
+        author: safeTrim(formData.author) || "Admin LPMPP",
         isPublished: !!formData.isPublished,
         publishedAt: formData.publishedAt || new Date().toISOString().slice(0, 16),
       };
@@ -464,9 +464,9 @@ export default function BeritaPage() {
       )}
 
       {/* Modal */}
-      <Modal 
-        isOpen={isOpen} 
-        onClose={onClose} 
+      <Modal
+        isOpen={isOpen}
+        onClose={onClose}
         size="5xl"
         scrollBehavior="inside"
       >
@@ -501,7 +501,7 @@ export default function BeritaPage() {
                 <label className="text-sm font-medium mb-2 block">
                   Konten Berita <span className="text-danger">*</span>
                 </label>
-              <RichTextEditor
+                <RichTextEditor
                   value={formData.content}
                   onChange={(content) =>
                     setFormData({ ...formData, content: content ?? "" })

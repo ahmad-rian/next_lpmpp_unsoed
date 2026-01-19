@@ -438,14 +438,14 @@ export const DEFAULT_PERMISSIONS = {
         ],
     },
 
-    // Supervisor/Expertise
+    // Layanan/Expertise
     expertise: {
-        displayName: "Supervisor",
+        displayName: "Layanan",
         permissions: [
-            { name: "expertise.view", displayName: "View Supervisor" },
-            { name: "expertise.create", displayName: "Create Supervisor" },
-            { name: "expertise.update", displayName: "Update Supervisor" },
-            { name: "expertise.delete", displayName: "Delete Supervisor" },
+            { name: "expertise.view", displayName: "View Layanan" },
+            { name: "expertise.create", displayName: "Create Layanan" },
+            { name: "expertise.update", displayName: "Update Layanan" },
+            { name: "expertise.delete", displayName: "Delete Layanan" },
         ],
     },
 
