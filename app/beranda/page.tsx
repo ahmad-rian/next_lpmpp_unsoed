@@ -90,7 +90,6 @@ export default function BerandaPage() {
 
             <AdditionalImagesSection
                 gambarSlogan={config?.gambarSlogan}
-                gambarTeam={config?.gambarTeam}
                 gambarPartner={config?.gambarPartner}
             />
             {/* Info Section - Accreditation Status & Agenda */}
