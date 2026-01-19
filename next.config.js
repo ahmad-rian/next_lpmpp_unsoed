@@ -13,13 +13,13 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'lpmpp.unsoed.ac.id',
-      },
-      {
-        protocol: 'https',
         hostname: 'lh3.googleusercontent.com',
       },
     ],
+    formats: ['image/webp', 'image/avif'],
+    // Custom loader untuk handle local uploads
+    loader: 'custom',
+    loaderFile: './lib/image-loader.ts',
   },
 };
 
