@@ -99,12 +99,24 @@ export function GoogleTranslateWidget() {
 
     setIsOpen(false);
 
-    // Set cookie for Google Translate
     const domain = window.location.hostname;
-    document.cookie = `googtrans=/id/${lang.code}; path=/; domain=${domain}`;
-    document.cookie = `googtrans=/id/${lang.code}; path=/`;
 
-    // Reload page langsung untuk translate seluruh halaman
+    // Jika bahasa yang dipilih adalah Indonesia (bahasa asli halaman),
+    // hapus cookie googtrans dengan mengatur expires ke masa lalu
+    if (lang.code === "id") {
+      // Hapus cookie dengan set expires ke masa lalu
+      document.cookie = `googtrans=; path=/; domain=${domain}; expires=Thu, 01 Jan 1970 00:00:00 UTC`;
+      document.cookie = `googtrans=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC`;
+      // Juga hapus untuk domain dengan titik di depan (beberapa browser menyimpan dengan format ini)
+      document.cookie = `googtrans=; path=/; domain=.${domain}; expires=Thu, 01 Jan 1970 00:00:00 UTC`;
+    } else {
+      // Set cookie untuk bahasa selain Indonesia
+      document.cookie = `googtrans=/id/${lang.code}; path=/; domain=${domain}`;
+      document.cookie = `googtrans=/id/${lang.code}; path=/`;
+      document.cookie = `googtrans=/id/${lang.code}; path=/; domain=.${domain}`;
+    }
+
+    // Reload page untuk translate seluruh halaman
     window.location.reload();
   }, [currentLang.code]);
 
@@ -206,11 +218,10 @@ export function GoogleTranslateWidget() {
                     key={lang.code}
                     whileHover={{ x: 4 }}
                     onClick={() => changeLanguage(lang)}
-                    className={`w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors ${
-                      currentLang.code === lang.code
+                    className={`w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors ${currentLang.code === lang.code
                         ? "bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400"
                         : "hover:bg-gray-50 dark:hover:bg-zinc-700/50 text-gray-700 dark:text-gray-200"
-                    }`}
+                      }`}
                   >
                     <span className="text-xl">{lang.flag}</span>
                     <span className="font-medium">{lang.name}</span>
@@ -230,7 +241,7 @@ export function GoogleTranslateWidget() {
                   </motion.button>
                 ))}
               </div>
-              
+
               {/* Powered by indicator - subtle */}
               <div className="px-4 py-2 border-t border-gray-100 dark:border-zinc-700">
                 <p className="text-[10px] text-gray-400 dark:text-gray-500 text-center">
