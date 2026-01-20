@@ -75,6 +75,28 @@ export function GoogleTranslateWidget() {
     };
   }, []);
 
+  // Helper function to get all possible domain variations for cookie clearing
+  const getDomainVariations = useCallback(() => {
+    const hostname = window.location.hostname;
+    const domains = [hostname, `.${hostname}`];
+
+    // For subdomains like lpmpp.unsoed.ac.id, also add parent domain variations
+    const parts = hostname.split('.');
+    if (parts.length > 2) {
+      // Add .unsoed.ac.id and unsoed.ac.id
+      const parentDomain = parts.slice(1).join('.');
+      domains.push(parentDomain, `.${parentDomain}`);
+
+      // For deeper subdomains, also try one level up
+      if (parts.length > 3) {
+        const grandParentDomain = parts.slice(2).join('.');
+        domains.push(grandParentDomain, `.${grandParentDomain}`);
+      }
+    }
+
+    return domains;
+  }, []);
+
   // Helper function to get cookie
   const getCookie = useCallback((name: string) => {
     if (typeof document === 'undefined') return null;
@@ -82,15 +104,25 @@ export function GoogleTranslateWidget() {
     const parts = value.split(`; ${name}=`);
     if (parts.length === 2) {
       const cookieValue = parts.pop()?.split(";").shift();
-      // Handle URL-encoded cookie values
       return cookieValue ? decodeURIComponent(cookieValue) : null;
     }
     return null;
   }, []);
 
-  // Detect current language from cookie - run immediately on mount
+  // Detect current language - use localStorage as primary source, cookie as fallback
   useEffect(() => {
     const detectLanguage = () => {
+      // First check localStorage (our source of truth for UI)
+      const storedLang = localStorage.getItem('selectedLanguage');
+      if (storedLang) {
+        const found = LANGUAGES.find((l) => l.code === storedLang);
+        if (found) {
+          setCurrentLang(found);
+          return;
+        }
+      }
+
+      // Fallback to cookie detection
       const googleCookie = getCookie("googtrans");
       if (googleCookie) {
         // Cookie format is /id/en or /id/zh-CN
@@ -98,20 +130,18 @@ export function GoogleTranslateWidget() {
         const found = LANGUAGES.find((l) => l.code === langCode);
         if (found) {
           setCurrentLang(found);
-        } else {
-          // If no translation cookie or invalid, default to Indonesian
-          setCurrentLang(LANGUAGES[0]);
+          // Sync to localStorage
+          localStorage.setItem('selectedLanguage', found.code);
+          return;
         }
-      } else {
-        // No cookie means original language (Indonesian)
-        setCurrentLang(LANGUAGES[0]);
       }
+
+      // Default to Indonesian
+      setCurrentLang(LANGUAGES[0]);
+      localStorage.setItem('selectedLanguage', 'id');
     };
 
-    // Detect immediately
     detectLanguage();
-
-    // Also detect when isLoaded changes (in case cookie was set by Google)
   }, [getCookie, isLoaded]);
 
   const changeLanguage = useCallback((lang: Language) => {
@@ -122,26 +152,30 @@ export function GoogleTranslateWidget() {
 
     setIsOpen(false);
 
-    const domain = window.location.hostname;
+    const domains = getDomainVariations();
 
-    // Jika bahasa yang dipilih adalah Indonesia (bahasa asli halaman),
-    // hapus cookie googtrans dengan mengatur expires ke masa lalu
+    // Update localStorage immediately (UI source of truth)
+    localStorage.setItem('selectedLanguage', lang.code);
+
     if (lang.code === "id") {
-      // Hapus cookie dengan set expires ke masa lalu
-      document.cookie = `googtrans=; path=/; domain=${domain}; expires=Thu, 01 Jan 1970 00:00:00 UTC`;
+      // Clear all googtrans cookies on all domain variations
+      domains.forEach(domain => {
+        document.cookie = `googtrans=; path=/; domain=${domain}; expires=Thu, 01 Jan 1970 00:00:00 UTC`;
+      });
+      // Also clear without domain
       document.cookie = `googtrans=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC`;
-      // Juga hapus untuk domain dengan titik di depan (beberapa browser menyimpan dengan format ini)
-      document.cookie = `googtrans=; path=/; domain=.${domain}; expires=Thu, 01 Jan 1970 00:00:00 UTC`;
     } else {
-      // Set cookie untuk bahasa selain Indonesia
-      document.cookie = `googtrans=/id/${lang.code}; path=/; domain=${domain}`;
+      // Set cookie for translation on all domain variations
+      domains.forEach(domain => {
+        document.cookie = `googtrans=/id/${lang.code}; path=/; domain=${domain}`;
+      });
+      // Also set without domain
       document.cookie = `googtrans=/id/${lang.code}; path=/`;
-      document.cookie = `googtrans=/id/${lang.code}; path=/; domain=.${domain}`;
     }
 
-    // Reload page untuk translate seluruh halaman
+    // Reload page
     window.location.reload();
-  }, [currentLang.code]);
+  }, [currentLang.code, getDomainVariations]);
 
   return (
     <>
