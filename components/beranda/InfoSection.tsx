@@ -68,13 +68,26 @@ export default function InfoSection() {
             const response = await fetch("/api/study-program-accreditations");
             const data: Accreditation[] = await response.json();
 
-            // Filter critical accreditations
-            const critical = data.filter((item) => {
-                const status = calculateAccreditationStatus(
-                    item.validUntil ? new Date(item.validUntil) : null
-                );
-                return status.color === "danger";
-            });
+            // Filter critical accreditations and sort by days remaining (ascending - smallest first)
+            const critical = data
+                .filter((item) => {
+                    const status = calculateAccreditationStatus(
+                        item.validUntil ? new Date(item.validUntil) : null
+                    );
+                    return status.color === "danger";
+                })
+                .sort((a, b) => {
+                    const statusA = calculateAccreditationStatus(
+                        a.validUntil ? new Date(a.validUntil) : null
+                    );
+                    const statusB = calculateAccreditationStatus(
+                        b.validUntil ? new Date(b.validUntil) : null
+                    );
+                    // Sort by days remaining ascending (expired/most urgent first)
+                    const daysA = statusA.daysRemaining ?? -Infinity;
+                    const daysB = statusB.daysRemaining ?? -Infinity;
+                    return daysA - daysB;
+                });
 
             setCriticalAccreditations(critical);
 

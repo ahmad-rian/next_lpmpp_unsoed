@@ -17,8 +17,20 @@ interface StudyProgramAccreditation {
   skNumber: string | null;
   skYear: number | null;
   rank: string | null;
+  validUntil: string | null;
   order: number;
 }
+
+// Helper function to format date
+const formatDateID = (dateStr: string | null) => {
+  if (!dateStr) return "-";
+  const date = new Date(dateStr);
+  return date.toLocaleDateString("id-ID", {
+    day: "numeric",
+    month: "long",
+    year: "numeric"
+  });
+};
 
 const RANK_LABELS: Record<string, string> = {
   UNGGUL: "UNGGUL",
@@ -112,7 +124,6 @@ export default function AkreditasiProgramStudiPage() {
     .filter((acc) => filterLevel === "all" || acc.level === filterLevel)
     .filter((acc) =>
       acc.studyProgram.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (acc.skNumber && acc.skNumber.toLowerCase().includes(searchQuery.toLowerCase())) ||
       (acc.rank && RANK_LABELS[acc.rank].toLowerCase().includes(searchQuery.toLowerCase()))
     );
 
@@ -287,7 +298,7 @@ export default function AkreditasiProgramStudiPage() {
             {/* Search Bar */}
             <div className="w-full">
               <Input
-                placeholder="Cari program studi, No. SK, atau peringkat..."
+                placeholder="Cari program studi atau peringkat..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 startContent={<SearchIcon />}
@@ -313,7 +324,7 @@ export default function AkreditasiProgramStudiPage() {
                     <th className="text-left py-3 px-4 text-sm font-semibold text-default-600">Program Studi</th>
                     <th className="text-left py-3 px-4 text-sm font-semibold text-default-600">Korprodi</th>
                     <th className="text-left py-3 px-4 text-sm font-semibold text-default-600">Strata</th>
-                    <th className="text-left py-3 px-4 text-sm font-semibold text-default-600">No. SK</th>
+                    <th className="text-left py-3 px-4 text-sm font-semibold text-default-600">Masa Berlaku</th>
                     <th className="text-left py-3 px-4 text-sm font-semibold text-default-600">Tahun SK</th>
                     <th className="text-left py-3 px-4 text-sm font-semibold text-default-600">Peringkat</th>
                   </tr>
@@ -330,7 +341,7 @@ export default function AkreditasiProgramStudiPage() {
                             {LEVEL_LABELS[acc.level] || acc.level}
                           </Chip>
                         </td>
-                        <td className="py-3 px-4 text-sm">{acc.skNumber || "-"}</td>
+                        <td className="py-3 px-4 text-sm">{formatDateID(acc.validUntil)}</td>
                         <td className="py-3 px-4 text-sm">{acc.skYear || "-"}</td>
                         <td className="py-3 px-4 text-sm">
                           <Chip size="sm" variant="flat" color={getRankChipColor(acc.rank)}>
@@ -382,7 +393,7 @@ export default function AkreditasiProgramStudiPage() {
                         </Chip>
                       </div>
                       <div className="flex items-center gap-3 text-xs text-default-500 pt-2 border-t border-default-100">
-                        <span>No. SK: {acc.skNumber || "-"}</span>
+                        <span>Masa Berlaku: {formatDateID(acc.validUntil)}</span>
                         <span>•</span>
                         <span>Tahun: {acc.skYear || "-"}</span>
                       </div>
