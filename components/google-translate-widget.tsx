@@ -75,21 +75,44 @@ export function GoogleTranslateWidget() {
     };
   }, []);
 
-  // Detect current language from cookie
+  // Helper function to get cookie
+  const getCookie = useCallback((name: string) => {
+    if (typeof document === 'undefined') return null;
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) {
+      const cookieValue = parts.pop()?.split(";").shift();
+      // Handle URL-encoded cookie values
+      return cookieValue ? decodeURIComponent(cookieValue) : null;
+    }
+    return null;
+  }, []);
+
+  // Detect current language from cookie - run immediately on mount
   useEffect(() => {
-    const getCookie = (name: string) => {
-      const value = `; ${document.cookie}`;
-      const parts = value.split(`; ${name}=`);
-      if (parts.length === 2) return parts.pop()?.split(";").shift();
+    const detectLanguage = () => {
+      const googleCookie = getCookie("googtrans");
+      if (googleCookie) {
+        // Cookie format is /id/en or /id/zh-CN
+        const langCode = googleCookie.split("/").pop();
+        const found = LANGUAGES.find((l) => l.code === langCode);
+        if (found) {
+          setCurrentLang(found);
+        } else {
+          // If no translation cookie or invalid, default to Indonesian
+          setCurrentLang(LANGUAGES[0]);
+        }
+      } else {
+        // No cookie means original language (Indonesian)
+        setCurrentLang(LANGUAGES[0]);
+      }
     };
 
-    const googleCookie = getCookie("googtrans");
-    if (googleCookie) {
-      const langCode = googleCookie.split("/").pop();
-      const found = LANGUAGES.find((l) => l.code === langCode);
-      if (found) setCurrentLang(found);
-    }
-  }, [isLoaded]);
+    // Detect immediately
+    detectLanguage();
+
+    // Also detect when isLoaded changes (in case cookie was set by Google)
+  }, [getCookie, isLoaded]);
 
   const changeLanguage = useCallback((lang: Language) => {
     if (lang.code === currentLang.code) {
@@ -184,8 +207,8 @@ export function GoogleTranslateWidget() {
       {/* Hidden Google Translate element */}
       <div id="google_translate_element_hidden" aria-hidden="true" />
 
-      {/* Custom Language Switcher UI - Simple Flag Only */}
-      <div ref={dropdownRef} className="relative">
+      {/* Custom Language Switcher UI - Simple Flag Only - notranslate prevents Google from translating labels */}
+      <div ref={dropdownRef} className="relative notranslate" translate="no">
         <button
           onClick={() => setIsOpen(!isOpen)}
           className="flex items-center gap-1 px-2 py-1.5 hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-lg transition-colors"
@@ -219,8 +242,8 @@ export function GoogleTranslateWidget() {
                     whileHover={{ x: 4 }}
                     onClick={() => changeLanguage(lang)}
                     className={`w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors ${currentLang.code === lang.code
-                        ? "bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400"
-                        : "hover:bg-gray-50 dark:hover:bg-zinc-700/50 text-gray-700 dark:text-gray-200"
+                      ? "bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400"
+                      : "hover:bg-gray-50 dark:hover:bg-zinc-700/50 text-gray-700 dark:text-gray-200"
                       }`}
                   >
                     <span className="text-xl">{lang.flag}</span>
