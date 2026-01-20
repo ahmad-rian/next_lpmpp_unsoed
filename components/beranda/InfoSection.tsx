@@ -217,9 +217,9 @@ export default function InfoSection() {
                         className="lg:col-span-1"
                     >
                         <Card className="h-full shadow-xl border-0 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-sm">
-                            <CardBody className="p-6">
-                                <div className="flex items-center justify-between mb-4">
-                                    <h3 className="text-lg font-bold text-gray-900 dark:text-white">
+                            <CardBody className="p-4">
+                                <div className="flex items-center justify-between mb-3">
+                                    <h3 className="text-base font-bold text-gray-900 dark:text-white">
                                         Perlu Reakreditasi
                                     </h3>
                                     <Chip color="danger" variant="solid" size="sm" className="font-bold">
@@ -228,19 +228,19 @@ export default function InfoSection() {
                                 </div>
 
                                 {criticalAccreditations.length === 0 ? (
-                                    <div className="text-center py-8 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/20 rounded-xl border border-green-200 dark:border-green-800">
+                                    <div className="text-center py-6 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/20 rounded-lg border border-green-200 dark:border-green-800">
                                         <img
                                             src="/assets/images/ceklis.png"
                                             alt="Verified"
-                                            className="w-16 h-16 object-contain mx-auto mb-2"
+                                            className="w-12 h-12 object-contain mx-auto mb-2"
                                         />
                                         <p className="text-sm font-semibold text-green-700 dark:text-green-400">
                                             Semua prodi status baik
                                         </p>
                                     </div>
                                 ) : (
-                                    <div className="space-y-3 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
-                                        {criticalAccreditations.slice(0, 5).map((item, index) => {
+                                    <div className="space-y-2 max-h-[350px] overflow-y-auto custom-scrollbar">
+                                        {criticalAccreditations.slice(0, 10).map((item) => {
                                             const status = calculateAccreditationStatus(
                                                 item.validUntil ? new Date(item.validUntil) : null
                                             );
@@ -248,27 +248,29 @@ export default function InfoSection() {
                                             return (
                                                 <div
                                                     key={item.id}
-                                                    className="p-3 bg-gradient-to-br from-red-50 to-orange-50 dark:from-red-950/30 dark:to-orange-950/30 border border-red-200 dark:border-red-800 rounded-lg hover:shadow-md transition-all"
+                                                    className="p-2.5 bg-gradient-to-br from-red-50 to-orange-50 dark:from-red-950/30 dark:to-orange-950/30 border border-red-200 dark:border-red-800 rounded-lg hover:shadow-md transition-all"
                                                 >
-                                                    <h4 className="font-bold text-sm text-gray-900 dark:text-white mb-1 line-clamp-1">
+                                                    <h4 className="font-bold text-sm text-gray-900 dark:text-white mb-1.5 line-clamp-1">
                                                         {item.studyProgram}
                                                     </h4>
-                                                    <div className="flex gap-1 mb-2">
-                                                        <Chip size="sm" variant="flat" color="primary" className="text-xs">
+                                                    <div className="flex flex-wrap gap-1 mb-1.5">
+                                                        <Chip size="sm" variant="flat" color="primary" className="text-xs h-5">
                                                             {LEVEL_LABELS[item.level] || item.level}
                                                         </Chip>
-                                                        <Chip size="sm" variant="flat" color="success" className="text-xs">
+                                                        <Chip size="sm" variant="flat" color="success" className="text-xs h-5">
                                                             {item.rank}
                                                         </Chip>
                                                     </div>
-                                                    {item.validUntil && (
-                                                        <p className="text-xs text-gray-700 dark:text-gray-300">
-                                                            📅 {formatDateID(item.validUntil)}
-                                                        </p>
-                                                    )}
-                                                    <Chip color="danger" variant="solid" size="sm" className="mt-2 text-xs">
-                                                        {status.message}
-                                                    </Chip>
+                                                    <div className="flex items-center justify-between gap-2">
+                                                        {item.validUntil && (
+                                                            <p className="text-xs text-gray-600 dark:text-gray-400">
+                                                                📅 {formatDateID(item.validUntil)}
+                                                            </p>
+                                                        )}
+                                                        <Chip color="danger" variant="solid" size="sm" className="text-xs h-5 ml-auto">
+                                                            {status.message}
+                                                        </Chip>
+                                                    </div>
                                                 </div>
                                             );
                                         })}
