@@ -367,7 +367,7 @@ async function main() {
   for (let i = 0; i < fasilitatorData.length; i++) {
     await prisma.expertise.create({
       data: {
-        type: 'FASILITATOR_PEKERTI',
+        type: 'PELATIHAN_PEKERTI_AA',
         name: fasilitatorData[i],
         order: i + 1,
       },
@@ -381,7 +381,7 @@ async function main() {
   for (let i = 0; i < auditorData.length; i++) {
     await prisma.expertise.create({
       data: {
-        type: 'AUDITOR_SPMI',
+        type: 'PELATIHAN_SPMI_AMI',
         name: auditorData[i],
         order: i + 1,
       },
@@ -395,7 +395,7 @@ async function main() {
   for (let i = 0; i < asesorData.length; i++) {
     await prisma.expertise.create({
       data: {
-        type: 'ASESOR_BKD',
+        type: 'EVALUASI_BKD',
         name: asesorData[i],
         order: i + 1,
       },
