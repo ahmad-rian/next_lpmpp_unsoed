@@ -32,6 +32,31 @@ const formatDateID = (dateStr: string | null) => {
   });
 };
 
+// Helper function to calculate countdown
+const getCountdown = (dateStr: string | null) => {
+  if (!dateStr) return { text: "-", color: "default" as const };
+  const now = new Date();
+  const target = new Date(dateStr);
+  const diffMs = target.getTime() - now.getTime();
+  const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+
+  if (diffDays < 0) {
+    return { text: "Kedaluwarsa", color: "danger" as const };
+  }
+
+  const years = Math.floor(diffDays / 365);
+  const months = Math.floor((diffDays % 365) / 30);
+  const days = diffDays % 30;
+
+  let text = "";
+  if (years > 0) text += `${years} thn `;
+  if (months > 0) text += `${months} bln `;
+  if (years === 0) text += `${days} hr`;
+
+  const color = diffDays <= 180 ? "warning" as const : diffDays <= 0 ? "danger" as const : "success" as const;
+  return { text: text.trim(), color };
+};
+
 const RANK_LABELS: Record<string, string> = {
   UNGGUL: "UNGGUL",
   BAIK_SEKALI: "BAIK SEKALI",
@@ -325,7 +350,7 @@ export default function AkreditasiProgramStudiPage() {
                     <th className="text-left py-3 px-4 text-sm font-semibold text-default-600">Korprodi</th>
                     <th className="text-left py-3 px-4 text-sm font-semibold text-default-600">Strata</th>
                     <th className="text-left py-3 px-4 text-sm font-semibold text-default-600">Masa Berlaku</th>
-                    <th className="text-left py-3 px-4 text-sm font-semibold text-default-600">Tahun SK</th>
+                    <th className="text-left py-3 px-4 text-sm font-semibold text-default-600">Sisa Waktu</th>
                     <th className="text-left py-3 px-4 text-sm font-semibold text-default-600">Peringkat</th>
                   </tr>
                 </thead>
@@ -342,7 +367,16 @@ export default function AkreditasiProgramStudiPage() {
                           </Chip>
                         </td>
                         <td className="py-3 px-4 text-sm">{formatDateID(acc.validUntil)}</td>
-                        <td className="py-3 px-4 text-sm">{acc.skYear || "-"}</td>
+                        <td className="py-3 px-4 text-sm">
+                          {(() => {
+                            const countdown = getCountdown(acc.validUntil);
+                            return (
+                              <Chip size="sm" variant="flat" color={countdown.color}>
+                                {countdown.text}
+                              </Chip>
+                            );
+                          })()}
+                        </td>
                         <td className="py-3 px-4 text-sm">
                           <Chip size="sm" variant="flat" color={getRankChipColor(acc.rank)}>
                             {acc.rank ? RANK_LABELS[acc.rank] || acc.rank : "-"}
@@ -395,7 +429,7 @@ export default function AkreditasiProgramStudiPage() {
                       <div className="flex items-center gap-3 text-xs text-default-500 pt-2 border-t border-default-100">
                         <span>Masa Berlaku: {formatDateID(acc.validUntil)}</span>
                         <span>•</span>
-                        <span>Tahun: {acc.skYear || "-"}</span>
+                        <span>Sisa: {getCountdown(acc.validUntil).text}</span>
                       </div>
                     </CardBody>
                   </Card>
