@@ -5,7 +5,6 @@ import { motion } from "framer-motion";
 
 interface SiteConfig {
     gambarStaff?: string | null;
-    gambarTambahan?: string | null;
     gambarTeam?: string | null;
 }
 
@@ -32,7 +31,7 @@ export default function TenagaGambarSection() {
     };
 
     // Check if any image exist
-    const hasImages = config?.gambarTeam || config?.gambarStaff || config?.gambarTambahan;
+    const hasImages = config?.gambarTeam || config?.gambarStaff;
 
     if (loading) {
         return (
@@ -92,15 +91,15 @@ export default function TenagaGambarSection() {
                     </p>
                 </motion.div>
 
-                {/* Images Grid - Side by Side */}
-                <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+                {/* Team Photos Grid - 2 Columns Side by Side */}
+                <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
                     {/* Gambar Team */}
                     {config?.gambarTeam && (
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
-                            transition={{ duration: 0.6, delay: 0 }}
+                            transition={{ duration: 0.6, delay: 0.1 }}
                             className="relative group"
                         >
                             <div className="absolute -top-3 -left-3 w-12 h-12 border-t-4 border-l-4 border-amber-800/30 rounded-tl-xl" />
@@ -126,7 +125,7 @@ export default function TenagaGambarSection() {
                             initial={{ opacity: 0, y: 20 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
-                            transition={{ duration: 0.6, delay: 0.1 }}
+                            transition={{ duration: 0.6, delay: 0.2 }}
                             className="relative group"
                         >
                             <div className="absolute -top-3 -left-3 w-12 h-12 border-t-4 border-l-4 border-amber-800/30 rounded-tl-xl" />
@@ -138,32 +137,6 @@ export default function TenagaGambarSection() {
                                 <img
                                     src={config.gambarStaff}
                                     alt="Tenaga Kependidikan LPMPP UNSOED"
-                                    className="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-[1.02]"
-                                    loading="lazy"
-                                />
-                                <div className="absolute inset-0 bg-gradient-to-t from-amber-900/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                            </div>
-                        </motion.div>
-                    )}
-
-                    {/* Gambar Tambahan */}
-                    {config?.gambarTambahan && (
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ duration: 0.6, delay: 0.2 }}
-                            className="relative group"
-                        >
-                            <div className="absolute -top-3 -left-3 w-12 h-12 border-t-4 border-l-4 border-amber-800/30 rounded-tl-xl" />
-                            <div className="absolute -top-3 -right-3 w-12 h-12 border-t-4 border-r-4 border-amber-800/30 rounded-tr-xl" />
-                            <div className="absolute -bottom-3 -left-3 w-12 h-12 border-b-4 border-l-4 border-amber-800/30 rounded-bl-xl" />
-                            <div className="absolute -bottom-3 -right-3 w-12 h-12 border-b-4 border-r-4 border-amber-800/30 rounded-br-xl" />
-
-                            <div className="relative rounded-xl overflow-hidden shadow-xl border-2 border-amber-900/10 dark:border-amber-800/20 bg-white dark:bg-zinc-900">
-                                <img
-                                    src={config.gambarTambahan}
-                                    alt="Informasi Tambahan LPMPP UNSOED"
                                     className="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-[1.02]"
                                     loading="lazy"
                                 />

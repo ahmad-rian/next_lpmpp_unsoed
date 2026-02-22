@@ -17,6 +17,7 @@ interface SiteConfig {
   gambarSlogan?: string;
   gambarTeam?: string;
   gambarPartner?: string;
+  gambarTambahan?: string;
   layananKami?: string | null;
   pelatihan?: string | null;
   pembelajaran?: string | null;
@@ -90,10 +91,11 @@ export default function Home() {
         carouselImages={carouselImages}
       />
 
-      {/* Gambar Slogan dan Partner - Tanpa gambarTeam (sudah dipindah ke Pengelola) */}
+      {/* Gambar Slogan, Partner, dan Tambahan */}
       <AdditionalImagesSection
         gambarSlogan={config?.gambarSlogan}
         gambarPartner={config?.gambarPartner}
+        gambarTambahan={config?.gambarTambahan}
       />
 
       {/* Info Section - Accreditation Status & Agenda */}

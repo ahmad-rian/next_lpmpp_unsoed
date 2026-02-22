@@ -27,7 +27,7 @@ export default function AsesorBKDPage() {
     try {
       setLoading(true);
       const params = new URLSearchParams({
-        type: "ASESOR_BKD",
+        type: "EVALUASI_BKD",
         page: String(page),
         pageSize: String(pageSize)
       });
@@ -53,10 +53,10 @@ export default function AsesorBKDPage() {
       {/* Header */}
       <div className="text-center mb-8 md:mb-12 space-y-3">
         <h1 className="text-3xl md:text-5xl font-bold text-red-600 dark:text-red-400">
-          Asesor BKD
+          Evaluasi BKD
         </h1>
         <p className="text-base md:text-xl text-default-600 max-w-3xl mx-auto">
-          Daftar asesor Beban Kerja Dosen (BKD) LPMPP UNSOED
+          Daftar asesor Evaluasi Beban Kerja Dosen (BKD) LPMPP UNSOED
         </p>
       </div>
 
@@ -125,7 +125,7 @@ export default function AsesorBKDPage() {
                           {item.name}
                         </h3>
                         <p className="text-sm text-default-500">
-                          Asesor Beban Kerja Dosen (BKD)
+                          Asesor Evaluasi BKD
                         </p>
                       </div>
 

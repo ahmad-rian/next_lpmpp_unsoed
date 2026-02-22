@@ -354,6 +354,7 @@ model StudyProgramAccreditation {
   korprodi       String?
   rank           AccreditationRank?
   studyProgram   String
+  faculty        String?
   validFrom      DateTime?
   validUntil     DateTime?
 
@@ -586,8 +587,10 @@ enum AccreditationRank {
 }
 
 enum ExpertiseType {
-  FASILITATOR_PEKERTI
-  AUDITOR_SPMI
-  ASESOR_BKD
-  ASESOR_SERDOS
+  PELATIHAN_PEKERTI_AA
+  PELATIHAN_SPMI_AMI
+  PELATIHAN_BAHAN_AJAR
+  PELATIHAN_LAINNYA
+  EVALUASI_BKD
+  SERTIFIKASI_DOSEN
 }

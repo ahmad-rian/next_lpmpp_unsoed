@@ -29,7 +29,7 @@ export default function AsesorSerdosPage() {
 
     const fetchData = async () => {
         try {
-            const response = await fetch("/api/expertise?type=ASESOR_SERDOS");
+            const response = await fetch("/api/expertise?type=SERTIFIKASI_DOSEN");
             const result = await response.json();
             setData(result.filter((item: Expertise) => item.isActive));
         } catch (error) {
@@ -67,7 +67,7 @@ export default function AsesorSerdosPage() {
                 className="text-center mb-8"
             >
                 <h1 className="text-3xl md:text-4xl font-bold text-red-600 dark:text-red-400 mb-3">
-                    Asesor Serdos
+                    Sertifikasi Dosen
                 </h1>
                 <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
                     Daftar Asesor Sertifikasi Dosen LPMPP UNSOED

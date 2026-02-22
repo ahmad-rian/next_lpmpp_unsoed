@@ -1,12 +1,14 @@
 import Link from "next/link";
 import { Card, CardBody } from "@heroui/card";
-import { Breadcrumbs, BreadcrumbItem } from "@heroui/breadcrumbs";
 
 export default function KepakaranIndexPage() {
   const menu = [
-    { href: "/kepakaran/fasilitator-pekerti", title: "Fasilitator Pekerti/AA", desc: "Daftar fasilitator bersertifikat PEKERTI/AA." },
-    { href: "/kepakaran/auditor-mutu-internal", title: "Auditor Mutu Internal", desc: "Daftar auditor mutu internal LPMPP UNSOED." },
-    { href: "/kepakaran/asesor-bkd", title: "Asesor BKD", desc: "Daftar asesor BKD LPMPP UNSOED." },
+    { href: "/kepakaran/fasilitator-pekerti", title: "Pelatihan Pekerti/AA", desc: "Daftar fasilitator bersertifikat PEKERTI/AA." },
+    { href: "/kepakaran/auditor-mutu-internal", title: "Pelatihan SPMI/AMI", desc: "Daftar auditor mutu internal SPMI/AMI." },
+    { href: "/kepakaran/pelatihan-bahan-ajar", title: "Pelatihan Bahan Ajar", desc: "Daftar fasilitator pelatihan bahan ajar." },
+    { href: "/kepakaran/pelatihan-lainnya", title: "Pelatihan Lainnya", desc: "Daftar fasilitator pelatihan lainnya." },
+    { href: "/kepakaran/asesor-bkd", title: "Evaluasi BKD", desc: "Daftar asesor evaluasi Beban Kerja Dosen." },
+    { href: "/kepakaran/asesor-serdos", title: "Sertifikasi Dosen", desc: "Daftar asesor sertifikasi dosen." },
   ];
 
   return (

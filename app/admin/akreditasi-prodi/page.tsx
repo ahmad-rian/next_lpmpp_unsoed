@@ -54,6 +54,7 @@ const DownloadIcon = ({ className }: { className?: string }) => (
 interface StudyProgramAccreditation {
   id: string;
   studyProgram: string;
+  faculty: string | null;
   level: string;
   korprodi: string | null;
   skNumber: string | null;
@@ -125,6 +126,7 @@ export default function AkreditasiProdiPage() {
 
   const [formData, setFormData] = useState({
     studyProgram: "",
+    faculty: "",
     level: "",
     korprodi: "",
     skNumber: "",
@@ -179,6 +181,7 @@ export default function AkreditasiProdiPage() {
     const searchLower = searchQuery.toLowerCase().trim();
     const searchMatch = searchLower === "" ||
       acc.studyProgram.toLowerCase().includes(searchLower) ||
+      (acc.faculty && acc.faculty.toLowerCase().includes(searchLower)) ||
       (acc.korprodi && acc.korprodi.toLowerCase().includes(searchLower)) ||
       (acc.skNumber && acc.skNumber.toLowerCase().includes(searchLower)) ||
       (acc.rank && acc.rank.toLowerCase().includes(searchLower));
@@ -197,6 +200,7 @@ export default function AkreditasiProdiPage() {
       setEditingItem(item);
       setFormData({
         studyProgram: item.studyProgram,
+        faculty: item.faculty || "",
         level: item.level,
         korprodi: item.korprodi || "",
         skNumber: item.skNumber || "",
@@ -211,6 +215,7 @@ export default function AkreditasiProdiPage() {
       setEditingItem(null);
       setFormData({
         studyProgram: "",
+        faculty: "",
         level: "",
         korprodi: "",
         skNumber: "",
@@ -230,6 +235,7 @@ export default function AkreditasiProdiPage() {
     setCertificateFile(null);
     setFormData({
       studyProgram: "",
+      faculty: "",
       level: "",
       korprodi: "",
       skNumber: "",
@@ -279,6 +285,7 @@ export default function AkreditasiProdiPage() {
         ? {
           id: editingItem.id,
           studyProgram: formData.studyProgram,
+          faculty: formData.faculty || null,
           level: formData.level,
           korprodi: formData.korprodi || null,
           skNumber: formData.skNumber || null,
@@ -291,6 +298,7 @@ export default function AkreditasiProdiPage() {
         }
         : {
           studyProgram: formData.studyProgram,
+          faculty: formData.faculty || null,
           level: formData.level,
           korprodi: formData.korprodi || null,
           skNumber: formData.skNumber || null,
@@ -354,10 +362,11 @@ export default function AkreditasiProdiPage() {
 
   const handleExport = () => {
     // Simple CSV export
-    const headers = ["No", "Program Studi", "Strata", "No. SK", "Tahun SK", "Peringkat"];
+    const headers = ["No", "Program Studi", "Fakultas", "Strata", "No. SK", "Tahun SK", "Peringkat"];
     const rows = accreditations.map((item, index) => [
       index + 1,
       item.studyProgram,
+      item.faculty || "-",
       item.level,
       item.skNumber || "-",
       item.skYear || "-",
@@ -511,6 +520,7 @@ export default function AkreditasiProdiPage() {
           <TableHeader>
             <TableColumn>NO</TableColumn>
             <TableColumn>PROGRAM STUDI</TableColumn>
+            <TableColumn>FAKULTAS</TableColumn>
             <TableColumn>KORPRODI</TableColumn>
             <TableColumn>STRATA</TableColumn>
             <TableColumn>PERINGKAT</TableColumn>
@@ -535,6 +545,9 @@ export default function AkreditasiProdiPage() {
                         </div>
                       )}
                     </div>
+                  </TableCell>
+                  <TableCell>
+                    <span className="text-sm">{item.faculty || "-"}</span>
                   </TableCell>
                   <TableCell>{item.korprodi || "-"}</TableCell>
                   <TableCell>
@@ -645,6 +658,14 @@ export default function AkreditasiProdiPage() {
                     setFormData({ ...formData, studyProgram: e.target.value })
                   }
                   isRequired
+                />
+                <Input
+                  label="Fakultas"
+                  placeholder="Masukkan nama fakultas (opsional)"
+                  value={formData.faculty}
+                  onChange={(e: any) =>
+                    setFormData({ ...formData, faculty: e.target.value })
+                  }
                 />
                 <Select
                   label="Strata"

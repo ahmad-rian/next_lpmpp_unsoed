@@ -29,7 +29,7 @@ export default function FasilitatorPekertiPage() {
       try {
         setLoading(true);
         const params = new URLSearchParams({
-          type: "FASILITATOR_PEKERTI",
+          type: "PELATIHAN_PEKERTI_AA",
           page: String(page),
           pageSize: String(pageSize),
         });
@@ -56,7 +56,7 @@ export default function FasilitatorPekertiPage() {
       {/* Header */}
       <div className="text-center mb-8 md:mb-12 space-y-3">
         <h1 className="text-3xl md:text-5xl font-bold text-red-600 dark:text-red-400">
-          Fasilitator Pekerti / AA
+          Pelatihan Pekerti / AA
         </h1>
         <p className="text-base md:text-xl text-default-600 max-w-3xl mx-auto">
           Daftar fasilitator bersertifikat PEKERTI/AA LPMPP UNSOED

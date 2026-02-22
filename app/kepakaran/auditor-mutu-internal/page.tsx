@@ -27,7 +27,7 @@ export default function AuditorMutuInternalPage() {
     try {
       setLoading(true);
       const params = new URLSearchParams({
-        type: "AUDITOR_SPMI",
+        type: "PELATIHAN_SPMI_AMI",
         page: String(page),
         pageSize: String(pageSize)
       });
@@ -53,10 +53,10 @@ export default function AuditorMutuInternalPage() {
       {/* Header */}
       <div className="text-center mb-8 md:mb-12 space-y-3">
         <h1 className="text-3xl md:text-5xl font-bold text-red-600 dark:text-red-400">
-          Auditor Mutu Internal
+          Pelatihan SPMI/AMI
         </h1>
         <p className="text-base md:text-xl text-default-600 max-w-3xl mx-auto">
-          Daftar auditor mutu internal LPMPP UNSOED
+          Daftar auditor mutu internal SPMI/AMI LPMPP UNSOED
         </p>
       </div>
 
@@ -125,7 +125,7 @@ export default function AuditorMutuInternalPage() {
                           {item.name}
                         </h3>
                         <p className="text-sm text-default-500">
-                          Auditor Mutu Internal SPMI
+                          Auditor Mutu Internal SPMI/AMI
                         </p>
                       </div>
 

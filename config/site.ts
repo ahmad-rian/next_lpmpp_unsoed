@@ -104,28 +104,40 @@ export const siteConfig = {
     },
     {
       label: "Layanan",
-      href: "/kepakaran/fasilitator-pekerti",
+      href: "/kepakaran/pelatihan-pekerti-aa",
       children: [
         {
-          label: "Fasilitator Pekerti / AA",
+          label: "Pelatihan Pekerti / AA",
           href: "/kepakaran/fasilitator-pekerti",
-          description: "Daftar Fasilitator Pekerti dan Applied Approach",
+          description: "Daftar Fasilitator Pelatihan Pekerti dan Applied Approach",
           icon: "users",
         },
         {
-          label: "Auditor Mutu Internal",
+          label: "Pelatihan SPMI/AMI",
           href: "/kepakaran/auditor-mutu-internal",
-          description: "Daftar Auditor Mutu Internal",
+          description: "Daftar Auditor Mutu Internal SPMI/AMI",
           icon: "shield",
         },
         {
-          label: "Asesor BKD",
+          label: "Pelatihan Bahan Ajar",
+          href: "/kepakaran/pelatihan-bahan-ajar",
+          description: "Daftar Fasilitator Pelatihan Bahan Ajar",
+          icon: "document",
+        },
+        {
+          label: "Pelatihan Lainnya",
+          href: "/kepakaran/pelatihan-lainnya",
+          description: "Daftar Fasilitator Pelatihan Lainnya",
+          icon: "clipboard",
+        },
+        {
+          label: "Evaluasi BKD",
           href: "/kepakaran/asesor-bkd",
-          description: "Daftar Asesor Beban Kerja Dosen",
+          description: "Daftar Asesor Evaluasi Beban Kerja Dosen",
           icon: "usercheck",
         },
         {
-          label: "Asesor Serdos",
+          label: "Sertifikasi Dosen",
           href: "/kepakaran/asesor-serdos",
           description: "Daftar Asesor Sertifikasi Dosen",
           icon: "certificate",

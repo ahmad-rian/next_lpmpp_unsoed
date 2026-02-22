@@ -54,14 +54,16 @@ interface Expertise {
 }
 
 const typeLabels = {
-  FASILITATOR_PEKERTI: "Fasilitator Pekerti/AA",
-  AUDITOR_SPMI: "Auditor SPMI",
-  ASESOR_BKD: "Asesor BKD",
-  ASESOR_SERDOS: "Asesor Serdos",
+  PELATIHAN_PEKERTI_AA: "Pelatihan Pekerti/AA",
+  PELATIHAN_SPMI_AMI: "Pelatihan SPMI/AMI",
+  PELATIHAN_BAHAN_AJAR: "Pelatihan Bahan Ajar",
+  PELATIHAN_LAINNYA: "Pelatihan Lainnya",
+  EVALUASI_BKD: "Evaluasi BKD",
+  SERTIFIKASI_DOSEN: "Sertifikasi Dosen",
 };
 
 export default function KepakaranPage() {
-  const [selectedType, setSelectedType] = useState("FASILITATOR_PEKERTI");
+  const [selectedType, setSelectedType] = useState("PELATIHAN_PEKERTI_AA");
   const [expertise, setExpertise] = useState<Expertise[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -223,10 +225,12 @@ export default function KepakaranPage() {
         variant="underlined"
         className="mb-6"
       >
-        <Tab key="FASILITATOR_PEKERTI" title="Fasilitator Pekerti/AA" />
-        <Tab key="AUDITOR_SPMI" title="Auditor SPMI" />
-        <Tab key="ASESOR_BKD" title="Asesor BKD" />
-        <Tab key="ASESOR_SERDOS" title="Asesor Serdos" />
+        <Tab key="PELATIHAN_PEKERTI_AA" title="Pelatihan Pekerti/AA" />
+        <Tab key="PELATIHAN_SPMI_AMI" title="Pelatihan SPMI/AMI" />
+        <Tab key="PELATIHAN_BAHAN_AJAR" title="Pelatihan Bahan Ajar" />
+        <Tab key="PELATIHAN_LAINNYA" title="Pelatihan Lainnya" />
+        <Tab key="EVALUASI_BKD" title="Evaluasi BKD" />
+        <Tab key="SERTIFIKASI_DOSEN" title="Sertifikasi Dosen" />
       </Tabs>
 
       {loading ? (

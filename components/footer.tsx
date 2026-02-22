@@ -48,7 +48,7 @@ export const Footer = () => {
   const serviceLinks = [
     { label: "SPMI", href: "/spmi/gugus-penjamin-mutu-fakultas" },
     { label: "Akreditasi", href: "/akreditasi/perguruan-tinggi" },
-    { label: "Layanan", href: "/kepakaran/mbkm" },
+    { label: "Layanan", href: "/kepakaran" },
     { label: "Pimpinan", href: "/pimpinan" },
     { label: "Tata Usaha", href: "/tata-usaha" },
   ];
@@ -61,7 +61,7 @@ export const Footer = () => {
           <div className="space-y-5">
             <div className="flex items-center space-x-3">
               <Image
-                src={config?.logoApp || "/assets/images/logo-white.png"}
+                src="/assets/images/logo-white.png"
                 alt="Logo LPMPP"
                 width={40}
                 height={40}
