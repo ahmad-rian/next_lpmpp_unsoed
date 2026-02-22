@@ -66,7 +66,7 @@ async function seedFromMarkdown() {
   for (let i = 0; i < fasilitators.length; i++) {
     await prisma.expertise.create({
       data: {
-        type: ExpertiseType.FASILITATOR_PEKERTI,
+        type: ExpertiseType.PELATIHAN_PEKERTI_AA,
         name: fasilitators[i],
         order: i + 1,
       },
@@ -77,7 +77,7 @@ async function seedFromMarkdown() {
   for (let i = 0; i < auditors.length; i++) {
     await prisma.expertise.create({
       data: {
-        type: ExpertiseType.AUDITOR_SPMI,
+        type: ExpertiseType.PELATIHAN_SPMI_AMI,
         name: auditors[i],
         order: i + 1,
       },
@@ -88,7 +88,7 @@ async function seedFromMarkdown() {
   for (let i = 0; i < asesors.length; i++) {
     await prisma.expertise.create({
       data: {
-        type: ExpertiseType.ASESOR_BKD,
+        type: ExpertiseType.EVALUASI_BKD,
         name: asesors[i],
         order: i + 1,
       },
