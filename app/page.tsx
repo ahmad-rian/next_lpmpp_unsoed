@@ -91,11 +91,10 @@ export default function Home() {
         carouselImages={carouselImages}
       />
 
-      {/* Gambar Slogan, Partner, dan Tambahan */}
+      {/* Gambar Slogan dan Partner */}
       <AdditionalImagesSection
         gambarSlogan={config?.gambarSlogan}
         gambarPartner={config?.gambarPartner}
-        gambarTambahan={config?.gambarTambahan}
       />
 
       {/* Info Section - Accreditation Status & Agenda */}

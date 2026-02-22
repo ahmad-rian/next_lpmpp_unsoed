@@ -5,16 +5,14 @@ import { motion } from "framer-motion";
 interface AdditionalImagesSectionProps {
     gambarSlogan?: string;
     gambarPartner?: string;
-    gambarTambahan?: string;
 }
 
 export default function AdditionalImagesSection({
     gambarSlogan,
     gambarPartner,
-    gambarTambahan,
 }: AdditionalImagesSectionProps) {
     // Jika tidak ada gambar sama sekali, jangan render section
-    if (!gambarSlogan && !gambarPartner && !gambarTambahan) {
+    if (!gambarSlogan && !gambarPartner) {
         return null;
     }
 
@@ -83,25 +81,6 @@ export default function AdditionalImagesSection({
                             <img
                                 src={gambarPartner}
                                 alt="Mitra LPMPP UNSOED"
-                                className="w-full h-auto object-cover rounded-xl md:rounded-2xl"
-                                loading="lazy"
-                            />
-                        </div>
-                    </motion.div>
-                )}
-
-                {gambarTambahan && (
-                    <motion.div
-                        initial={{ opacity: 0, y: 30 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true, margin: "-50px" }}
-                        transition={{ duration: 0.5, ease: "easeOut" }}
-                        className="w-full px-4 md:px-8 lg:px-12 xl:px-16"
-                    >
-                        <div className="max-w-7xl mx-auto">
-                            <img
-                                src={gambarTambahan}
-                                alt="Informasi Tambahan LPMPP UNSOED"
                                 className="w-full h-auto object-cover rounded-xl md:rounded-2xl"
                                 loading="lazy"
                             />

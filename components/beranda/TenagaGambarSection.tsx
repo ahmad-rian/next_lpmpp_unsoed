@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 
 interface SiteConfig {
     gambarStaff?: string | null;
+    gambarTambahan?: string | null;
     gambarTeam?: string | null;
 }
 
@@ -31,7 +32,7 @@ export default function TenagaGambarSection() {
     };
 
     // Check if any image exist
-    const hasImages = config?.gambarTeam || config?.gambarStaff;
+    const hasImages = config?.gambarTeam || config?.gambarStaff || config?.gambarTambahan;
 
     if (loading) {
         return (
@@ -65,6 +66,27 @@ export default function TenagaGambarSection() {
             <div className="absolute bottom-0 left-0 right-0 h-2 bg-gradient-to-r from-transparent via-amber-800/20 to-transparent" />
 
             <div className="container mx-auto px-4 relative z-10">
+                {/* Gambar Tambahan/Logo - Full Width on Top */}
+                {config?.gambarTambahan && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.6 }}
+                        className="max-w-4xl mx-auto mb-8 md:mb-12"
+                    >
+                        <div className="relative group">
+                            <div className="relative rounded-xl overflow-hidden shadow-xl border-2 border-amber-900/10 dark:border-amber-800/20 bg-white dark:bg-zinc-900">
+                                <img
+                                    src={config.gambarTambahan}
+                                    alt="Informasi Tambahan LPMPP UNSOED"
+                                    className="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-[1.02]"
+                                    loading="lazy"
+                                />
+                            </div>
+                        </div>
+                    </motion.div>
+                )}
                 {/* Section Title */}
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
