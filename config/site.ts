@@ -104,7 +104,7 @@ export const siteConfig = {
     },
     {
       label: "Layanan",
-      href: "/kepakaran/pelatihan-pekerti-aa",
+      href: "/kepakaran/fasilitator-pekerti",
       children: [
         {
           label: "Pelatihan Pekerti / AA",
