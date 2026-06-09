@@ -145,6 +145,10 @@ export const siteConfig = {
       ],
     },
     {
+      label: "PPID",
+      href: "/ppid",
+    },
+    {
       label: "Program Unggulan",
       href: "/program-unggulan",
     },

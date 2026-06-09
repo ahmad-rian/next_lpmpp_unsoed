@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { Card, CardBody } from "@heroui/card";
 import { Input, Textarea } from "@heroui/input";
 import { Button } from "@heroui/button";
+import { Chip } from "@heroui/chip";
 import { AdminPageLayout } from "@/components/admin-page-layout";
 import { ImageUpload } from "@/components/image-upload";
 
@@ -13,36 +14,31 @@ interface SiteConfig {
   logoApp: string | null;
   logoDescription: string | null;
   siteName: string;
-  tagline: string | null; // Tagline LPMPP
-  motto: string | null; // Motto LPMPP (fixed typo from moto)
-  headMessage: string | null; // Pesan Kepala Lembaga
-  visi: string | null; // Visi LPMPP
-  misi: string | null; // Misi LPMPP
-  visiUnsoed: string | null; // Visi UNSOED
-  misiUnsoed: string | null; // Misi UNSOED
+  tagline: string | null;
+  motto: string | null;
+  headMessage: string | null;
+  visi: string | null;
+  misi: string | null;
+  visiUnsoed: string | null;
+  misiUnsoed: string | null;
   tugas: string | null;
   fungsi: string | null;
   alamat: string | null;
   email: string | null;
   instagramUrl: string | null;
-  carouselImages: string | null; // JSON string array
-
-  // Field tambahan untuk halaman utama
-  gambarTeam: string | null; // Gambar team
-  gambarSlogan: string | null; // Gambar slogan
-  gambarTambahan: string | null; // Gambar tambahan
-
-  // Detail Layanan LPMPP
-  layananKami: string | null; // LAYANAN KAMI description
-  pelatihan: string | null; // PELATIHAN description  
-  pembelajaran: string | null; // PEMBELAJARAN description
-  penjaminanMutu: string | null; // PENJAMINAN MUTU description
-
-  // Informasi dan Layanan
-  informasiLayanan: string | null; // Informasi pelayanan dan jadwal
-  gambarInformasi: string | null; // Gambar untuk informasi layanan
-  gambarStaff: string | null; // Gambar staff pendukung
-  gambarPartner: string | null; // Gambar partner
+  carouselImages: string | null;
+  gambarTeam: string | null;
+  gambarSlogan: string | null;
+  gambarTambahan: string | null;
+  layananKami: string | null;
+  pelatihan: string | null;
+  pembelajaran: string | null;
+  penjaminanMutu: string | null;
+  informasiLayanan: string | null;
+  gambarInformasi: string | null;
+  gambarStaff: string | null;
+  gambarPartner: string | null;
+  hasSpmiPassword: boolean;
 }
 
 const CogIcon = () => (
@@ -58,6 +54,8 @@ export default function SiteConfigPage() {
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
   const [carouselImages, setCarouselImages] = useState<string[]>([]);
+  const [spmiPasswordNew, setSpmiPasswordNew] = useState("");
+  const [spmiPasswordConfirm, setSpmiPasswordConfirm] = useState("");
 
   useEffect(() => {
     fetchConfig();
@@ -91,11 +89,23 @@ export default function SiteConfigPage() {
     setMessage(null);
 
     try {
+      // Validate SPMI password confirmation
+      if (spmiPasswordNew && spmiPasswordNew !== spmiPasswordConfirm) {
+        setMessage({ type: 'error', text: 'Konfirmasi password SPMI tidak cocok' });
+        setSaving(false);
+        return;
+      }
+
       // Prepare config with carousel images
-      const configToSave = {
+      const configToSave: Record<string, unknown> = {
         ...config,
         carouselImages: JSON.stringify(carouselImages),
       };
+
+      // Only include password field if user entered something
+      if (spmiPasswordNew) {
+        configToSave.spmiPasswordNew = spmiPasswordNew;
+      }
 
       const response = await fetch("/api/site-config", {
         method: "PUT",
@@ -108,6 +118,8 @@ export default function SiteConfigPage() {
       if (response.ok) {
         setMessage({ type: 'success', text: 'Konfigurasi berhasil disimpan!' });
         setConfig(result.data);
+        setSpmiPasswordNew("");
+        setSpmiPasswordConfirm("");
       } else {
         setMessage({ type: 'error', text: result.error || 'Gagal menyimpan konfigurasi' });
       }
@@ -552,6 +564,81 @@ Waktu : Pukul 08.00 – 16.00 WIB"
               description="Informasi lengkap tentang jadwal dan cara pelayanan"
               variant="bordered"
             />
+          </CardBody>
+        </Card>
+
+        {/* Proteksi Password SPMI */}
+        <Card>
+          <CardBody className="gap-4 p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-xl font-semibold mb-2">Proteksi Password SPMI</h2>
+                <p className="text-sm text-default-500">
+                  Lindungi halaman SPMI dengan password. Pengunjung harus memasukkan password untuk mengakses dokumen SPMI.
+                </p>
+              </div>
+              <Chip
+                color={config?.hasSpmiPassword ? "success" : "default"}
+                variant="flat"
+                size="sm"
+              >
+                {config?.hasSpmiPassword ? "Aktif" : "Tidak Aktif"}
+              </Chip>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Input
+                label="Password SPMI Baru"
+                placeholder="Masukkan password baru"
+                type="password"
+                value={spmiPasswordNew}
+                onChange={(e) => setSpmiPasswordNew(e.target.value)}
+                description="Kosongkan jika tidak ingin mengubah password"
+                variant="bordered"
+              />
+              <Input
+                label="Konfirmasi Password"
+                placeholder="Ulangi password baru"
+                type="password"
+                value={spmiPasswordConfirm}
+                onChange={(e) => setSpmiPasswordConfirm(e.target.value)}
+                description="Harus sama dengan password baru"
+                variant="bordered"
+                isInvalid={!!spmiPasswordConfirm && spmiPasswordNew !== spmiPasswordConfirm}
+                errorMessage={spmiPasswordConfirm && spmiPasswordNew !== spmiPasswordConfirm ? "Password tidak cocok" : ""}
+              />
+            </div>
+
+            {config?.hasSpmiPassword && (
+              <div className="flex items-center gap-2">
+                <Button
+                  color="danger"
+                  variant="flat"
+                  size="sm"
+                  onClick={async () => {
+                    try {
+                      const response = await fetch("/api/site-config", {
+                        method: "PUT",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ ...config, spmiPasswordNew: "", carouselImages: JSON.stringify(carouselImages) }),
+                      });
+                      if (response.ok) {
+                        const result = await response.json();
+                        setConfig(result.data);
+                        setMessage({ type: 'success', text: 'Proteksi password SPMI telah dihapus' });
+                      }
+                    } catch {
+                      setMessage({ type: 'error', text: 'Gagal menghapus proteksi password' });
+                    }
+                  }}
+                >
+                  Hapus Proteksi Password
+                </Button>
+                <span className="text-xs text-default-400">
+                  Halaman SPMI akan dapat diakses tanpa password
+                </span>
+              </div>
+            )}
           </CardBody>
         </Card>
 

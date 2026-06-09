@@ -6,7 +6,7 @@ import { auth } from "@/auth";
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const type = searchParams.get("type") as "SPMI" | "AUDIT" | "REGULATION" | null;
+    const type = searchParams.get("type") as "SPMI" | "AUDIT" | "REGULATION" | "PPID" | null;
 
     const where = type ? { type, isActive: true } : { isActive: true };
 

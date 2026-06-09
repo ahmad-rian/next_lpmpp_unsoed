@@ -146,6 +146,7 @@ model SiteConfig {
   headMessage      String?  @db.Text
   motto            String?  @db.Text
   tagline          String?  @db.Text
+  spmiPassword     String?  @db.Text
 }
 
 model Leadership {
@@ -557,6 +558,7 @@ enum DocumentType {
   SPMI
   AUDIT
   REGULATION
+  PPID
 }
 
 enum RankingInstitution {

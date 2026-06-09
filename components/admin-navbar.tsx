@@ -179,6 +179,10 @@ export function AdminNavbar() {
     { key: "berita", label: "Berita", href: "/admin/berita", icon: FileTextIcon },
   ];
 
+  const ppidItems = [
+    { key: "ppid", label: "Dokumen PPID", href: "/admin/ppid", icon: DocumentIcon },
+  ];
+
   const unduhanItems = [
     { key: "unduhan", label: "Unduhan", href: "/admin/unduhan", icon: DocumentIcon },
   ];
@@ -418,6 +422,22 @@ export function AdminNavbar() {
           >
             <FileTextIcon className="w-4 h-4" />
             Berita
+          </NextLink>
+        </NavbarItem>
+
+        {/* PPID */}
+        <NavbarItem>
+          <NextLink
+            href="/admin/ppid"
+            className={clsx(
+              "flex items-center gap-2 px-3 py-2 rounded-lg transition-colors",
+              pathname === "/admin/ppid"
+                ? "bg-primary text-primary-foreground"
+                : "text-foreground hover:bg-default-100"
+            )}
+          >
+            <DocumentIcon className="w-4 h-4" />
+            PPID
           </NextLink>
         </NavbarItem>
 
@@ -721,6 +741,22 @@ export function AdminNavbar() {
               >
                 <FileTextIcon className="w-5 h-5" />
                 Berita
+              </NextLink>
+            </NavbarMenuItem>
+
+            <NavbarMenuItem>
+              <NextLink
+                href="/admin/ppid"
+                className={clsx(
+                  "flex items-center gap-3 w-full px-4 py-3 rounded-lg",
+                  pathname === "/admin/ppid"
+                    ? "bg-primary text-primary-foreground font-semibold"
+                    : "hover:bg-default-100"
+                )}
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <DocumentIcon className="w-5 h-5" />
+                PPID
               </NextLink>
             </NavbarMenuItem>
 

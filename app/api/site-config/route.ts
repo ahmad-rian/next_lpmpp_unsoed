@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
+import { hash } from "bcryptjs";
 
 // GET - Fetch site config
 export async function GET() {
@@ -19,7 +20,12 @@ export async function GET() {
       });
     }
 
-    return NextResponse.json(config);
+    // Don't expose password hash, only boolean flag
+    const { spmiPassword, ...configWithoutPassword } = config;
+    return NextResponse.json({
+      ...configWithoutPassword,
+      hasSpmiPassword: !!spmiPassword,
+    });
   } catch (error) {
     console.error("Error fetching site config:", error);
     return NextResponse.json(
@@ -43,13 +49,25 @@ export async function PUT(request: NextRequest) {
     }
 
     const data = await request.json();
-    
+
     // Validate required fields
     if (!data.siteName) {
       return NextResponse.json(
         { error: "Site name is required" },
         { status: 400 }
       );
+    }
+
+    // Handle SPMI password
+    let spmiPasswordUpdate: { spmiPassword?: string | null } = {};
+    if (data.spmiPasswordNew !== undefined) {
+      if (data.spmiPasswordNew === "" || data.spmiPasswordNew === null) {
+        // Clear password protection
+        spmiPasswordUpdate = { spmiPassword: null };
+      } else {
+        // Hash and set new password
+        spmiPasswordUpdate = { spmiPassword: await hash(data.spmiPasswordNew, 10) };
+      }
     }
 
     // Get existing config
@@ -95,6 +113,7 @@ export async function PUT(request: NextRequest) {
           gambarInformasi: data.gambarInformasi,
           gambarStaff: data.gambarStaff,
           gambarPartner: data.gambarPartner,
+          ...spmiPasswordUpdate,
         },
       });
     } else {
@@ -135,13 +154,16 @@ export async function PUT(request: NextRequest) {
           gambarInformasi: data.gambarInformasi,
           gambarStaff: data.gambarStaff,
           gambarPartner: data.gambarPartner,
+          ...spmiPasswordUpdate,
         },
       });
     }
 
+    // Don't expose password hash in response
+    const { spmiPassword: _pwd, ...responseData } = config;
     return NextResponse.json({
       message: "Site configuration updated successfully",
-      data: config,
+      data: { ...responseData, hasSpmiPassword: !!_pwd },
     });
   } catch (error) {
     console.error("Error updating site config:", error);
