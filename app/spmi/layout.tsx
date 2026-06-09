@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { SpmiPasswordModal } from "@/components/spmi-password-modal";
+import { SpmiPasswordForm } from "@/components/spmi-password-form";
 
 export default function SpmiLayout({ children }: { children: React.ReactNode }) {
   const [status, setStatus] = useState<"loading" | "open" | "locked" | "unlocked">("loading");
@@ -19,7 +19,6 @@ export default function SpmiLayout({ children }: { children: React.ReactNode }) 
         setStatus("locked");
       }
     } catch {
-      // If check fails, allow access rather than blocking
       setStatus("open");
     }
   };
@@ -37,17 +36,7 @@ export default function SpmiLayout({ children }: { children: React.ReactNode }) 
   }
 
   if (status === "locked") {
-    return (
-      <>
-        <div className="blur-sm pointer-events-none select-none" aria-hidden="true">
-          {children}
-        </div>
-        <SpmiPasswordModal
-          isOpen={true}
-          onSuccess={() => setStatus("unlocked")}
-        />
-      </>
-    );
+    return <SpmiPasswordForm onSuccess={() => setStatus("unlocked")} />;
   }
 
   return <>{children}</>;
