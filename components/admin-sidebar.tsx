@@ -43,6 +43,11 @@ const menuItems = [
     icon: DocumentIcon,
   },
   {
+    title: "Safety Briefing",
+    href: "/admin/safety-briefing",
+    icon: DocumentIcon,
+  },
+  {
     title: "Analytics",
     href: "/admin/analytics",
     icon: ChartBarIcon,

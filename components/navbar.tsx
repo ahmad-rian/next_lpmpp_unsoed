@@ -63,7 +63,7 @@ export const Navbar = () => {
 
   // Build nav items with translations
   const navItems = useMemo(() => {
-    return siteConfig.navItems.slice(0, 7).map((item) => ({
+    return siteConfig.navItems.slice(0, 8).map((item) => ({
       name: item.label, // Keep original for now, translate in content
       link: item.href,
       children: item.children?.map((child) => ({

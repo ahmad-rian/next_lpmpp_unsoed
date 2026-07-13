@@ -149,6 +149,10 @@ export const siteConfig = {
       href: "/ppid",
     },
     {
+      label: "Safety Briefing LPMPP Building",
+      href: "/safety-briefing",
+    },
+    {
       label: "Program Unggulan",
       href: "/program-unggulan",
     },
@@ -181,6 +185,10 @@ export const siteConfig = {
     {
       label: "Pusat & Unit",
       href: "/pusat-unit",
+    },
+    {
+      label: "Safety Briefing LPMPP Building",
+      href: "/safety-briefing",
     },
     {
       label: "Program Unggulan",

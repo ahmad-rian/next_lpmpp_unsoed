@@ -596,3 +596,13 @@ enum ExpertiseType {
   EVALUASI_BKD
   SERTIFIKASI_DOSEN
 }
+
+model SafetyBriefing {
+  id          String   @id @default(cuid())
+  title       String   @default("Safety Briefing LPMPP Building")
+  description String?  @db.Text
+  images      String?  @db.Text // JSON array of /uploads/*.webp
+  videos      String?  @db.Text // JSON array of YouTube URLs
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
