@@ -32,6 +32,16 @@ export function ImageUpload({ label, value, onChange, description }: ImageUpload
     const file = e.target.files?.[0];
     if (!file) return;
 
+    // Guard: max 20MB to avoid silent 413 from the reverse proxy
+    const MAX_BYTES = 20 * 1024 * 1024;
+    if (file.size > MAX_BYTES) {
+      alert(
+        `Ukuran gambar terlalu besar (${(file.size / 1024 / 1024).toFixed(1)}MB). Maksimal 20MB.`
+      );
+      e.target.value = "";
+      return;
+    }
+
     // Show preview immediately
     const reader = new FileReader();
     reader.onloadend = () => {
@@ -50,18 +60,28 @@ export function ImageUpload({ label, value, onChange, description }: ImageUpload
         body: formData,
       });
 
-      const result = await response.json();
-
       if (response.ok) {
+        const result = await response.json();
         onChange(result.url);
         setPreview(result.url);
       } else {
-        alert(result.error || "Upload failed");
+        // Surface the real reason so upload failures aren't opaque
+        let detail = "";
+        try {
+          const result = await response.json();
+          detail = result.error || "";
+        } catch {
+          detail = response.statusText;
+        }
+        if (response.status === 413) {
+          detail = "File terlalu besar (ditolak server). Kompres gambar lalu coba lagi.";
+        }
+        alert(`Upload gagal (${response.status})${detail ? `: ${detail}` : ""}`);
         setPreview(value);
       }
     } catch (error) {
       console.error("Upload error:", error);
-      alert("Failed to upload image");
+      alert("Gagal upload gambar (koneksi/server).");
       setPreview(value);
     } finally {
       setUploading(false);
