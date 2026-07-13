@@ -30,6 +30,12 @@ export const siteConfig = {
           description: "Staff dan kepegawaian",
           icon: "briefcase",
         },
+        {
+          label: "Safety Briefing LPMPP Building",
+          href: "/safety-briefing",
+          description: "Petunjuk keselamatan gedung LPMPP",
+          icon: "shield",
+        },
       ],
     },
     {
@@ -147,10 +153,6 @@ export const siteConfig = {
     {
       label: "PPID",
       href: "/ppid",
-    },
-    {
-      label: "Safety Briefing LPMPP Building",
-      href: "/safety-briefing",
     },
     {
       label: "Program Unggulan",
