@@ -65,7 +65,7 @@ export default function PimpinanLembagaPage() {
           Pimpinan Lembaga
         </h1>
         <p className="text-base md:text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto px-4">
-          Struktur Kepemimpinan Lembaga Pengembangan Pembelajaran dan Penjaminan Mutu (LPMPP) 
+          Struktur Kepemimpinan Lembaga Penjaminan Mutu dan Pengembangan Pembelajaran (LPMPP) 
           Universitas Jenderal Soedirman
         </p>
         <Divider className="max-w-24 mx-auto bg-red-500" />

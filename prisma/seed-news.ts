@@ -6,9 +6,9 @@ const newsData = [
   {
     title: "LPMPP Unsoed Bekali Siswa SMKN 1 Kalibagor dengan Keterampilan Pertanian Modern Melalui Pelatihan IoT dan Seni Persuasi",
     slug: "lpmpp-unsoed-bekali-siswa-smkn-1-kalibagor-dengan-keterampilan-pertanian-modern",
-    excerpt: "PURWOKERTO, JAWA TENGAH – 17 September 2025 – Dalam rangka menjawab tantangan industri pertanian 4.0, Lembaga Pengembangan Pembelajaran dan Penjaminan Mutu (LPMPP) Universitas Jenderal Soedirman (Unsoed) menggelar kegiatan Penguatan Pembelajaran Vokasi Pertanian yang menargetkan siswa/i di SMKN 1 Kalibagor.",
+    excerpt: "PURWOKERTO, JAWA TENGAH – 17 September 2025 – Dalam rangka menjawab tantangan industri pertanian 4.0, Lembaga Penjaminan Mutu dan Pengembangan Pembelajaran (LPMPP) Universitas Jenderal Soedirman (Unsoed) menggelar kegiatan Penguatan Pembelajaran Vokasi Pertanian yang menargetkan siswa/i di SMKN 1 Kalibagor.",
     content: `<h2>PURWOKERTO, JAWA TENGAH – 17 September 2025</h2>
-<p>Dalam rangka menjawab tantangan industri pertanian 4.0, Lembaga Pengembangan Pembelajaran dan Penjaminan Mutu (LPMPP) Universitas Jenderal Soedirman (Unsoed) menggelar kegiatan <strong>"Penguatan Pembelajaran Vokasi Pertanian"</strong> yang menargetkan siswa/i di SMKN 1 Kalibagor. Acara yang berlangsung pada hari Rabu, 17 September 2025 ini bertujuan membekali para siswa dengan keterampilan praktis yang relevan dengan kebutuhan industri modern.</p>
+<p>Dalam rangka menjawab tantangan industri pertanian 4.0, Lembaga Penjaminan Mutu dan Pengembangan Pembelajaran (LPMPP) Universitas Jenderal Soedirman (Unsoed) menggelar kegiatan <strong>"Penguatan Pembelajaran Vokasi Pertanian"</strong> yang menargetkan siswa/i di SMKN 1 Kalibagor. Acara yang berlangsung pada hari Rabu, 17 September 2025 ini bertujuan membekali para siswa dengan keterampilan praktis yang relevan dengan kebutuhan industri modern.</p>
 
 <h3>Pelatihan IoT untuk Pertanian Smart</h3>
 <p>Salah satu fokus utama pelatihan ini adalah pengenalan teknologi Internet of Things (IoT) dalam bidang pertanian. Para siswa diajak untuk memahami bagaimana sensor dan sistem otomasi dapat meningkatkan efisiensi produksi pertanian, mulai dari monitoring kelembaban tanah hingga pengaturan irigasi otomatis.</p>
@@ -29,9 +29,9 @@ const newsData = [
   {
     title: "Perkuat Budaya Mutu, LPMPP Unsoed Gelar Praktik Audit Mutu Internal di Fakultas Kedokteran",
     slug: "perkuat-budaya-mutu-lpmpp-unsoed-gelar-praktik-audit-mutu-internal",
-    excerpt: "PURWOKERTO – 14 Agustus 2025 – Lembaga Pengembangan Pembelajaran dan Penjaminan Mutu (LPMPP) Universitas Jenderal Soedirman mengadakan kegiatan Praktik Audit Mutu Internal (AMI) di Fakultas Kedokteran Unsoed sebagai upaya memperkuat budaya mutu di lingkungan perguruan tinggi.",
+    excerpt: "PURWOKERTO – 14 Agustus 2025 – Lembaga Penjaminan Mutu dan Pengembangan Pembelajaran (LPMPP) Universitas Jenderal Soedirman mengadakan kegiatan Praktik Audit Mutu Internal (AMI) di Fakultas Kedokteran Unsoed sebagai upaya memperkuat budaya mutu di lingkungan perguruan tinggi.",
     content: `<h2>PURWOKERTO – 14 Agustus 2025</h2>
-<p>Lembaga Pengembangan Pembelajaran dan Penjaminan Mutu (LPMPP) Universitas Jenderal Soedirman mengadakan kegiatan <strong>Praktik Audit Mutu Internal (AMI)</strong> di Fakultas Kedokteran Unsoed sebagai upaya memperkuat budaya mutu di lingkungan perguruan tinggi.</p>
+<p>Lembaga Penjaminan Mutu dan Pengembangan Pembelajaran (LPMPP) Universitas Jenderal Soedirman mengadakan kegiatan <strong>Praktik Audit Mutu Internal (AMI)</strong> di Fakultas Kedokteran Unsoed sebagai upaya memperkuat budaya mutu di lingkungan perguruan tinggi.</p>
 
 <h3>Tujuan Audit Mutu Internal</h3>
 <p>Audit Mutu Internal merupakan instrumen penting dalam Sistem Penjaminan Mutu Internal (SPMI) yang bertujuan untuk:</p>

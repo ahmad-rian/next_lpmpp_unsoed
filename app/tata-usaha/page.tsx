@@ -90,7 +90,7 @@ export default function TataUsahaPage() {
           Tata Usaha
         </h1>
         <p className="text-base md:text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto px-4">
-          Tim Tata Usaha Lembaga Pengembangan Pembelajaran dan Penjaminan Mutu (LPMPP)
+          Tim Tata Usaha Lembaga Penjaminan Mutu dan Pengembangan Pembelajaran (LPMPP)
           Universitas Jenderal Soedirman
         </p>
         <Divider className="max-w-24 mx-auto bg-red-500" />

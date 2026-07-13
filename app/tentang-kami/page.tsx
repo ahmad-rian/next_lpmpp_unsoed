@@ -69,7 +69,7 @@ export default function TentangKamiPage() {
           Tentang Kami
         </h1>
         <p className="text-base md:text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto px-4">
-          Lembaga Pengembangan Pembelajaran dan Penjaminan Mutu
+          Lembaga Penjaminan Mutu dan Pengembangan Pembelajaran
         </p>
         <p className="text-sm md:text-lg text-gray-500 dark:text-gray-500 max-w-2xl mx-auto px-4">
           Universitas Jenderal Soedirman

@@ -92,7 +92,7 @@ export default function PusatUnitPage() {
             Pusat & Unit
           </h1>
           <p className="text-base md:text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto px-4">
-            Struktur Pusat dan Unit Lembaga Pengembangan Pembelajaran dan Penjaminan Mutu (LPMPP)
+            Struktur Pusat dan Unit Lembaga Penjaminan Mutu dan Pengembangan Pembelajaran (LPMPP)
           </p>
           <div className="w-16 md:w-20 h-1 bg-red-500 mx-auto mt-4 md:mt-6"></div>
         </div>
@@ -124,7 +124,7 @@ export default function PusatUnitPage() {
           Pusat & Unit
         </h1>
         <p className="text-base md:text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto px-4">
-          Struktur Pusat dan Unit Lembaga Pengembangan Pembelajaran dan Penjaminan Mutu (LPMPP)
+          Struktur Pusat dan Unit Lembaga Penjaminan Mutu dan Pengembangan Pembelajaran (LPMPP)
         </p>
         <p className="text-sm md:text-lg text-gray-500 dark:text-gray-500 max-w-2xl mx-auto px-4">
           Universitas Jenderal Soedirman

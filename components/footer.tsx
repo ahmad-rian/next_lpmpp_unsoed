@@ -72,7 +72,7 @@ export const Footer = () => {
               </h3>
             </div>
             <p className="text-sm text-red-50 dark:text-red-100 leading-relaxed">
-              Lembaga Pengembangan Pembelajaran dan Penjaminan Mutu
+              Lembaga Penjaminan Mutu dan Pengembangan Pembelajaran
             </p>
 
             {config?.logoUnsoed && (

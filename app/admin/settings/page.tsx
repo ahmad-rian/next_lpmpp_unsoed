@@ -29,7 +29,7 @@ export default function SettingsPage() {
               <Input
                 label="Site Description"
                 placeholder="Enter site description"
-                defaultValue="Lembaga Pengembangan dan Penjaminan Mutu Pendidikan"
+                defaultValue="Lembaga Penjaminan Mutu dan Pengembangan Pembelajaran"
               />
               <Input
                 label="Admin Email"

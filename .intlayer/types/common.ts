@@ -27,7 +27,7 @@ export default {
         "services": "Layanan",
         "contactUs": "Hubungi Kami",
         "followUs": "Ikuti Kami",
-        "institution": "Lembaga Pengembangan Pembelajaran dan Penjaminan Mutu"
+        "institution": "Lembaga Penjaminan Mutu dan Pengembangan Pembelajaran"
       },
       "en": {
         "welcomeTo": "Welcome to",
