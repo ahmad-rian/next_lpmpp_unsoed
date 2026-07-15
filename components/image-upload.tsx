@@ -23,10 +23,22 @@ const UploadIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
+const TrashIcon = ({ className }: { className?: string }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+  </svg>
+);
+
 export function ImageUpload({ label, value, onChange, description }: ImageUploadProps) {
   const [uploading, setUploading] = useState(false);
   const [preview, setPreview] = useState<string | null>(value);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleRemove = () => {
+    setPreview(null);
+    onChange("");
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -98,11 +110,23 @@ export function ImageUpload({ label, value, onChange, description }: ImageUpload
         {/* Preview */}
         <div className="relative w-full max-w-xs aspect-square border-2 border-dashed border-default-300 rounded-lg flex items-center justify-center overflow-hidden bg-default-50 p-4">
           {preview ? (
-            <img
-              src={preview}
-              alt="Preview"
-              className="object-contain w-full h-full"
-            />
+            <>
+              <img
+                src={preview}
+                alt="Preview"
+                className="object-contain w-full h-full"
+              />
+              <button
+                type="button"
+                onClick={handleRemove}
+                disabled={uploading}
+                aria-label="Hapus foto"
+                title="Hapus foto"
+                className="absolute top-2 right-2 z-10 flex items-center justify-center w-8 h-8 rounded-full bg-danger text-white shadow-md hover:bg-danger-600 disabled:opacity-50 transition-colors"
+              >
+                <TrashIcon className="w-4 h-4" />
+              </button>
+            </>
           ) : (
             <div className="flex flex-col items-center gap-2 text-default-400">
               <svg className="w-12 h-12" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
@@ -131,8 +155,20 @@ export function ImageUpload({ label, value, onChange, description }: ImageUpload
             isLoading={uploading}
             isDisabled={uploading}
           >
-            {uploading ? "Uploading..." : "Upload Image"}
+            {uploading ? "Uploading..." : preview ? "Ganti Image" : "Upload Image"}
           </Button>
+
+          {preview && (
+            <Button
+              color="danger"
+              variant="flat"
+              startContent={<TrashIcon className="w-4 h-4" />}
+              onPress={handleRemove}
+              isDisabled={uploading}
+            >
+              Hapus Foto
+            </Button>
+          )}
 
           {description && (
             <p className="text-xs text-default-500">{description}</p>
