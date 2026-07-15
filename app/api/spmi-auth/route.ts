@@ -102,7 +102,7 @@ export async function POST(request: NextRequest) {
     response.cookies.set("spmi_access", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
+      sameSite: "strict",
       path: "/",
       maxAge: TOKEN_MAX_AGE_MS / 1000,
     });

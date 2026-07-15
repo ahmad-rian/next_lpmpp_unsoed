@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/auth";
+import { requirePermission } from "@/lib/auth-helpers";
 import { prisma } from "@/lib/prisma";
 
 // GET - Fetch all leadership
@@ -22,15 +22,8 @@ export async function GET() {
 // PUT - Update leadership
 export async function PUT(request: NextRequest) {
   try {
-    // Check authentication
-    const session = await auth();
-    
-    if (!session || session.user?.role !== "ADMIN") {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
-    }
+    const guard = await requirePermission("leadership.update");
+    if (guard instanceof NextResponse) return guard;
 
     const data = await request.json();
     

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { auth } from "@/auth";
+import { requirePermission } from "@/lib/auth-helpers";
 
 // GET /api/spmi-information-systems - Get all information systems
 export async function GET() {
@@ -23,10 +23,8 @@ export async function GET() {
 // POST /api/spmi-information-systems - Create new system
 export async function POST(request: NextRequest) {
   try {
-    const session = await auth();
-    if (!session?.user || session.user.role !== "ADMIN") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const guard = await requirePermission("spmi.update");
+    if (guard instanceof NextResponse) return guard;
 
     const data = await request.json();
 
@@ -56,10 +54,8 @@ export async function POST(request: NextRequest) {
 // PUT /api/spmi-information-systems - Update system
 export async function PUT(request: NextRequest) {
   try {
-    const session = await auth();
-    if (!session?.user || session.user.role !== "ADMIN") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const guard = await requirePermission("spmi.update");
+    if (guard instanceof NextResponse) return guard;
 
     const data = await request.json();
     const { id, ...updateData } = data;
@@ -95,10 +91,8 @@ export async function PUT(request: NextRequest) {
 // DELETE /api/spmi-information-systems - Delete system
 export async function DELETE(request: NextRequest) {
   try {
-    const session = await auth();
-    if (!session?.user || session.user.role !== "ADMIN") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const guard = await requirePermission("spmi.update");
+    if (guard instanceof NextResponse) return guard;
 
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");

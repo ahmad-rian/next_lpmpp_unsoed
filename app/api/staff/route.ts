@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/auth";
+import { requirePermission } from "@/lib/auth-helpers";
 import { prisma } from "@/lib/prisma";
 
 // GET - Fetch all staff grouped by position
@@ -25,18 +25,11 @@ export async function GET() {
 // POST - Create new staff
 export async function POST(request: NextRequest) {
   try {
-    // Check authentication
-    const session = await auth();
-    
-    if (!session || session.user?.role !== "ADMIN") {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
-    }
+    const guard = await requirePermission("staff.create");
+    if (guard instanceof NextResponse) return guard;
 
     const data = await request.json();
-    
+
     // Validate required fields
     if (!data.position || !data.name) {
       return NextResponse.json(
@@ -72,18 +65,11 @@ export async function POST(request: NextRequest) {
 // PUT - Update staff
 export async function PUT(request: NextRequest) {
   try {
-    // Check authentication
-    const session = await auth();
-    
-    if (!session || session.user?.role !== "ADMIN") {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
-    }
+    const guard = await requirePermission("staff.update");
+    if (guard instanceof NextResponse) return guard;
 
     const data = await request.json();
-    
+
     // Validate required fields
     if (!data.id) {
       return NextResponse.json(
@@ -119,15 +105,8 @@ export async function PUT(request: NextRequest) {
 // DELETE - Delete staff
 export async function DELETE(request: NextRequest) {
   try {
-    // Check authentication
-    const session = await auth();
-    
-    if (!session || session.user?.role !== "ADMIN") {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
-    }
+    const guard = await requirePermission("staff.delete");
+    if (guard instanceof NextResponse) return guard;
 
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");

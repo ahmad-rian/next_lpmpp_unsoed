@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/auth";
+import { requirePermission } from "@/lib/auth-helpers";
 import { prisma } from "@/lib/prisma";
 
 // GET - Fetch expertise by type or all
@@ -56,11 +56,8 @@ export async function GET(request: NextRequest) {
 // POST - Create new expertise
 export async function POST(request: NextRequest) {
   try {
-    const session = await auth();
-
-    if (!session || session.user.role !== "ADMIN") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const guard = await requirePermission("expertise.create");
+    if (guard instanceof NextResponse) return guard;
 
     const body = await request.json();
     const { type, name, order, profileUrl } = body;
@@ -94,11 +91,8 @@ export async function POST(request: NextRequest) {
 // PUT - Update expertise
 export async function PUT(request: NextRequest) {
   try {
-    const session = await auth();
-
-    if (!session || session.user.role !== "ADMIN") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const guard = await requirePermission("expertise.update");
+    if (guard instanceof NextResponse) return guard;
 
     const body = await request.json();
     const { id, type, name, order, isActive, profileUrl } = body;
@@ -134,11 +128,8 @@ export async function PUT(request: NextRequest) {
 // DELETE - Delete expertise
 export async function DELETE(request: NextRequest) {
   try {
-    const session = await auth();
-
-    if (!session || session.user.role !== "ADMIN") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const guard = await requirePermission("expertise.delete");
+    if (guard instanceof NextResponse) return guard;
 
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");

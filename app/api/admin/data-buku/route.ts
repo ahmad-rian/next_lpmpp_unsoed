@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
+import { requirePermission } from "@/lib/auth-helpers";
 import { prisma } from "@/lib/prisma";
 
 // GET - Ambil semua data buku
@@ -34,14 +35,8 @@ export async function GET() {
 // POST - Tambah data buku baru
 export async function POST(request: NextRequest) {
   try {
-    const session = await auth();
-    
-    if (!session?.user || session.user.role !== "ADMIN") {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
-    }
+    const guard = await requirePermission("books.create");
+    if (guard instanceof NextResponse) return guard;
 
     const body = await request.json();
     const { judul, deskripsi, cover, linkBuku, urutan, isActive } = body;

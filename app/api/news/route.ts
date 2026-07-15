@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
+import { requirePermission } from "@/lib/auth-helpers";
 import { prisma } from "@/lib/prisma";
 
 // Helper function to generate slug from title
@@ -90,11 +91,8 @@ export async function GET(request: NextRequest) {
 // POST - Create new news
 export async function POST(request: NextRequest) {
   try {
-    const session = await auth();
-
-    if (!session || session.user.role !== "ADMIN") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const guard = await requirePermission("news.create");
+    if (guard instanceof NextResponse) return guard;
 
     const body = await request.json();
     const { title, excerpt, content, coverImage, galleryImages, author, isPublished, publishedAt } = body;
@@ -149,11 +147,8 @@ export async function POST(request: NextRequest) {
 // PUT - Update news
 export async function PUT(request: NextRequest) {
   try {
-    const session = await auth();
-
-    if (!session || session.user.role !== "ADMIN") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const guard = await requirePermission("news.update");
+    if (guard instanceof NextResponse) return guard;
 
     const body = await request.json();
     const { id, title, excerpt, content, coverImage, galleryImages, author, isPublished, publishedAt } = body;
@@ -226,11 +221,8 @@ export async function PUT(request: NextRequest) {
 // DELETE - Delete news
 export async function DELETE(request: NextRequest) {
   try {
-    const session = await auth();
-
-    if (!session || session.user.role !== "ADMIN") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const guard = await requirePermission("news.delete");
+    if (guard instanceof NextResponse) return guard;
 
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");

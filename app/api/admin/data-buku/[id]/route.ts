@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
+import { requirePermission } from "@/lib/auth-helpers";
 import { prisma } from "@/lib/prisma";
 
 // GET - Ambil data buku berdasarkan ID
@@ -45,14 +46,8 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await auth();
-    
-    if (!session?.user || session.user.role !== "ADMIN") {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
-    }
+    const guard = await requirePermission("books.update");
+    if (guard instanceof NextResponse) return guard;
 
     const { id } = await params;
     const body = await request.json();
@@ -94,17 +89,11 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await auth();
-    
-    if (!session?.user || session.user.role !== "ADMIN") {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
-    }
+    const guard = await requirePermission("books.delete");
+    if (guard instanceof NextResponse) return guard;
 
     const { id } = await params;
-    
+
     // Check if data exists
     const existingData = await prisma.dataBuku.findUnique({
       where: { id }

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
+import { requirePermission } from "@/lib/auth-helpers";
 import { prisma } from "@/lib/prisma";
 
 // GET - Ambil data SPMI About
@@ -20,10 +21,9 @@ export async function GET() {
 
     return NextResponse.json(spmiAbout);
   } catch (error) {
-    console.error("Error fetching SPMI about:", error);
-    console.error("Error details:", error instanceof Error ? error.message : 'Unknown error');
+    console.error("Error fetching SPMI about");
     return NextResponse.json(
-      { error: "Internal Server Error", details: error instanceof Error ? error.message : 'Unknown error' },
+      { error: "Internal Server Error" },
       { status: 500 }
     );
   }
@@ -32,11 +32,8 @@ export async function GET() {
 // POST - Buat data SPMI About baru
 export async function POST(request: NextRequest) {
   try {
-    const session = await auth();
-
-    if (!session || session.user.role !== "ADMIN") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const guard = await requirePermission("spmi.update");
+    if (guard instanceof NextResponse) return guard;
 
     const body = await request.json();
     const { title, tujuan, fungsi } = body;
@@ -80,11 +77,8 @@ export async function POST(request: NextRequest) {
 // PUT - Update data SPMI About
 export async function PUT(request: NextRequest) {
   try {
-    const session = await auth();
-
-    if (!session || session.user.role !== "ADMIN") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const guard = await requirePermission("spmi.update");
+    if (guard instanceof NextResponse) return guard;
 
     const body = await request.json();
     const { title, tujuan, fungsi } = body;

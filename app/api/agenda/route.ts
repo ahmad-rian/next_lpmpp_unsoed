@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/auth";
+import { requirePermission } from "@/lib/auth-helpers";
 import { prisma } from "@/lib/prisma";
 
 // GET - Fetch all agendas
@@ -33,12 +33,10 @@ export async function GET(request: NextRequest) {
         });
 
         return NextResponse.json(agendas);
-    } catch (error: any) {
-        console.error("Error fetching agendas:", error);
-        console.error("Error message:", error.message);
-        console.error("Error stack:", error.stack);
+    } catch (error) {
+        console.error("Error fetching agendas");
         return NextResponse.json(
-            { error: "Failed to fetch agendas", details: error.message },
+            { error: "Failed to fetch agendas" },
             { status: 500 }
         );
     }
@@ -47,11 +45,8 @@ export async function GET(request: NextRequest) {
 // POST - Create new agenda
 export async function POST(request: NextRequest) {
     try {
-        const session = await auth();
-
-        if (!session || session.user?.role !== "ADMIN") {
-            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-        }
+        const guard = await requirePermission("agenda.create");
+        if (guard instanceof NextResponse) return guard;
 
         const data = await request.json();
 
@@ -81,11 +76,8 @@ export async function POST(request: NextRequest) {
 // PUT - Update agenda
 export async function PUT(request: NextRequest) {
     try {
-        const session = await auth();
-
-        if (!session || session.user?.role !== "ADMIN") {
-            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-        }
+        const guard = await requirePermission("agenda.update");
+        if (guard instanceof NextResponse) return guard;
 
         const data = await request.json();
 
@@ -120,11 +112,8 @@ export async function PUT(request: NextRequest) {
 // DELETE - Delete agenda
 export async function DELETE(request: NextRequest) {
     try {
-        const session = await auth();
-
-        if (!session || session.user?.role !== "ADMIN") {
-            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-        }
+        const guard = await requirePermission("agenda.delete");
+        if (guard instanceof NextResponse) return guard;
 
         const { searchParams } = new URL(request.url);
         const id = searchParams.get("id");

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/auth";
+import { requirePermission } from "@/lib/auth-helpers";
 import { prisma } from "@/lib/prisma";
 
 // GET - Fetch all international accreditations
@@ -23,17 +23,11 @@ export async function GET() {
 // POST - Create new international accreditation
 export async function POST(request: NextRequest) {
   try {
-    const session = await auth();
-    
-    if (!session || session.user?.role !== "ADMIN") {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
-    }
+    const guard = await requirePermission("accreditation.create");
+    if (guard instanceof NextResponse) return guard;
 
     const data = await request.json();
-    
+
     const accreditation = await prisma.internationalAccreditation.create({
       data: {
         faculty: data.faculty || data.facultyName,
@@ -57,17 +51,11 @@ export async function POST(request: NextRequest) {
 // PUT - Update international accreditation
 export async function PUT(request: NextRequest) {
   try {
-    const session = await auth();
-    
-    if (!session || session.user?.role !== "ADMIN") {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
-    }
+    const guard = await requirePermission("accreditation.update");
+    if (guard instanceof NextResponse) return guard;
 
     const data = await request.json();
-    
+
     if (!data.id) {
       return NextResponse.json(
         { error: "ID is required" },
@@ -99,14 +87,8 @@ export async function PUT(request: NextRequest) {
 // DELETE - Delete international accreditation
 export async function DELETE(request: NextRequest) {
   try {
-    const session = await auth();
-    
-    if (!session || session.user?.role !== "ADMIN") {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
-    }
+    const guard = await requirePermission("accreditation.delete");
+    if (guard instanceof NextResponse) return guard;
 
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");

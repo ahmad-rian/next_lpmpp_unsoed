@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/auth";
+import { requirePermission } from "@/lib/auth-helpers";
 import { prisma } from "@/lib/prisma";
 
 // GET - Fetch all study program accreditations
@@ -23,14 +23,8 @@ export async function GET() {
 // POST - Create new study program accreditation
 export async function POST(request: NextRequest) {
   try {
-    const session = await auth();
-
-    if (!session || session.user?.role !== "ADMIN") {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
-    }
+    const guard = await requirePermission("accreditation.create");
+    if (guard instanceof NextResponse) return guard;
 
     const data = await request.json();
 
@@ -64,14 +58,8 @@ export async function POST(request: NextRequest) {
 // PUT - Update study program accreditation
 export async function PUT(request: NextRequest) {
   try {
-    const session = await auth();
-
-    if (!session || session.user?.role !== "ADMIN") {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
-    }
+    const guard = await requirePermission("accreditation.update");
+    if (guard instanceof NextResponse) return guard;
 
     const data = await request.json();
 
@@ -113,14 +101,8 @@ export async function PUT(request: NextRequest) {
 // DELETE - Delete study program accreditation
 export async function DELETE(request: NextRequest) {
   try {
-    const session = await auth();
-
-    if (!session || session.user?.role !== "ADMIN") {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
-    }
+    const guard = await requirePermission("accreditation.delete");
+    if (guard instanceof NextResponse) return guard;
 
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");

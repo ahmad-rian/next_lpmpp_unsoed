@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/auth";
+import { requirePermission } from "@/lib/auth-helpers";
 import { prisma } from "@/lib/prisma";
 import { RankingInstitution } from "@prisma/client";
 
@@ -41,10 +41,8 @@ export async function GET(request: NextRequest) {
 // POST - Create a new university ranking
 export async function POST(request: NextRequest) {
   try {
-    const session = await auth();
-    if (!session || session.user?.role !== "ADMIN") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const guard = await requirePermission("accreditation.create");
+    if (guard instanceof NextResponse) return guard;
 
     const body = await request.json();
     const {
@@ -97,10 +95,8 @@ export async function POST(request: NextRequest) {
 // PUT - Update a university ranking
 export async function PUT(request: NextRequest) {
   try {
-    const session = await auth();
-    if (!session || session.user?.role !== "ADMIN") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const guard = await requirePermission("accreditation.update");
+    if (guard instanceof NextResponse) return guard;
 
     const body = await request.json();
     const {
@@ -152,10 +148,8 @@ export async function PUT(request: NextRequest) {
 // DELETE - Delete a university ranking
 export async function DELETE(request: NextRequest) {
   try {
-    const session = await auth();
-    if (!session || session.user?.role !== "ADMIN") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const guard = await requirePermission("accreditation.delete");
+    if (guard instanceof NextResponse) return guard;
 
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");

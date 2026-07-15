@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/auth";
+import { requirePermission } from "@/lib/auth-helpers";
 import { prisma } from "@/lib/prisma";
 
 // GET - Fetch all links
@@ -24,11 +24,8 @@ export async function GET() {
 // POST - Create new link
 export async function POST(request: NextRequest) {
   try {
-    const session = await auth();
-
-    if (!session || session.user.role !== "ADMIN") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const guard = await requirePermission("links.create");
+    if (guard instanceof NextResponse) return guard;
 
     const body = await request.json();
     const { name, url, order } = body;
@@ -61,11 +58,8 @@ export async function POST(request: NextRequest) {
 // PUT - Update link
 export async function PUT(request: NextRequest) {
   try {
-    const session = await auth();
-
-    if (!session || session.user.role !== "ADMIN") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const guard = await requirePermission("links.update");
+    if (guard instanceof NextResponse) return guard;
 
     const body = await request.json();
     const { id, name, url, order, isActive } = body;
@@ -100,11 +94,8 @@ export async function PUT(request: NextRequest) {
 // DELETE - Delete link
 export async function DELETE(request: NextRequest) {
   try {
-    const session = await auth();
-
-    if (!session || session.user.role !== "ADMIN") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const guard = await requirePermission("links.delete");
+    if (guard instanceof NextResponse) return guard;
 
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");

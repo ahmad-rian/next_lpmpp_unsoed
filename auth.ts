@@ -15,12 +15,10 @@ export const authConfig: NextAuthConfig = {
   trustHost: true,
   callbacks: {
     async signIn({ user, account, profile }) {
-      console.log("🔐 SignIn callback started for:", user.email);
+      // Avoid logging user emails (PII) in production
+      const isDev = process.env.NODE_ENV !== "production";
 
-      if (!user.email) {
-        console.log("❌ No email provided");
-        return false;
-      }
+      if (!user.email) return false;
 
       try {
         const existingUser = await prisma.user.findUnique({
@@ -35,17 +33,17 @@ export const authConfig: NextAuthConfig = {
         });
 
         if (!existingUser) {
-          console.log(`❌ Login ditolak: ${user.email} tidak terdaftar di database`);
+          if (isDev) console.log(`Login ditolak: ${user.email} tidak terdaftar`);
           return false;
         }
 
         if (!existingUser.isActive) {
-          console.log(`❌ Login ditolak: ${user.email} tidak aktif`);
+          if (isDev) console.log(`Login ditolak: ${user.email} tidak aktif`);
           return false;
         }
 
         if (existingUser.roles.length === 0) {
-          console.log(`❌ Login ditolak: ${user.email} tidak memiliki role`);
+          if (isDev) console.log(`Login ditolak: ${user.email} tidak memiliki role`);
           return false;
         }
 
@@ -59,10 +57,9 @@ export const authConfig: NextAuthConfig = {
           });
         }
 
-        console.log(`✅ Login berhasil: ${user.email}`);
         return true;
       } catch (error) {
-        console.error("❌ SignIn error:", error);
+        console.error("SignIn error");
         return false;
       }
     },
@@ -128,7 +125,7 @@ export const authConfig: NextAuthConfig = {
             token.permissions = Array.from(permissions);
           }
         } catch (error) {
-          console.error("❌ JWT callback error:", error);
+          console.error("JWT callback error");
         }
       }
       return token;

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { auth } from "@/auth";
+import { requirePermission } from "@/lib/auth-helpers";
 
 // GET /api/center-members - Get members by center ID
 export async function GET(request: NextRequest) {
@@ -36,10 +36,8 @@ export async function GET(request: NextRequest) {
 // POST /api/center-members - Create new member
 export async function POST(request: NextRequest) {
   try {
-    const session = await auth();
-    if (!session?.user || session.user.role !== "ADMIN") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const guard = await requirePermission("centers.create");
+    if (guard instanceof NextResponse) return guard;
 
     const data = await request.json();
 
@@ -67,10 +65,8 @@ export async function POST(request: NextRequest) {
 // PUT /api/center-members - Update member
 export async function PUT(request: NextRequest) {
   try {
-    const session = await auth();
-    if (!session?.user || session.user.role !== "ADMIN") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const guard = await requirePermission("centers.update");
+    if (guard instanceof NextResponse) return guard;
 
     const data = await request.json();
     const { id } = data;
@@ -106,10 +102,8 @@ export async function PUT(request: NextRequest) {
 // DELETE /api/center-members - Delete member
 export async function DELETE(request: NextRequest) {
   try {
-    const session = await auth();
-    if (!session?.user || session.user.role !== "ADMIN") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const guard = await requirePermission("centers.delete");
+    if (guard instanceof NextResponse) return guard;
 
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");

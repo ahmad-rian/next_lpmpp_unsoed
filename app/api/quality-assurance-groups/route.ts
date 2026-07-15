@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { auth } from "@/auth";
+import { requirePermission } from "@/lib/auth-helpers";
 
 // GET /api/quality-assurance-groups - Get all groups
 export async function GET() {
@@ -26,10 +26,8 @@ export async function GET() {
 // POST /api/quality-assurance-groups - Create new group
 export async function POST(request: NextRequest) {
   try {
-    const session = await auth();
-    if (!session?.user || session.user.role !== "ADMIN") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const guard = await requirePermission("gpm.create");
+    if (guard instanceof NextResponse) return guard;
 
     const data = await request.json();
 
@@ -60,10 +58,8 @@ export async function POST(request: NextRequest) {
 // PUT /api/quality-assurance-groups - Update group
 export async function PUT(request: NextRequest) {
   try {
-    const session = await auth();
-    if (!session?.user || session.user.role !== "ADMIN") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const guard = await requirePermission("gpm.update");
+    if (guard instanceof NextResponse) return guard;
 
     const data = await request.json();
     const { id } = data;
@@ -99,10 +95,8 @@ export async function PUT(request: NextRequest) {
 // DELETE /api/quality-assurance-groups - Delete group
 export async function DELETE(request: NextRequest) {
   try {
-    const session = await auth();
-    if (!session?.user || session.user.role !== "ADMIN") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const guard = await requirePermission("gpm.delete");
+    if (guard instanceof NextResponse) return guard;
 
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");

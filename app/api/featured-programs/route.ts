@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/auth";
+import { requirePermission } from "@/lib/auth-helpers";
 import { prisma } from "@/lib/prisma";
 
 // GET - Fetch all featured programs
@@ -24,11 +24,8 @@ export async function GET() {
 // POST - Create new featured program
 export async function POST(request: NextRequest) {
   try {
-    const session = await auth();
-
-    if (!session || session.user.role !== "ADMIN") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const guard = await requirePermission("programs.create");
+    if (guard instanceof NextResponse) return guard;
 
     const body = await request.json();
     const { title, slug, description, documentUrl, documentName, icon, order } = body;
@@ -66,11 +63,8 @@ export async function POST(request: NextRequest) {
 // PUT - Update featured program
 export async function PUT(request: NextRequest) {
   try {
-    const session = await auth();
-
-    if (!session || session.user.role !== "ADMIN") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const guard = await requirePermission("programs.update");
+    if (guard instanceof NextResponse) return guard;
 
     const body = await request.json();
     const { id, title, slug, description, documentUrl, documentName, icon, order, isActive } = body;
@@ -109,11 +103,8 @@ export async function PUT(request: NextRequest) {
 // DELETE - Delete featured program
 export async function DELETE(request: NextRequest) {
   try {
-    const session = await auth();
-
-    if (!session || session.user.role !== "ADMIN") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const guard = await requirePermission("programs.delete");
+    if (guard instanceof NextResponse) return guard;
 
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
