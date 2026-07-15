@@ -8,11 +8,9 @@ import { Input, Textarea } from "@heroui/input";
 import { Select, SelectItem } from "@heroui/select";
 import { Card, CardBody, CardHeader } from "@heroui/card";
 import { AdminPageLayout } from "@/components/admin-page-layout";
-
-const showNotification = (message: string, type: 'success' | 'error' = 'success') => {
-  // Simple notification function - replace with your preferred notification system
-  alert(message);
-};
+import { notifySuccess, notifyError } from "@/lib/notify";
+import { useDeleteConfirm } from "@/hooks/use-delete-confirm";
+import { DeleteConfirmationModal } from "@/components/delete-confirmation-modal";
 
 // Heroicons
 const PencilIcon = ({ className }: { className?: string }) => (
@@ -93,14 +91,6 @@ export default function SpmiGpmPage() {
     order: 0,
   });
 
-  // Delete modal
-  const {
-    isOpen: isDeleteOpen,
-    onOpen: onDeleteOpen,
-    onClose: onDeleteClose,
-  } = useDisclosure();
-  const [groupToDelete, setGroupToDelete] = useState<QualityAssuranceGroup | null>(null);
-
   // Link modal
   const {
     isOpen: isLinkModalOpen,
@@ -115,14 +105,47 @@ export default function SpmiGpmPage() {
     order: 0,
   });
 
-  // Delete link modal
-  const {
-    isOpen: isDeleteLinkOpen,
-    onOpen: onDeleteLinkOpen,
-    onClose: onDeleteLinkClose,
-  } = useDisclosure();
-  const [linkToDelete, setLinkToDelete] = useState<GPMLink | null>(null);
   const linkSectionRef = React.useRef<HTMLDivElement>(null);
+
+  // Delete confirmation (GPM group)
+  const { ask: askDeleteGroup, dialogProps: deleteGroupDialogProps } =
+    useDeleteConfirm(async (id) => {
+      const response = await fetch("/api/quality-assurance-groups", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id }),
+      });
+
+      if (response.ok) {
+        notifySuccess("GPM berhasil dihapus");
+        fetchGroups();
+        if (selectedGroup?.id === id) {
+          setSelectedGroup(null);
+          setLinks([]);
+        }
+      } else {
+        notifyError("Gagal menghapus GPM");
+      }
+    });
+
+  // Delete confirmation (GPM link)
+  const { ask: askDeleteLink, dialogProps: deleteLinkDialogProps } =
+    useDeleteConfirm(async (id) => {
+      const response = await fetch("/api/gpm-links", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id }),
+      });
+
+      if (response.ok) {
+        notifySuccess("Link berhasil dihapus");
+        if (selectedGroup) {
+          fetchLinks(selectedGroup.id);
+        }
+      } else {
+        notifyError("Gagal menghapus link");
+      }
+    });
 
   useEffect(() => {
     fetchGroups();
@@ -221,47 +244,15 @@ export default function SpmiGpmPage() {
       });
 
       if (response.ok) {
-        showNotification(formData.id ? "GPM berhasil diperbarui" : "GPM berhasil ditambahkan", "success");
+        notifySuccess(formData.id ? "GPM berhasil diperbarui" : "GPM berhasil ditambahkan");
         onClose();
         fetchGroups();
       } else {
-        showNotification("Gagal menyimpan GPM", "error");
+        notifyError("Gagal menyimpan GPM");
       }
     } catch (error) {
       console.error("Error saving group:", error);
-      showNotification("Terjadi kesalahan saat menyimpan GPM", "error");
-    }
-  };
-
-  const handleDelete = (group: QualityAssuranceGroup) => {
-    setGroupToDelete(group);
-    onDeleteOpen();
-  };
-
-  const confirmDelete = async () => {
-    if (!groupToDelete) return;
-
-    try {
-      const response = await fetch("/api/quality-assurance-groups", {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id: groupToDelete.id }),
-      });
-
-      if (response.ok) {
-        showNotification("GPM berhasil dihapus", "success");
-        onDeleteClose();
-        fetchGroups();
-        if (selectedGroup?.id === groupToDelete.id) {
-          setSelectedGroup(null);
-          setLinks([]);
-        }
-      } else {
-        showNotification("Gagal menghapus GPM", "error");
-      }
-    } catch (error) {
-      console.error("Error deleting group:", error);
-      showNotification("Terjadi kesalahan saat menghapus GPM", "error");
+      notifyError("Terjadi kesalahan saat menyimpan GPM");
     }
   };
 
@@ -311,45 +302,15 @@ export default function SpmiGpmPage() {
       });
 
       if (response.ok) {
-        showNotification(linkFormData.id ? "Link berhasil diperbarui" : "Link berhasil ditambahkan", "success");
+        notifySuccess(linkFormData.id ? "Link berhasil diperbarui" : "Link berhasil ditambahkan");
         onLinkModalClose();
         fetchLinks(selectedGroup.id);
       } else {
-        showNotification("Gagal menyimpan link", "error");
+        notifyError("Gagal menyimpan link");
       }
     } catch (error) {
       console.error("Error saving link:", error);
-      showNotification("Terjadi kesalahan saat menyimpan link", "error");
-    }
-  };
-
-  const handleDeleteLink = (link: GPMLink) => {
-    setLinkToDelete(link);
-    onDeleteLinkOpen();
-  };
-
-  const confirmDeleteLink = async () => {
-    if (!linkToDelete) return;
-
-    try {
-      const response = await fetch("/api/gpm-links", {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id: linkToDelete.id }),
-      });
-
-      if (response.ok) {
-        showNotification("Link berhasil dihapus", "success");
-        onDeleteLinkClose();
-        if (selectedGroup) {
-          fetchLinks(selectedGroup.id);
-        }
-      } else {
-        showNotification("Gagal menghapus link", "error");
-      }
-    } catch (error) {
-      console.error("Error deleting link:", error);
-      showNotification("Terjadi kesalahan saat menghapus link", "error");
+      notifyError("Terjadi kesalahan saat menyimpan link");
     }
   };
 
@@ -431,7 +392,7 @@ export default function SpmiGpmPage() {
                         color="danger"
                         variant="flat"
                         startContent={<TrashIcon className="w-3 h-3" />}
-                        onPress={() => handleDelete(group)}
+                        onPress={() => askDeleteGroup(group.id, group.faculty.name)}
                       >
                         Hapus
                       </Button>
@@ -506,7 +467,7 @@ export default function SpmiGpmPage() {
                               color="danger"
                               variant="flat"
                               startContent={<TrashIcon className="w-3 h-3" />}
-                              onPress={() => handleDeleteLink(link)}
+                              onPress={() => askDeleteLink(link.id, link.title)}
                             >
                               Hapus
                             </Button>
@@ -623,26 +584,7 @@ export default function SpmiGpmPage() {
       </Modal>
 
       {/* Delete GPM Modal */}
-      <Modal isOpen={isDeleteOpen} onClose={onDeleteClose}>
-        <ModalContent>
-          <ModalHeader>Hapus GPM</ModalHeader>
-          <ModalBody>
-            <p>
-              Apakah Anda yakin ingin menghapus GPM{" "}
-              <strong>{groupToDelete?.faculty.name}</strong>?
-              Semua link yang terkait juga akan terhapus.
-            </p>
-          </ModalBody>
-          <ModalFooter>
-            <Button variant="flat" onPress={onDeleteClose}>
-              Batal
-            </Button>
-            <Button color="danger" onPress={confirmDelete}>
-              Hapus
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+      <DeleteConfirmationModal {...deleteGroupDialogProps} />
 
       {/* Link Modal */}
       <Modal isOpen={isLinkModalOpen} onClose={onLinkModalClose} size="2xl">
@@ -704,25 +646,7 @@ export default function SpmiGpmPage() {
       </Modal>
 
       {/* Delete Link Modal */}
-      <Modal isOpen={isDeleteLinkOpen} onClose={onDeleteLinkClose}>
-        <ModalContent>
-          <ModalHeader>Hapus Link</ModalHeader>
-          <ModalBody>
-            <p>
-              Apakah Anda yakin ingin menghapus link{" "}
-              <strong>{linkToDelete?.title}</strong>?
-            </p>
-          </ModalBody>
-          <ModalFooter>
-            <Button variant="flat" onPress={onDeleteLinkClose}>
-              Batal
-            </Button>
-            <Button color="danger" onPress={confirmDeleteLink}>
-              Hapus
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+      <DeleteConfirmationModal {...deleteLinkDialogProps} />
     </AdminPageLayout>
   );
 }

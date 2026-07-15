@@ -21,7 +21,11 @@ import {
 } from "@heroui/modal";
 import { Input, Textarea } from "@heroui/input";
 import { Checkbox } from "@heroui/checkbox";
+import { Alert } from "@heroui/alert";
 import { AdminPageLayout } from "@/components/admin-page-layout";
+import { notifySuccess, notifyError } from "@/lib/notify";
+import { useDeleteConfirm } from "@/hooks/use-delete-confirm";
+import { DeleteConfirmationModal } from "@/components/delete-confirmation-modal";
 
 // Icons
 const ShieldIcon = ({ className }: { className?: string }) => (
@@ -100,7 +104,7 @@ export default function RolesPage() {
     const [isModalOpen, setIsModalOpen] = React.useState(false);
     const [editingRole, setEditingRole] = React.useState<Role | null>(null);
     const [isSubmitting, setIsSubmitting] = React.useState(false);
-    const [message, setMessage] = React.useState<{ type: "success" | "error"; text: string } | null>(null);
+    const [formError, setFormError] = React.useState<string | null>(null);
 
     const [formData, setFormData] = React.useState({
         name: "",
@@ -144,16 +148,24 @@ export default function RolesPage() {
         fetchPermissions();
     }, [fetchRoles, fetchPermissions]);
 
-    // Clear message after 5 seconds
-    React.useEffect(() => {
-        if (message) {
-            const timer = setTimeout(() => setMessage(null), 5000);
-            return () => clearTimeout(timer);
+    // Delete confirmation wired to the shared modal (replaces native confirm())
+    const { ask: askDeleteRole, dialogProps: deleteRoleDialog } = useDeleteConfirm(async (id) => {
+        const response = await fetch(`/api/roles?id=${id}`, {
+            method: "DELETE",
+        });
+
+        if (response.ok) {
+            notifySuccess("Role deleted successfully");
+            fetchRoles();
+        } else {
+            const error = await response.json();
+            notifyError(error.error || "Failed to delete role");
         }
-    }, [message]);
+    });
 
     const handleCreateRole = () => {
         setEditingRole(null);
+        setFormError(null);
         setFormData({
             name: "",
             displayName: "",
@@ -166,6 +178,7 @@ export default function RolesPage() {
 
     const handleEditRole = (role: Role) => {
         setEditingRole(role);
+        setFormError(null);
         setFormData({
             name: role.name,
             displayName: role.displayName,
@@ -177,8 +190,9 @@ export default function RolesPage() {
     };
 
     const handleSubmit = async () => {
+        setFormError(null);
         if (!formData.displayName.trim()) {
-            setMessage({ type: "error", text: "Display name is required" });
+            setFormError("Display name is required");
             return;
         }
 
@@ -196,48 +210,27 @@ export default function RolesPage() {
             });
 
             if (response.ok) {
-                setMessage({
-                    type: "success",
-                    text: editingRole ? "Role updated successfully" : "Role created successfully",
-                });
+                notifySuccess(editingRole ? "Role updated successfully" : "Role created successfully");
                 setIsModalOpen(false);
                 fetchRoles();
             } else {
                 const error = await response.json();
-                setMessage({ type: "error", text: error.error || "Failed to save role" });
+                notifyError(error.error || "Failed to save role");
             }
         } catch (error) {
-            setMessage({ type: "error", text: "An error occurred" });
+            notifyError("An error occurred");
         } finally {
             setIsSubmitting(false);
         }
     };
 
-    const handleDeleteRole = async (role: Role) => {
+    const handleDeleteRole = (role: Role) => {
         if (role.isSystem) {
-            setMessage({ type: "error", text: "Cannot delete system role" });
+            notifyError("Cannot delete system role");
             return;
         }
 
-        if (!confirm(`Are you sure you want to delete "${role.displayName}"?`)) {
-            return;
-        }
-
-        try {
-            const response = await fetch(`/api/roles?id=${role.id}`, {
-                method: "DELETE",
-            });
-
-            if (response.ok) {
-                setMessage({ type: "success", text: "Role deleted successfully" });
-                fetchRoles();
-            } else {
-                const error = await response.json();
-                setMessage({ type: "error", text: error.error || "Failed to delete role" });
-            }
-        } catch (error) {
-            setMessage({ type: "error", text: "An error occurred" });
-        }
+        askDeleteRole(role.id, role.displayName);
     };
 
     const togglePermission = (permissionId: string) => {
@@ -292,22 +285,6 @@ export default function RolesPage() {
                     </Button>
                 }
             >
-                {/* Message Alert */}
-                {message && (
-                    <Card
-                        className={`mb-4 ${message.type === "success"
-                            ? "bg-success-50 border-success"
-                            : "bg-danger-50 border-danger"
-                            }`}
-                    >
-                        <CardBody>
-                            <p className={`text-sm ${message.type === "success" ? "text-success" : "text-danger"}`}>
-                                {message.text}
-                            </p>
-                        </CardBody>
-                    </Card>
-                )}
-
                 {/* Roles Table */}
                 <Card>
                     <CardBody className="p-0">
@@ -408,6 +385,10 @@ export default function RolesPage() {
                     </ModalHeader>
                     <ModalBody>
                         <div className="space-y-6">
+                            {formError && (
+                                <Alert color="danger" className="mb-3">{formError}</Alert>
+                            )}
+
                             {/* Basic Info */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <Input
@@ -504,6 +485,8 @@ export default function RolesPage() {
                     </ModalFooter>
                 </ModalContent>
             </Modal>
+
+            <DeleteConfirmationModal {...deleteRoleDialog} />
         </>
     );
 }

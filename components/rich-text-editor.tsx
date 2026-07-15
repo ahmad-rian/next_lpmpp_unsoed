@@ -2,6 +2,7 @@
 
 import React from "react";
 import { SafeHtml } from "@/components/safe-html";
+import { notifyError, notifySuccess } from "@/lib/notify";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import TextAlign from "@tiptap/extension-text-align";
@@ -264,7 +265,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
       setShowImageDialog(false);
     } catch (error) {
       console.error("Error uploading images:", error);
-      alert("Gagal upload gambar");
+      notifyError("Gagal upload gambar");
     } finally {
       setUploadingImage(false);
     }

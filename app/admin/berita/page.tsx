@@ -15,8 +15,12 @@ import { Input, Textarea } from "@heroui/input";
 import { Chip } from "@heroui/chip";
 import { Pagination } from "@heroui/pagination";
 import { Switch } from "@heroui/switch";
+import { Alert } from "@heroui/alert";
 import { AdminPageLayout } from "@/components/admin-page-layout";
 import { RichTextEditor } from "@/components/rich-text-editor";
+import { notifySuccess, notifyError } from "@/lib/notify";
+import { useDeleteConfirm } from "@/hooks/use-delete-confirm";
+import { DeleteConfirmationModal } from "@/components/delete-confirmation-modal";
 
 // Icons
 const NewspaperIcon = () => (
@@ -90,6 +94,22 @@ export default function BeritaPage() {
   });
 
   const [editingNews, setEditingNews] = useState<News | null>(null);
+  const [formError, setFormError] = useState<string | null>(null);
+
+  const { ask: askDelete, dialogProps: deleteDialogProps } = useDeleteConfirm(
+    async (id) => {
+      const response = await fetch(`/api/news?id=${id}`, {
+        method: "DELETE",
+      });
+
+      if (response.ok) {
+        await fetchNews();
+        notifySuccess("Berita berhasil dihapus");
+      } else {
+        notifyError("Gagal menghapus berita");
+      }
+    }
+  );
 
   // Calculate pagination
   const pages = Math.ceil(news.length / rowsPerPage);
@@ -128,13 +148,14 @@ export default function BeritaPage() {
     } catch (error) {
       console.error("Error fetching news:", error);
       setNews([]);
-      alert("Gagal memuat data berita");
+      notifyError("Gagal memuat data berita");
     } finally {
       setLoading(false);
     }
   };
 
   const handleAdd = () => {
+    setFormError(null);
     setEditingNews(null);
     setFormData({
       id: "",
@@ -151,6 +172,7 @@ export default function BeritaPage() {
   };
 
   const handleEdit = (newsItem: News) => {
+    setFormError(null);
     setEditingNews(newsItem);
     const gallery = newsItem.galleryImages ? JSON.parse(newsItem.galleryImages) : [];
     setFormData({
@@ -173,13 +195,13 @@ export default function BeritaPage() {
 
     // Validate file type
     if (!file.type.startsWith("image/")) {
-      alert("File harus berupa gambar");
+      notifyError("File harus berupa gambar");
       return;
     }
 
     // Validate file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
-      alert("Ukuran file maksimal 5MB");
+      notifyError("Ukuran file maksimal 5MB");
       return;
     }
 
@@ -202,7 +224,7 @@ export default function BeritaPage() {
       setFormData((prev) => ({ ...prev, coverImage: data.url }));
     } catch (error) {
       console.error("Error uploading image:", error);
-      alert("Gagal upload gambar");
+      notifyError(error instanceof Error ? error.message : "Gagal upload gambar");
     } finally {
       setUploadingImage(false);
     }
@@ -215,11 +237,11 @@ export default function BeritaPage() {
     // Validate files
     for (let i = 0; i < files.length; i++) {
       if (!files[i].type.startsWith("image/")) {
-        alert("Semua file harus berupa gambar");
+        notifyError("Semua file harus berupa gambar");
         return;
       }
       if (files[i].size > 5 * 1024 * 1024) {
-        alert("Ukuran file maksimal 5MB per gambar");
+        notifyError("Ukuran file maksimal 5MB per gambar");
         return;
       }
     }
@@ -251,7 +273,7 @@ export default function BeritaPage() {
       }));
     } catch (error) {
       console.error("Error uploading gallery images:", error);
-      alert("Gagal upload beberapa gambar");
+      notifyError(error instanceof Error ? error.message : "Gagal upload beberapa gambar");
     } finally {
       setUploadingImage(false);
     }
@@ -270,13 +292,14 @@ export default function BeritaPage() {
   };
 
   const handleSubmit = async () => {
+    setFormError(null);
     // Normalize fields first to avoid TypeError on .trim()
     const title = safeTrim(formData.title);
     const excerpt = safeTrim(formData.excerpt);
     const content = safeTrim(formData.content);
 
     if (!title || !excerpt || !content) {
-      alert("Judul, excerpt, dan konten harus diisi");
+      setFormError("Judul, excerpt, dan konten harus diisi");
       return;
     }
 
@@ -311,32 +334,12 @@ export default function BeritaPage() {
 
       await fetchNews();
       onClose();
-      alert(editingNews ? "Berita berhasil diupdate" : "Berita berhasil ditambahkan");
+      notifySuccess(editingNews ? "Berita berhasil diupdate" : "Berita berhasil ditambahkan");
     } catch (error) {
       console.error("Error saving news:", error);
-      alert("Gagal menyimpan berita");
+      notifyError(error instanceof Error ? error.message : "Gagal menyimpan berita");
     } finally {
       setSaving(false);
-    }
-  };
-
-  const handleDelete = async (id: string) => {
-    if (!confirm("Yakin ingin menghapus berita ini?")) return;
-
-    try {
-      const response = await fetch(`/api/news?id=${id}`, {
-        method: "DELETE",
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to delete");
-      }
-
-      await fetchNews();
-      alert("Berita berhasil dihapus");
-    } catch (error) {
-      console.error("Error deleting news:", error);
-      alert("Gagal menghapus berita");
     }
   };
 
@@ -437,7 +440,7 @@ export default function BeritaPage() {
                         variant="flat"
                         color="danger"
                         isIconOnly
-                        onPress={() => handleDelete(newsItem.id)}
+                        onPress={() => askDelete(newsItem.id, newsItem.title)}
                       >
                         <TrashIcon className="w-4 h-4" />
                       </Button>
@@ -476,6 +479,11 @@ export default function BeritaPage() {
           </ModalHeader>
           <ModalBody>
             <div className="space-y-4">
+              {formError && (
+                <Alert color="danger" className="mb-3">
+                  {formError}
+                </Alert>
+              )}
               <Input
                 label="Judul Berita"
                 placeholder="Masukkan judul berita"
@@ -626,6 +634,8 @@ export default function BeritaPage() {
           </ModalFooter>
         </ModalContent>
       </Modal>
+
+      <DeleteConfirmationModal {...deleteDialogProps} />
     </AdminPageLayout>
   );
 }

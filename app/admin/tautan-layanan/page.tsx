@@ -33,10 +33,13 @@ import {
   Bars3Icon,
   LinkIcon
 } from "@heroicons/react/24/outline";
+import { Alert } from "@heroui/alert";
 import Image from "next/image";
-import { toast } from "react-hot-toast";
 import { ImageUpload } from "@/components/image-upload";
 import { AdminPageLayout } from "@/components/admin-page-layout";
+import { notifySuccess, notifyError } from "@/lib/notify";
+import { useDeleteConfirm } from "@/hooks/use-delete-confirm";
+import { DeleteConfirmationModal } from "@/components/delete-confirmation-modal";
 
 interface TautanLayanan {
   id: string;
@@ -70,8 +73,22 @@ export default function TautanLayananPage() {
     deskripsi: "",
     isActive: true,
   });
+  const [formError, setFormError] = useState<string | null>(null);
 
   const { isOpen, onOpen, onClose } = useDisclosure();
+
+  const { ask, dialogProps } = useDeleteConfirm(async (id: string) => {
+    const response = await fetch(`/api/admin/tautan-layanan/${id}`, {
+      method: "DELETE",
+    });
+
+    if (response.ok) {
+      notifySuccess("Tautan layanan berhasil dihapus");
+      fetchTautanLayanan();
+    } else {
+      notifyError("Gagal menghapus tautan layanan");
+    }
+  });
 
   useEffect(() => {
     fetchTautanLayanan();
@@ -84,11 +101,11 @@ export default function TautanLayananPage() {
         const data = await response.json();
         setTautanLayanan(data);
       } else {
-        toast.error("Gagal memuat data tautan layanan");
+        notifyError("Gagal memuat data tautan layanan");
       }
     } catch (error) {
       console.error("Error fetching tautan layanan:", error);
-      toast.error("Gagal memuat data tautan layanan");
+      notifyError("Gagal memuat data tautan layanan");
     } finally {
       setLoading(false);
     }
@@ -107,10 +124,12 @@ export default function TautanLayananPage() {
 
   const handleAdd = () => {
     resetForm();
+    setFormError(null);
     onOpen();
   };
 
   const handleEdit = (item: TautanLayanan) => {
+    setFormError(null);
     setEditingItem(item);
     setFormData({
       nama: item.nama,
@@ -123,13 +142,15 @@ export default function TautanLayananPage() {
   };
 
   const handleSubmit = async () => {
+    setFormError(null);
+
     if (!formData.nama.trim()) {
-      toast.error("Nama layanan harus diisi");
+      setFormError("Nama layanan harus diisi");
       return;
     }
 
     if (!formData.link.trim()) {
-      toast.error("Link layanan harus diisi");
+      setFormError("Link layanan harus diisi");
       return;
     }
 
@@ -150,7 +171,7 @@ export default function TautanLayananPage() {
       });
 
       if (response.ok) {
-        toast.success(
+        notifySuccess(
           editingItem
             ? "Tautan layanan berhasil diperbarui"
             : "Tautan layanan berhasil ditambahkan"
@@ -160,35 +181,13 @@ export default function TautanLayananPage() {
         resetForm();
       } else {
         const errorData = await response.json();
-        toast.error(errorData.error || "Terjadi kesalahan");
+        notifyError(errorData.error || "Terjadi kesalahan");
       }
     } catch (error) {
       console.error("Error submitting form:", error);
-      toast.error("Terjadi kesalahan");
+      notifyError("Terjadi kesalahan");
     } finally {
       setSubmitting(false);
-    }
-  };
-
-  const handleDelete = async (id: string) => {
-    if (!confirm("Apakah Anda yakin ingin menghapus tautan layanan ini?")) {
-      return;
-    }
-
-    try {
-      const response = await fetch(`/api/admin/tautan-layanan/${id}`, {
-        method: "DELETE",
-      });
-
-      if (response.ok) {
-        toast.success("Tautan layanan berhasil dihapus");
-        fetchTautanLayanan();
-      } else {
-        toast.error("Gagal menghapus tautan layanan");
-      }
-    } catch (error) {
-      console.error("Error deleting tautan layanan:", error);
-      toast.error("Gagal menghapus tautan layanan");
     }
   };
 
@@ -203,16 +202,16 @@ export default function TautanLayananPage() {
       });
 
       if (response.ok) {
-        toast.success(
+        notifySuccess(
           `Tautan layanan berhasil ${!isActive ? "diaktifkan" : "dinonaktifkan"}`
         );
         fetchTautanLayanan();
       } else {
-        toast.error("Gagal mengubah status tautan layanan");
+        notifyError("Gagal mengubah status tautan layanan");
       }
     } catch (error) {
       console.error("Error toggling status:", error);
-      toast.error("Gagal mengubah status tautan layanan");
+      notifyError("Gagal mengubah status tautan layanan");
     }
   };
 
@@ -361,7 +360,7 @@ export default function TautanLayananPage() {
                         size="sm"
                         variant="light"
                         color="danger"
-                        onPress={() => handleDelete(item.id)}
+                        onPress={() => ask(item.id, item.nama)}
                       >
                         <TrashIcon className="w-4 h-4" />
                       </Button>
@@ -387,6 +386,11 @@ export default function TautanLayananPage() {
           </ModalHeader>
           <ModalBody>
             <div className="space-y-4">
+              {formError && (
+                <Alert color="danger" className="mb-3">
+                  {formError}
+                </Alert>
+              )}
               <Input
                 label="Nama Layanan"
                 placeholder="Masukkan nama layanan"
@@ -450,6 +454,8 @@ export default function TautanLayananPage() {
           </ModalFooter>
         </ModalContent>
       </Modal>
+
+      <DeleteConfirmationModal {...dialogProps} />
     </AdminPageLayout>
   );
 }

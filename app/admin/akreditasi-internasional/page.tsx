@@ -12,7 +12,11 @@ import {
 import { Button } from "@heroui/button";
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure } from "@heroui/modal";
 import { Input, Textarea } from "@heroui/input";
+import { Alert } from "@heroui/alert";
 import { AdminPageLayout } from "@/components/admin-page-layout";
+import { notifySuccess, notifyError } from "@/lib/notify";
+import { useDeleteConfirm } from "@/hooks/use-delete-confirm";
+import { DeleteConfirmationModal } from "@/components/delete-confirmation-modal";
 
 // Heroicons
 const GlobeIcon = () => (
@@ -54,6 +58,7 @@ export default function AkreditasiInternasionalPage() {
   const [saving, setSaving] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [editingItem, setEditingItem] = useState<InternationalAccreditation | null>(null);
+  const [formError, setFormError] = useState<string | null>(null);
 
   const [formData, setFormData] = useState({
     faculty: "",
@@ -73,13 +78,14 @@ export default function AkreditasiInternasionalPage() {
       setAccreditations(data);
     } catch (error) {
       console.error("Error fetching accreditations:", error);
-      alert("Gagal memuat data akreditasi");
+      notifyError("Gagal memuat data akreditasi");
     } finally {
       setLoading(false);
     }
   };
 
   const handleOpenModal = (item?: InternationalAccreditation) => {
+    setFormError(null);
     if (item) {
       setEditingItem(item);
       setFormData({
@@ -101,6 +107,7 @@ export default function AkreditasiInternasionalPage() {
   };
 
   const handleCloseModal = () => {
+    setFormError(null);
     setEditingItem(null);
     setFormData({
       faculty: "",
@@ -112,8 +119,9 @@ export default function AkreditasiInternasionalPage() {
   };
 
   const handleSubmit = async () => {
+    setFormError(null);
     if (!formData.faculty || !formData.studyProgram || !formData.accreditationBody) {
-      alert("Semua field harus diisi");
+      setFormError("Semua field harus diisi");
       return;
     }
 
@@ -137,22 +145,18 @@ export default function AkreditasiInternasionalPage() {
         throw new Error(data.error || "Gagal menyimpan data");
       }
 
-      alert(editingItem ? "Data berhasil diperbarui" : "Data berhasil ditambahkan");
+      notifySuccess(editingItem ? "Data berhasil diperbarui" : "Data berhasil ditambahkan");
       handleCloseModal();
       fetchAccreditations();
     } catch (error: any) {
       console.error("Error saving:", error);
-      alert(error.message || "Gagal menyimpan data");
+      notifyError(error?.message || "Gagal menyimpan data");
     } finally {
       setSaving(false);
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Apakah Anda yakin ingin menghapus data ini?")) {
-      return;
-    }
-
+  const { ask, dialogProps } = useDeleteConfirm(async (id: string) => {
     try {
       const response = await fetch(`/api/international-accreditations?id=${id}`, {
         method: "DELETE",
@@ -164,13 +168,13 @@ export default function AkreditasiInternasionalPage() {
         throw new Error(data.error || "Gagal menghapus data");
       }
 
-      alert("Data berhasil dihapus");
+      notifySuccess("Data berhasil dihapus");
       fetchAccreditations();
     } catch (error: any) {
       console.error("Error deleting:", error);
-      alert(error.message || "Gagal menghapus data");
+      notifyError(error?.message || "Gagal menghapus data");
     }
-  };
+  });
 
   if (loading) {
     return (
@@ -232,7 +236,7 @@ export default function AkreditasiInternasionalPage() {
                     variant="flat"
                     color="danger"
                     isIconOnly
-                    onPress={() => handleDelete(item.id)}
+                    onPress={() => ask(item.id, item.studyProgram)}
                   >
                     <TrashIcon className="w-4 h-4" />
                   </Button>
@@ -251,6 +255,11 @@ export default function AkreditasiInternasionalPage() {
           </ModalHeader>
           <ModalBody>
             <div className="space-y-4">
+              {formError && (
+                <Alert color="danger" className="mb-3">
+                  {formError}
+                </Alert>
+              )}
               <Input
                 label="Fakultas"
                 placeholder="Masukkan nama fakultas"
@@ -300,6 +309,8 @@ export default function AkreditasiInternasionalPage() {
           </ModalFooter>
         </ModalContent>
       </Modal>
+
+      <DeleteConfirmationModal {...dialogProps} />
       </div>
     </AdminPageLayout>
   );

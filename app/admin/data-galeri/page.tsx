@@ -32,10 +32,13 @@ import {
   Bars3Icon,
   PhotoIcon 
 } from "@heroicons/react/24/outline";
+import { Alert } from "@heroui/alert";
 import Image from "next/image";
-import { toast } from "react-hot-toast";
 import { AdminPageLayout } from "@/components/admin-page-layout";
 import { ImageUpload } from "@/components/image-upload";
+import { notifySuccess, notifyError } from "@/lib/notify";
+import { useDeleteConfirm } from "@/hooks/use-delete-confirm";
+import { DeleteConfirmationModal } from "@/components/delete-confirmation-modal";
 
 interface DataGaleri {
   id: string;
@@ -66,8 +69,24 @@ export default function DataGaleriPage() {
     deskripsi: "",
     isActive: true,
   });
+  const [formError, setFormError] = useState<string | null>(null);
 
   const { isOpen, onOpen, onClose } = useDisclosure();
+
+  const { ask: askDelete, dialogProps: deleteDialogProps } = useDeleteConfirm(
+    async (id: string) => {
+      const response = await fetch(`/api/admin/data-galeri/${id}`, {
+        method: "DELETE",
+      });
+
+      if (response.ok) {
+        notifySuccess("Foto berhasil dihapus");
+        fetchDataGaleri();
+      } else {
+        notifyError("Gagal menghapus foto");
+      }
+    }
+  );
 
   useEffect(() => {
     fetchDataGaleri();
@@ -80,11 +99,11 @@ export default function DataGaleriPage() {
         const data = await response.json();
         setDataGaleri(data);
       } else {
-        toast.error("Gagal memuat data galeri");
+        notifyError("Gagal memuat data galeri");
       }
     } catch (error) {
       console.error("Error fetching data galeri:", error);
-      toast.error("Gagal memuat data galeri");
+      notifyError("Gagal memuat data galeri");
     } finally {
       setLoading(false);
     }
@@ -102,10 +121,12 @@ export default function DataGaleriPage() {
 
   const handleAdd = () => {
     resetForm();
+    setFormError(null);
     onOpen();
   };
 
   const handleEdit = (item: DataGaleri) => {
+    setFormError(null);
     setEditingItem(item);
     setFormData({
       judul: item.judul || "",
@@ -117,8 +138,9 @@ export default function DataGaleriPage() {
   };
 
   const handleSubmit = async () => {
+    setFormError(null);
     if (!formData.gambar.trim()) {
-      toast.error("URL gambar harus diisi");
+      setFormError("URL gambar harus diisi");
       return;
     }
 
@@ -139,7 +161,7 @@ export default function DataGaleriPage() {
       });
 
       if (response.ok) {
-        toast.success(
+        notifySuccess(
           editingItem
             ? "Data galeri berhasil diperbarui"
             : "Data galeri berhasil ditambahkan"
@@ -149,35 +171,13 @@ export default function DataGaleriPage() {
         resetForm();
       } else {
         const errorData = await response.json();
-        toast.error(errorData.error || "Terjadi kesalahan");
+        notifyError(errorData.error || "Terjadi kesalahan");
       }
     } catch (error) {
       console.error("Error submitting form:", error);
-      toast.error("Terjadi kesalahan");
+      notifyError("Terjadi kesalahan");
     } finally {
       setSubmitting(false);
-    }
-  };
-
-  const handleDelete = async (id: string) => {
-    if (!confirm("Apakah Anda yakin ingin menghapus foto ini?")) {
-      return;
-    }
-
-    try {
-      const response = await fetch(`/api/admin/data-galeri/${id}`, {
-        method: "DELETE",
-      });
-
-      if (response.ok) {
-        toast.success("Foto berhasil dihapus");
-        fetchDataGaleri();
-      } else {
-        toast.error("Gagal menghapus foto");
-      }
-    } catch (error) {
-      console.error("Error deleting data galeri:", error);
-      toast.error("Gagal menghapus foto");
     }
   };
 
@@ -192,16 +192,16 @@ export default function DataGaleriPage() {
       });
 
       if (response.ok) {
-        toast.success(
+        notifySuccess(
           `Foto berhasil ${!isActive ? "diaktifkan" : "disembunyikan"}`
         );
         fetchDataGaleri();
       } else {
-        toast.error("Gagal mengubah status foto");
+        notifyError("Gagal mengubah status foto");
       }
     } catch (error) {
       console.error("Error toggling status:", error);
-      toast.error("Gagal mengubah status foto");
+      notifyError("Gagal mengubah status foto");
     }
   };
 
@@ -308,7 +308,9 @@ export default function DataGaleriPage() {
                             size="sm"
                             variant="solid"
                             color="danger"
-                            onPress={() => handleDelete(item.id)}
+                            onPress={() =>
+                              askDelete(item.id, item.judul || `Foto ${index + 1}`)
+                            }
                           >
                             <TrashIcon className="w-3.5 h-3.5" />
                           </Button>
@@ -375,6 +377,11 @@ export default function DataGaleriPage() {
           </ModalHeader>
           <ModalBody>
             <div className="space-y-4">
+              {formError && (
+                <Alert color="danger" className="mb-3">
+                  {formError}
+                </Alert>
+              )}
               <ImageUpload
                 label="Upload Gambar"
                 value={formData.gambar || null}
@@ -424,7 +431,7 @@ export default function DataGaleriPage() {
                       sizes="500px"
                       onError={() => {
                         setFormData({ ...formData, gambar: "" });
-                        toast.error("URL gambar tidak valid");
+                        notifyError("URL gambar tidak valid");
                       }}
                     />
                   </div>
@@ -446,6 +453,8 @@ export default function DataGaleriPage() {
           </ModalFooter>
         </ModalContent>
       </Modal>
+
+      <DeleteConfirmationModal {...deleteDialogProps} />
     </AdminPageLayout>
   );
 }

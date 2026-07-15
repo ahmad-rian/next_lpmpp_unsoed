@@ -23,13 +23,12 @@ import { Select, SelectItem } from "@heroui/select";
 import { Card, CardBody } from "@heroui/card";
 import { Chip } from "@heroui/chip";
 import { Switch } from "@heroui/switch";
+import { Alert } from "@heroui/alert";
 import { AdminPageLayout } from "@/components/admin-page-layout";
 import { ImageUpload } from "@/components/image-upload";
 import { DeleteConfirmationModal } from "@/components/delete-confirmation-modal";
-
-const showNotification = (message: string, type: "success" | "error" = "success") => {
-  alert(message);
-};
+import { notifySuccess, notifyError } from "@/lib/notify";
+import { useDeleteConfirm } from "@/hooks/use-delete-confirm";
 
 // Icons
 const PlusIcon = ({ className }: { className?: string }) => (
@@ -202,13 +201,8 @@ export default function PeringkatPTPage() {
     isActive: true,
   });
   const [isEditing, setIsEditing] = useState(false);
-  const [deleteItem, setDeleteItem] = useState<UniversityRanking | null>(null);
+  const [formError, setFormError] = useState<string | null>(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const {
-    isOpen: isDeleteOpen,
-    onOpen: onDeleteOpen,
-    onClose: onDeleteClose,
-  } = useDisclosure();
 
   const fetchRankings = useCallback(async () => {
     try {
@@ -219,7 +213,7 @@ export default function PeringkatPTPage() {
       }
     } catch (error) {
       console.error("Error fetching rankings:", error);
-      showNotification("Gagal mengambil data peringkat", "error");
+      notifyError("Gagal mengambil data peringkat");
     } finally {
       setLoading(false);
     }
@@ -248,6 +242,7 @@ export default function PeringkatPTPage() {
   };
 
   const handleOpenModal = (ranking?: UniversityRanking) => {
+    setFormError(null);
     if (ranking) {
       setFormData({
         id: ranking.id,
@@ -271,8 +266,9 @@ export default function PeringkatPTPage() {
   };
 
   const handleSubmit = async () => {
+    setFormError(null);
     if (!formData.institution || !formData.year) {
-      showNotification("Lembaga dan tahun harus diisi", "error");
+      setFormError("Lembaga dan tahun harus diisi");
       return;
     }
 
@@ -285,7 +281,7 @@ export default function PeringkatPTPage() {
       });
 
       if (response.ok) {
-        showNotification(
+        notifySuccess(
           isEditing
             ? "Peringkat berhasil diupdate"
             : "Peringkat berhasil ditambahkan"
@@ -299,39 +295,31 @@ export default function PeringkatPTPage() {
       }
     } catch (error) {
       console.error("Error saving ranking:", error);
-      showNotification("Gagal menyimpan data peringkat", "error");
+      notifyError(
+        error instanceof Error && error.message
+          ? error.message
+          : "Gagal menyimpan data peringkat"
+      );
     }
   };
 
-  const handleDelete = async () => {
-    if (!deleteItem) return;
-
+  const { ask, dialogProps } = useDeleteConfirm(async (id) => {
     try {
-      const response = await fetch(
-        `/api/university-rankings?id=${deleteItem.id}`,
-        {
-          method: "DELETE",
-        }
-      );
+      const response = await fetch(`/api/university-rankings?id=${id}`, {
+        method: "DELETE",
+      });
 
       if (response.ok) {
-        showNotification("Peringkat berhasil dihapus");
+        notifySuccess("Peringkat berhasil dihapus");
         fetchRankings();
-        onDeleteClose();
-        setDeleteItem(null);
       } else {
         throw new Error("Failed to delete");
       }
     } catch (error) {
       console.error("Error deleting ranking:", error);
-      showNotification("Gagal menghapus peringkat", "error");
+      notifyError("Gagal menghapus peringkat");
     }
-  };
-
-  const confirmDelete = (ranking: UniversityRanking) => {
-    setDeleteItem(ranking);
-    onDeleteOpen();
-  };
+  });
 
   // Group rankings by institution for statistics
   const statsByInstitution = INSTITUTIONS.map((inst) => {
@@ -486,7 +474,12 @@ export default function PeringkatPTPage() {
                     size="sm"
                     variant="light"
                     color="danger"
-                    onPress={() => confirmDelete(ranking)}
+                    onPress={() =>
+                      ask(
+                        ranking.id,
+                        `${getInstitutionLabel(ranking.institution)} tahun ${ranking.year}`
+                      )
+                    }
                   >
                     <TrashIcon className="w-4 h-4" />
                   </Button>
@@ -504,6 +497,11 @@ export default function PeringkatPTPage() {
             {isEditing ? "Edit Peringkat" : "Tambah Peringkat Baru"}
           </ModalHeader>
           <ModalBody>
+            {formError && (
+              <Alert color="danger" className="mb-3">
+                {formError}
+              </Alert>
+            )}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Select
                 label="Lembaga Pemeringkat"
@@ -635,13 +633,7 @@ export default function PeringkatPTPage() {
       </Modal>
 
       {/* Delete Confirmation Modal */}
-      <DeleteConfirmationModal
-        isOpen={isDeleteOpen}
-        onClose={onDeleteClose}
-        onConfirm={handleDelete}
-        title="Hapus Peringkat"
-        message={`Apakah Anda yakin ingin menghapus peringkat ${deleteItem ? getInstitutionLabel(deleteItem.institution) : ""} tahun ${deleteItem?.year}?`}
-      />
+      <DeleteConfirmationModal {...dialogProps} title="Hapus Peringkat" />
     </AdminPageLayout>
   );
 }

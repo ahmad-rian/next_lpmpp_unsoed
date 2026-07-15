@@ -20,7 +20,11 @@ import {
 import { Input, Textarea } from "@heroui/input";
 import { Chip } from "@heroui/chip";
 import { Pagination } from "@heroui/pagination";
+import { Alert } from "@heroui/alert";
 import { AdminPageLayout } from "@/components/admin-page-layout";
+import { notifySuccess, notifyError } from "@/lib/notify";
+import { useDeleteConfirm } from "@/hooks/use-delete-confirm";
+import { DeleteConfirmationModal } from "@/components/delete-confirmation-modal";
 
 // Icons
 const DocumentIcon = () => (
@@ -68,6 +72,7 @@ export default function DownloadsPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [formError, setFormError] = useState<string | null>(null);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -90,7 +95,7 @@ export default function DownloadsPage() {
       }
     } catch (error) {
       console.error("Error fetching downloads:", error);
-      alert("Gagal memuat data unduhan");
+      notifyError("Gagal memuat data unduhan");
     } finally {
       setLoading(false);
     }
@@ -108,16 +113,18 @@ export default function DownloadsPage() {
     ];
 
     if (!allowedTypes.includes(file.type)) {
-      alert("File harus berformat PDF, DOC, atau DOCX");
+      setFormError("File harus berformat PDF, DOC, atau DOCX");
       return;
     }
 
     // Validate file size (max 10MB)
     const maxSize = 10 * 1024 * 1024; // 10MB in bytes
     if (file.size > maxSize) {
-      alert("Ukuran file maksimal 10MB");
+      setFormError("Ukuran file maksimal 10MB");
       return;
     }
+
+    setFormError(null);
 
     setUploading(true);
 
@@ -142,19 +149,20 @@ export default function DownloadsPage() {
             : "doc",
           fileSize: file.size,
         }));
-        alert("File berhasil diupload");
+        notifySuccess("File berhasil diupload");
       } else {
-        alert("Gagal mengupload file");
+        notifyError("Gagal mengupload file");
       }
     } catch (error) {
       console.error("Error uploading file:", error);
-      alert("Gagal mengupload file");
+      notifyError("Gagal mengupload file");
     } finally {
       setUploading(false);
     }
   };
 
   const handleAdd = () => {
+    setFormError(null);
     setEditingId(null);
     setFormData({
       name: "",
@@ -167,6 +175,7 @@ export default function DownloadsPage() {
   };
 
   const handleEdit = (download: Download) => {
+    setFormError(null);
     setEditingId(download.id);
     setFormData({
       name: download.name,
@@ -179,8 +188,9 @@ export default function DownloadsPage() {
   };
 
   const handleSubmit = async () => {
+    setFormError(null);
     if (!formData.name || !formData.fileUrl) {
-      alert("Nama dan file wajib diisi");
+      setFormError("Nama dan file wajib diisi");
       return;
     }
 
@@ -199,7 +209,7 @@ export default function DownloadsPage() {
       });
 
       if (response.ok) {
-        alert(
+        notifySuccess(
           editingId
             ? "Unduhan berhasil diperbarui"
             : "Unduhan berhasil ditambahkan"
@@ -207,33 +217,31 @@ export default function DownloadsPage() {
         setIsModalOpen(false);
         fetchDownloads();
       } else {
-        alert("Gagal menyimpan unduhan");
+        notifyError("Gagal menyimpan unduhan");
       }
     } catch (error) {
       console.error("Error saving download:", error);
-      alert("Gagal menyimpan unduhan");
+      notifyError("Gagal menyimpan unduhan");
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Apakah Anda yakin ingin menghapus unduhan ini?")) return;
-
+  const { ask, dialogProps } = useDeleteConfirm(async (id: string) => {
     try {
       const response = await fetch(`/api/downloads?id=${id}`, {
         method: "DELETE",
       });
 
       if (response.ok) {
-        alert("Unduhan berhasil dihapus");
+        notifySuccess("Unduhan berhasil dihapus");
         fetchDownloads();
       } else {
-        alert("Gagal menghapus unduhan");
+        notifyError("Gagal menghapus unduhan");
       }
     } catch (error) {
       console.error("Error deleting download:", error);
-      alert("Gagal menghapus unduhan");
+      notifyError("Gagal menghapus unduhan");
     }
-  };
+  });
 
   const formatFileSize = (bytes: number) => {
     if (bytes === 0) return "0 Bytes";
@@ -335,7 +343,7 @@ export default function DownloadsPage() {
                     size="sm"
                     color="danger"
                     variant="flat"
-                    onPress={() => handleDelete(item.id)}
+                    onPress={() => ask(item.id, item.name)}
                   >
                     Hapus
                   </Button>
@@ -369,6 +377,11 @@ export default function DownloadsPage() {
           </ModalHeader>
           <ModalBody>
             <div className="space-y-4">
+              {formError && (
+                <Alert color="danger" className="mb-3">
+                  {formError}
+                </Alert>
+              )}
               <Input
                 label="Nama Dokumen"
                 placeholder="Masukkan nama dokumen"
@@ -451,6 +464,8 @@ export default function DownloadsPage() {
           </ModalFooter>
         </ModalContent>
       </Modal>
+
+      <DeleteConfirmationModal {...dialogProps} />
     </AdminPageLayout>
   );
 }

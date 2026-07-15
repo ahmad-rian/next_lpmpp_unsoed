@@ -23,8 +23,8 @@ export function DeleteConfirmationModal({
   isOpen,
   onClose,
   onConfirm,
-  title = "Confirm Deletion",
-  message = "Are you sure you want to delete this item? This action cannot be undone.",
+  title = "Konfirmasi Hapus",
+  message = "Yakin ingin menghapus data ini? Tindakan ini tidak bisa dibatalkan.",
   isLoading = false,
 }: DeleteConfirmationModalProps) {
   return (
@@ -49,14 +49,14 @@ export function DeleteConfirmationModal({
             onPress={onClose}
             isDisabled={isLoading}
           >
-            Cancel
+            Batal
           </Button>
           <Button
             color="danger"
             onPress={onConfirm}
             isLoading={isLoading}
           >
-            Delete
+            Hapus
           </Button>
         </ModalFooter>
       </ModalContent>

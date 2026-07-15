@@ -5,7 +5,7 @@ import { Card, CardBody } from "@heroui/card";
 import { Button } from "@heroui/button";
 import { Input, Textarea } from "@heroui/input";
 import { AdminPageLayout } from "@/components/admin-page-layout";
-import toast, { Toaster } from "react-hot-toast";
+import { notifySuccess, notifyError } from "@/lib/notify";
 
 interface SpmiAbout {
   id: string;
@@ -50,7 +50,7 @@ export default function AdminSpmiPage() {
       }
     } catch (error) {
       console.error("Error fetching SPMI data:", error);
-      toast.error('Gagal memuat data SPMI');
+      notifyError('Gagal memuat data SPMI');
     } finally {
       setIsLoading(false);
     }
@@ -72,14 +72,14 @@ export default function AdminSpmiPage() {
       if (response.ok) {
         const data = await response.json();
         setSpmiData(data);
-        toast.success('Data SPMI berhasil disimpan!');
+        notifySuccess('Data SPMI berhasil disimpan!');
       } else {
         const errorData = await response.json();
-        toast.error(errorData.error || 'Gagal menyimpan data SPMI');
+        notifyError(errorData.error || 'Gagal menyimpan data SPMI');
       }
     } catch (error) {
       console.error("Error saving SPMI data:", error);
-      toast.error('Terjadi kesalahan saat menyimpan');
+      notifyError('Terjadi kesalahan saat menyimpan');
     } finally {
       setIsSaving(false);
     }
@@ -103,8 +103,6 @@ export default function AdminSpmiPage() {
       description="Kelola informasi Sistem Penjaminan Mutu Internal (SPMI) UNSOED"
       icon={<DocumentIcon />}
     >
-      <Toaster position="top-right" />
-      
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Basic Information Section */}
         <Card>

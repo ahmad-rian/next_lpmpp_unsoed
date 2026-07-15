@@ -15,7 +15,11 @@ import { Input } from "@heroui/input";
 import { Chip } from "@heroui/chip";
 import { Tabs, Tab } from "@heroui/tabs";
 import { Pagination } from "@heroui/pagination";
+import { Alert } from "@heroui/alert";
 import { AdminPageLayout } from "@/components/admin-page-layout";
+import { notifySuccess, notifyError } from "@/lib/notify";
+import { useDeleteConfirm } from "@/hooks/use-delete-confirm";
+import { DeleteConfirmationModal } from "@/components/delete-confirmation-modal";
 
 // Icons
 const AcademicCapIcon = () => (
@@ -82,6 +86,20 @@ export default function KepakaranPage() {
   });
 
   const [editingExpertise, setEditingExpertise] = useState<Expertise | null>(null);
+  const [formError, setFormError] = useState<string | null>(null);
+
+  const { ask, dialogProps } = useDeleteConfirm(async (id: string) => {
+    const response = await fetch(`/api/expertise?id=${id}`, {
+      method: "DELETE",
+    });
+
+    if (response.ok) {
+      notifySuccess("Data berhasil dihapus");
+      fetchExpertise();
+    } else {
+      notifyError("Gagal menghapus data");
+    }
+  });
 
   // Calculate pagination
   const pages = Math.ceil(expertise.length / rowsPerPage);
@@ -117,13 +135,14 @@ export default function KepakaranPage() {
     } catch (error) {
       console.error("Error fetching expertise:", error);
       setExpertise([]);
-      alert("Gagal memuat data kepakaran");
+      notifyError("Gagal memuat data kepakaran");
     } finally {
       setLoading(false);
     }
   };
 
   const handleAdd = () => {
+    setFormError(null);
     setEditingExpertise(null);
     setFormData({
       id: "",
@@ -136,6 +155,7 @@ export default function KepakaranPage() {
   };
 
   const handleEdit = (exp: Expertise) => {
+    setFormError(null);
     setEditingExpertise(exp);
     setFormData({
       id: exp.id,
@@ -148,8 +168,9 @@ export default function KepakaranPage() {
   };
 
   const handleSubmit = async () => {
+    setFormError(null);
     if (!formData.name.trim()) {
-      alert("Nama harus diisi");
+      setFormError("Nama harus diisi");
       return;
     }
 
@@ -170,32 +191,12 @@ export default function KepakaranPage() {
 
       await fetchExpertise();
       onClose();
-      alert(editingExpertise ? "Data berhasil diupdate" : "Data berhasil ditambahkan");
+      notifySuccess(editingExpertise ? "Data berhasil diupdate" : "Data berhasil ditambahkan");
     } catch (error) {
       console.error("Error saving expertise:", error);
-      alert("Gagal menyimpan data");
+      notifyError(error instanceof Error ? error.message : "Gagal menyimpan data");
     } finally {
       setSaving(false);
-    }
-  };
-
-  const handleDelete = async (id: string) => {
-    if (!confirm("Yakin ingin menghapus data ini?")) return;
-
-    try {
-      const response = await fetch(`/api/expertise?id=${id}`, {
-        method: "DELETE",
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to delete");
-      }
-
-      await fetchExpertise();
-      alert("Data berhasil dihapus");
-    } catch (error) {
-      console.error("Error deleting expertise:", error);
-      alert("Gagal menghapus data");
     }
   };
 
@@ -294,7 +295,7 @@ export default function KepakaranPage() {
                         variant="flat"
                         color="danger"
                         isIconOnly
-                        onPress={() => handleDelete(exp.id)}
+                        onPress={() => ask(exp.id, exp.name)}
                       >
                         <TrashIcon className="w-4 h-4" />
                       </Button>
@@ -330,6 +331,11 @@ export default function KepakaranPage() {
           </ModalHeader>
           <ModalBody>
             <div className="space-y-4">
+              {formError && (
+                <Alert color="danger" className="mb-3">
+                  {formError}
+                </Alert>
+              )}
               <Input
                 label="Nama Lengkap (dengan gelar)"
                 placeholder="Contoh: Prof. Dr. Nama Lengkap, S.T., M.T."
@@ -370,6 +376,8 @@ export default function KepakaranPage() {
           </ModalFooter>
         </ModalContent>
       </Modal>
+
+      <DeleteConfirmationModal {...dialogProps} />
     </AdminPageLayout>
   );
 }

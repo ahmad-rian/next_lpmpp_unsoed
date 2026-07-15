@@ -14,8 +14,12 @@ import { Button } from "@heroui/button";
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure } from "@heroui/modal";
 import { Input, Textarea } from "@heroui/input";
 import { Chip } from "@heroui/chip";
+import { Alert } from "@heroui/alert";
 import { AdminPageLayout } from "@/components/admin-page-layout";
 import { RichTextEditor, RichTextViewer } from "@/components/rich-text-editor";
+import { notifySuccess, notifyError, notifyWarning } from "@/lib/notify";
+import { useDeleteConfirm } from "@/hooks/use-delete-confirm";
+import { DeleteConfirmationModal } from "@/components/delete-confirmation-modal";
 
 // Heroicons
 const SparklesIcon = () => (
@@ -82,6 +86,22 @@ export default function ProgramUnggulanPage() {
   });
 
   const [editingProgram, setEditingProgram] = useState<FeaturedProgram | null>(null);
+  const [formError, setFormError] = useState<string | null>(null);
+
+  const { ask, dialogProps } = useDeleteConfirm(async (id: string) => {
+    const response = await fetch(`/api/featured-programs?id=${id}`, {
+      method: "DELETE",
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      notifySuccess("Program berhasil dihapus");
+      fetchPrograms();
+    } else {
+      notifyError(data?.error || "Gagal menghapus program");
+    }
+  });
 
   useEffect(() => {
     fetchPrograms();
@@ -106,13 +126,14 @@ export default function ProgramUnggulanPage() {
     } catch (error) {
       console.error("Error fetching programs:", error);
       setPrograms([]); // Set empty array on error
-      alert("Gagal memuat data program");
+      notifyError((error as any)?.message || "Gagal memuat data program");
     } finally {
       setLoading(false);
     }
   };
 
   const handleAdd = () => {
+    setFormError(null);
     setEditingProgram(null);
     setFormData({
       id: "",
@@ -129,6 +150,7 @@ export default function ProgramUnggulanPage() {
   };
 
   const handleEdit = (program: FeaturedProgram) => {
+    setFormError(null);
     setEditingProgram(program);
     setFormData({
       id: program.id,
@@ -150,12 +172,12 @@ export default function ProgramUnggulanPage() {
 
     const allowedTypes = ["application/pdf", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"];
     if (!allowedTypes.includes(file.type)) {
-      alert("File harus berformat PDF, DOC, atau DOCX");
+      notifyWarning("File harus berformat PDF, DOC, atau DOCX");
       return;
     }
 
     if (file.size > 10 * 1024 * 1024) {
-      alert("Ukuran file maksimal 10MB");
+      notifyWarning("Ukuran file maksimal 10MB");
       return;
     }
 
@@ -180,10 +202,10 @@ export default function ProgramUnggulanPage() {
         documentUrl: data.url,
         documentName: file.name,
       });
-      alert("Dokumen berhasil diupload");
+      notifySuccess("Dokumen berhasil diupload");
     } catch (error: any) {
       console.error("Error uploading document:", error);
-      alert(error.message || "Gagal mengupload dokumen");
+      notifyError(error?.message || "Gagal mengupload dokumen");
     } finally {
       setUploadingDoc(false);
     }
@@ -197,8 +219,9 @@ export default function ProgramUnggulanPage() {
   };
 
   const handleSubmit = async () => {
+    setFormError(null);
     if (!formData.title) {
-      alert("Judul harus diisi");
+      setFormError("Judul harus diisi");
       return;
     }
 
@@ -224,38 +247,14 @@ export default function ProgramUnggulanPage() {
         throw new Error(data.error || "Gagal menyimpan data");
       }
 
-      alert(editingProgram ? "Program berhasil diperbarui" : "Program berhasil ditambahkan");
+      notifySuccess(editingProgram ? "Program berhasil diperbarui" : "Program berhasil ditambahkan");
       onClose();
       fetchPrograms();
     } catch (error: any) {
       console.error("Error saving:", error);
-      alert(error.message || "Gagal menyimpan data");
+      notifyError(error?.message || "Gagal menyimpan data");
     } finally {
       setSaving(false);
-    }
-  };
-
-  const handleDelete = async (id: string) => {
-    if (!confirm("Apakah Anda yakin ingin menghapus program ini?")) {
-      return;
-    }
-
-    try {
-      const response = await fetch(`/api/featured-programs?id=${id}`, {
-        method: "DELETE",
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Gagal menghapus program");
-      }
-
-      alert("Program berhasil dihapus");
-      fetchPrograms();
-    } catch (error: any) {
-      console.error("Error deleting:", error);
-      alert(error.message || "Gagal menghapus program");
     }
   };
 
@@ -354,7 +353,7 @@ export default function ProgramUnggulanPage() {
                     variant="flat"
                     color="danger"
                     isIconOnly
-                    onPress={() => handleDelete(program.id)}
+                    onPress={() => ask(program.id, program.title)}
                   >
                     <TrashIcon className="w-4 h-4" />
                   </Button>
@@ -373,6 +372,11 @@ export default function ProgramUnggulanPage() {
           </ModalHeader>
           <ModalBody>
             <div className="space-y-4">
+              {formError && (
+                <Alert color="danger" className="mb-3">
+                  {formError}
+                </Alert>
+              )}
               <Input
                 label="Judul Program"
                 placeholder="Contoh: Pembelajaran di Luar Kampus (MBKM)"
@@ -461,6 +465,8 @@ export default function ProgramUnggulanPage() {
           </ModalFooter>
         </ModalContent>
       </Modal>
+
+      <DeleteConfirmationModal {...dialogProps} />
     </AdminPageLayout>
   );
 }

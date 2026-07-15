@@ -2,6 +2,7 @@
 
 import React, { useState, useRef } from "react";
 import { Button } from "@heroui/button";
+import { notifyError, notifySuccess } from "@/lib/notify";
 
 interface DocumentUploadProps {
   label: string;
@@ -50,12 +51,12 @@ export function DocumentUpload({ label, value, onChange, description }: Document
         onChange(result.url, result.filename, result.size);
         setFileName(result.filename);
       } else {
-        alert(result.error || "Upload failed");
+        notifyError(result.error || "Upload failed");
         setFileName(null);
       }
     } catch (error) {
       console.error("Upload error:", error);
-      alert("Failed to upload document");
+      notifyError("Failed to upload document");
       setFileName(null);
     } finally {
       setUploading(false);

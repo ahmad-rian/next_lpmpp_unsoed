@@ -14,7 +14,11 @@ import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure
 import { Input } from "@heroui/input";
 import { Chip } from "@heroui/chip";
 import { Pagination } from "@heroui/pagination";
+import { Alert } from "@heroui/alert";
 import { AdminPageLayout } from "@/components/admin-page-layout";
+import { notifySuccess, notifyError } from "@/lib/notify";
+import { useDeleteConfirm } from "@/hooks/use-delete-confirm";
+import { DeleteConfirmationModal } from "@/components/delete-confirmation-modal";
 
 // Icons
 const LinkIcon = () => (
@@ -75,6 +79,20 @@ export default function TautanPage() {
   });
 
   const [editingLink, setEditingLink] = useState<Link | null>(null);
+  const [formError, setFormError] = useState<string | null>(null);
+
+  const { ask, dialogProps } = useDeleteConfirm(async (id: string) => {
+    const response = await fetch(`/api/links?id=${id}`, {
+      method: "DELETE",
+    });
+
+    if (response.ok) {
+      await fetchLinks();
+      notifySuccess("Tautan berhasil dihapus");
+    } else {
+      notifyError("Gagal menghapus tautan");
+    }
+  });
 
   // Calculate pagination
   const pages = Math.ceil(links.length / rowsPerPage);
@@ -109,7 +127,7 @@ export default function TautanPage() {
     } catch (error) {
       console.error("Error fetching links:", error);
       setLinks([]);
-      alert("Gagal memuat data tautan");
+      notifyError("Gagal memuat data tautan");
     } finally {
       setLoading(false);
     }
@@ -117,6 +135,7 @@ export default function TautanPage() {
 
   const handleAdd = () => {
     setEditingLink(null);
+    setFormError(null);
     setFormData({
       id: "",
       name: "",
@@ -128,6 +147,7 @@ export default function TautanPage() {
 
   const handleEdit = (link: Link) => {
     setEditingLink(link);
+    setFormError(null);
     setFormData({
       id: link.id,
       name: link.name,
@@ -138,8 +158,9 @@ export default function TautanPage() {
   };
 
   const handleSubmit = async () => {
+    setFormError(null);
     if (!formData.name.trim() || !formData.url.trim()) {
-      alert("Nama dan URL harus diisi");
+      setFormError("Nama dan URL harus diisi");
       return;
     }
 
@@ -160,32 +181,12 @@ export default function TautanPage() {
 
       await fetchLinks();
       onClose();
-      alert(editingLink ? "Tautan berhasil diupdate" : "Tautan berhasil ditambahkan");
+      notifySuccess(editingLink ? "Tautan berhasil diupdate" : "Tautan berhasil ditambahkan");
     } catch (error) {
       console.error("Error saving link:", error);
-      alert("Gagal menyimpan tautan");
+      notifyError("Gagal menyimpan tautan");
     } finally {
       setSaving(false);
-    }
-  };
-
-  const handleDelete = async (id: string) => {
-    if (!confirm("Yakin ingin menghapus tautan ini?")) return;
-
-    try {
-      const response = await fetch(`/api/links?id=${id}`, {
-        method: "DELETE",
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to delete");
-      }
-
-      await fetchLinks();
-      alert("Tautan berhasil dihapus");
-    } catch (error) {
-      console.error("Error deleting link:", error);
-      alert("Gagal menghapus tautan");
     }
   };
 
@@ -263,7 +264,7 @@ export default function TautanPage() {
                         variant="flat"
                         color="danger"
                         isIconOnly
-                        onPress={() => handleDelete(link.id)}
+                        onPress={() => ask(link.id, link.name)}
                       >
                         <TrashIcon className="w-4 h-4" />
                       </Button>
@@ -297,6 +298,11 @@ export default function TautanPage() {
           </ModalHeader>
           <ModalBody>
             <div className="space-y-4">
+              {formError && (
+                <Alert color="danger" className="mb-3">
+                  {formError}
+                </Alert>
+              )}
               <Input
                 label="Nama Tautan"
                 placeholder="Contoh: SAPTO 2, BAN-PT, PDDIKTI"
@@ -338,6 +344,8 @@ export default function TautanPage() {
           </ModalFooter>
         </ModalContent>
       </Modal>
+
+      <DeleteConfirmationModal {...dialogProps} />
     </AdminPageLayout>
   );
 }

@@ -5,7 +5,11 @@ import { Button } from "@heroui/button";
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure } from "@heroui/modal";
 import { Input, Textarea } from "@heroui/input";
 import { Card, CardBody } from "@heroui/card";
+import { Alert } from "@heroui/alert";
 import { AdminPageLayout } from "@/components/admin-page-layout";
+import { notifySuccess, notifyError } from "@/lib/notify";
+import { useDeleteConfirm } from "@/hooks/use-delete-confirm";
+import { DeleteConfirmationModal } from "@/components/delete-confirmation-modal";
 import Image from "next/image";
 
 // Heroicons
@@ -93,6 +97,27 @@ export default function AkreditasiPTPage() {
 
   const [editingDoc, setEditingDoc] = useState<Document | null>(null);
 
+  const [formError, setFormError] = useState<string | null>(null);
+  const [docFormError, setDocFormError] = useState<string | null>(null);
+
+  const { ask: askDeleteDocument, dialogProps: deleteDocumentDialogProps } =
+    useDeleteConfirm(async (id) => {
+      const response = await fetch(
+        `/api/university-accreditation-documents?id=${id}`,
+        { method: "DELETE" }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        notifyError(data.error || "Gagal menghapus dokumen");
+        return;
+      }
+
+      notifySuccess("Dokumen berhasil dihapus");
+      fetchAccreditation();
+    });
+
   useEffect(() => {
     fetchAccreditation();
   }, []);
@@ -108,13 +133,14 @@ export default function AkreditasiPTPage() {
       }
     } catch (error) {
       console.error("Error fetching accreditation:", error);
-      alert("Gagal memuat data akreditasi");
+      notifyError("Gagal memuat data akreditasi");
     } finally {
       setLoading(false);
     }
   };
 
   const handleOpenEdit = () => {
+    setFormError(null);
     if (accreditation) {
       setFormData({
         title: accreditation.title,
@@ -136,17 +162,17 @@ export default function AkreditasiPTPage() {
     if (!file) return;
 
     if (!accreditation) {
-      alert("Buat data akreditasi terlebih dahulu");
+      notifyError("Buat data akreditasi terlebih dahulu");
       return;
     }
 
     if (!file.type.startsWith("image/")) {
-      alert("File harus berformat gambar");
+      notifyError("File harus berformat gambar");
       return;
     }
 
     if (file.size > 5 * 1024 * 1024) {
-      alert("Ukuran file maksimal 5MB");
+      notifyError("Ukuran file maksimal 5MB");
       return;
     }
 
@@ -185,19 +211,20 @@ export default function AkreditasiPTPage() {
         throw new Error(updateData.error || "Gagal menyimpan gambar");
       }
 
-      alert("Gambar banner berhasil diupload");
+      notifySuccess("Gambar banner berhasil diupload");
       fetchAccreditation(); // Reload data
     } catch (error: any) {
       console.error("Error uploading image:", error);
-      alert(error.message || "Gagal mengupload gambar");
+      notifyError(error?.message || "Gagal mengupload gambar");
     } finally {
       setUploadingImage(false);
     }
   };
 
   const handleSubmit = async () => {
+    setFormError(null);
     if (!formData.title || !formData.description) {
-      alert("Judul dan Deskripsi harus diisi");
+      setFormError("Judul dan Deskripsi harus diisi");
       return;
     }
 
@@ -221,12 +248,12 @@ export default function AkreditasiPTPage() {
         throw new Error(data.error || "Gagal menyimpan data");
       }
 
-      alert(accreditation ? "Data berhasil diperbarui" : "Data berhasil ditambahkan");
+      notifySuccess(accreditation ? "Data berhasil diperbarui" : "Data berhasil ditambahkan");
       onClose();
       fetchAccreditation();
     } catch (error: any) {
       console.error("Error saving:", error);
-      alert(error.message || "Gagal menyimpan data");
+      notifyError(error?.message || "Gagal menyimpan data");
     } finally {
       setSaving(false);
     }
@@ -239,12 +266,12 @@ export default function AkreditasiPTPage() {
 
     const allowedTypes = ["application/pdf", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"];
     if (!allowedTypes.includes(file.type)) {
-      alert("File harus berformat PDF, DOC, atau DOCX");
+      notifyError("File harus berformat PDF, DOC, atau DOCX");
       return;
     }
 
     if (file.size > 10 * 1024 * 1024) {
-      alert("Ukuran file maksimal 10MB");
+      notifyError("Ukuran file maksimal 10MB");
       return;
     }
 
@@ -269,16 +296,17 @@ export default function AkreditasiPTPage() {
         documentUrl: data.url,
         documentName: file.name,
       });
-      alert("Dokumen berhasil diupload");
+      notifySuccess("Dokumen berhasil diupload");
     } catch (error: any) {
       console.error("Error uploading document:", error);
-      alert(error.message || "Gagal mengupload dokumen");
+      notifyError(error?.message || "Gagal mengupload dokumen");
     } finally {
       setUploadingDoc(false);
     }
   };
 
   const handleAddDocument = () => {
+    setDocFormError(null);
     setEditingDoc(null);
     setDocFormData({
       id: "",
@@ -290,6 +318,7 @@ export default function AkreditasiPTPage() {
   };
 
   const handleEditDocument = (doc: Document) => {
+    setDocFormError(null);
     setEditingDoc(doc);
     setDocFormData({
       id: doc.id,
@@ -301,13 +330,14 @@ export default function AkreditasiPTPage() {
   };
 
   const handleSubmitDocument = async () => {
+    setDocFormError(null);
     if (!docFormData.title || !docFormData.documentUrl) {
-      alert("Judul dokumen dan file harus diisi");
+      setDocFormError("Judul dokumen dan file harus diisi");
       return;
     }
 
     if (!accreditation) {
-      alert("Buat data akreditasi terlebih dahulu");
+      setDocFormError("Buat data akreditasi terlebih dahulu");
       return;
     }
 
@@ -335,38 +365,14 @@ export default function AkreditasiPTPage() {
         throw new Error(data.error || "Gagal menyimpan dokumen");
       }
 
-      alert(editingDoc ? "Dokumen berhasil diperbarui" : "Dokumen berhasil ditambahkan");
+      notifySuccess(editingDoc ? "Dokumen berhasil diperbarui" : "Dokumen berhasil ditambahkan");
       onDocClose();
       fetchAccreditation();
     } catch (error: any) {
       console.error("Error saving document:", error);
-      alert(error.message || "Gagal menyimpan dokumen");
+      notifyError(error?.message || "Gagal menyimpan dokumen");
     } finally {
       setSaving(false);
-    }
-  };
-
-  const handleDeleteDocument = async (id: string) => {
-    if (!confirm("Apakah Anda yakin ingin menghapus dokumen ini?")) {
-      return;
-    }
-
-    try {
-      const response = await fetch(`/api/university-accreditation-documents?id=${id}`, {
-        method: "DELETE",
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Gagal menghapus dokumen");
-      }
-
-      alert("Dokumen berhasil dihapus");
-      fetchAccreditation();
-    } catch (error: any) {
-      console.error("Error deleting document:", error);
-      alert(error.message || "Gagal menghapus dokumen");
     }
   };
 
@@ -519,7 +525,7 @@ export default function AkreditasiPTPage() {
                           variant="flat"
                           color="danger"
                           isIconOnly
-                          onPress={() => handleDeleteDocument(doc.id)}
+                          onPress={() => askDeleteDocument(doc.id, doc.title)}
                         >
                           <TrashIcon className="w-4 h-4" />
                         </Button>
@@ -540,6 +546,11 @@ export default function AkreditasiPTPage() {
             </ModalHeader>
             <ModalBody>
               <div className="space-y-4">
+                {formError && (
+                  <Alert color="danger" className="mb-3">
+                    {formError}
+                  </Alert>
+                )}
                 <Input
                   label="Judul"
                   placeholder="Masukkan judul akreditasi"
@@ -580,6 +591,11 @@ export default function AkreditasiPTPage() {
             </ModalHeader>
             <ModalBody>
               <div className="space-y-4">
+                {docFormError && (
+                  <Alert color="danger" className="mb-3">
+                    {docFormError}
+                  </Alert>
+                )}
                 <Input
                   label="Judul Dokumen"
                   placeholder="Masukkan judul dokumen (misal: SK Akreditasi 2024)"
@@ -629,6 +645,9 @@ export default function AkreditasiPTPage() {
             </ModalFooter>
           </ModalContent>
         </Modal>
+
+        {/* Delete Confirmation Modal */}
+        <DeleteConfirmationModal {...deleteDocumentDialogProps} />
       </div>
     </AdminPageLayout>
   );

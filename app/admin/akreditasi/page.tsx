@@ -5,7 +5,7 @@ import { Card, CardBody, CardHeader } from "@heroui/card";
 import { Chip } from "@heroui/chip";
 import { Tabs, Tab } from "@heroui/tabs";
 import { Spinner } from "@heroui/spinner";
-import toast, { Toaster } from "react-hot-toast";
+import { notifyError } from "@/lib/notify";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 
 interface InternationalAccreditation {
@@ -67,7 +67,7 @@ export default function AdminAkreditasiPage() {
       setStudyProgramAccreditations(data.studyProgramAccreditations);
     } catch (error) {
       console.error("Error:", error);
-      toast.error("Gagal memuat data akreditasi");
+      notifyError("Gagal memuat data akreditasi");
     } finally {
       setLoading(false);
     }
@@ -103,8 +103,6 @@ export default function AdminAkreditasiPage() {
 
   return (
     <div className="p-6 max-w-7xl mx-auto">
-      <Toaster position="top-right" />
-
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-2">Manajemen Akreditasi</h1>

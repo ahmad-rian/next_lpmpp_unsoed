@@ -23,9 +23,12 @@ import { Switch } from "@heroui/switch";
 import { Chip } from "@heroui/chip";
 import { Card, CardBody } from "@heroui/card";
 import { BookOpenIcon, PlusIcon, PencilIcon, TrashIcon } from "@heroicons/react/24/outline";
+import { Alert } from "@heroui/alert";
 import { AdminPageLayout } from "@/components/admin-page-layout";
 import { ImageUpload } from "@/components/image-upload";
-import toast from "react-hot-toast";
+import { notifySuccess, notifyError } from "@/lib/notify";
+import { useDeleteConfirm } from "@/hooks/use-delete-confirm";
+import { DeleteConfirmationModal } from "@/components/delete-confirmation-modal";
 
 interface DataBuku {
   id: string;
@@ -61,7 +64,21 @@ export default function DataBukuPage() {
     urutan: "0",
     isActive: true,
   });
+  const [formError, setFormError] = useState<string | null>(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
+
+  const { ask, dialogProps } = useDeleteConfirm(async (id: string) => {
+    const response = await fetch(`/api/admin/data-buku/${id}`, {
+      method: "DELETE",
+    });
+
+    if (response.ok) {
+      notifySuccess("Data buku berhasil dihapus");
+      await fetchData();
+    } else {
+      notifyError("Gagal menghapus data buku");
+    }
+  });
 
   useEffect(() => {
     fetchData();
@@ -74,17 +91,18 @@ export default function DataBukuPage() {
         const data = await response.json();
         setDataBuku(data);
       } else {
-        toast.error("Gagal memuat data buku");
+        notifyError("Gagal memuat data buku");
       }
     } catch (error) {
       console.error("Error fetching data:", error);
-      toast.error("Gagal memuat data buku");
+      notifyError("Gagal memuat data buku");
     } finally {
       setLoading(false);
     }
   };
 
   const handleAdd = () => {
+    setFormError(null);
     setEditingItem(null);
     setFormData({
       judul: "",
@@ -98,6 +116,7 @@ export default function DataBukuPage() {
   };
 
   const handleEdit = (item: DataBuku) => {
+    setFormError(null);
     setEditingItem(item);
     setFormData({
       judul: item.judul,
@@ -111,8 +130,9 @@ export default function DataBukuPage() {
   };
 
   const handleSubmit = async () => {
+    setFormError(null);
     if (!formData.judul) {
-      toast.error("Judul harus diisi");
+      setFormError("Judul harus diisi");
       return;
     }
 
@@ -141,38 +161,18 @@ export default function DataBukuPage() {
       });
 
       if (response.ok) {
-        toast.success(editingItem ? "Data buku berhasil diperbarui" : "Data buku berhasil ditambahkan");
+        notifySuccess(editingItem ? "Data buku berhasil diperbarui" : "Data buku berhasil ditambahkan");
         await fetchData();
         onClose();
       } else {
         const errorData = await response.json();
-        toast.error(errorData.error || "Gagal menyimpan data buku");
+        notifyError(errorData.error || "Gagal menyimpan data buku");
       }
     } catch (error) {
       console.error("Error submitting data:", error);
-      toast.error("Gagal menyimpan data buku");
+      notifyError("Gagal menyimpan data buku");
     } finally {
       setSubmitting(false);
-    }
-  };
-
-  const handleDelete = async (id: string) => {
-    if (!confirm("Apakah Anda yakin ingin menghapus data buku ini?")) return;
-
-    try {
-      const response = await fetch(`/api/admin/data-buku/${id}`, {
-        method: "DELETE",
-      });
-
-      if (response.ok) {
-        toast.success("Data buku berhasil dihapus");
-        await fetchData();
-      } else {
-        toast.error("Gagal menghapus data buku");
-      }
-    } catch (error) {
-      console.error("Error deleting data:", error);
-      toast.error("Gagal menghapus data buku");
     }
   };
 
@@ -193,14 +193,14 @@ export default function DataBukuPage() {
       });
 
       if (response.ok) {
-        toast.success(`Status berhasil ${!currentStatus ? 'diaktifkan' : 'dinonaktifkan'}`);
+        notifySuccess(`Status berhasil ${!currentStatus ? 'diaktifkan' : 'dinonaktifkan'}`);
         await fetchData();
       } else {
-        toast.error("Gagal mengubah status");
+        notifyError("Gagal mengubah status");
       }
     } catch (error) {
       console.error("Error updating status:", error);
-      toast.error("Gagal mengubah status");
+      notifyError("Gagal mengubah status");
     }
   };
 
@@ -319,7 +319,7 @@ export default function DataBukuPage() {
                         size="sm"
                         variant="light"
                         color="danger"
-                        onPress={() => handleDelete(item.id)}
+                        onPress={() => ask(item.id, item.judul)}
                       >
                         <TrashIcon className="w-4 h-4" />
                       </Button>
@@ -345,6 +345,7 @@ export default function DataBukuPage() {
           </ModalHeader>
           <ModalBody>
             <div className="space-y-4">
+              {formError && <Alert color="danger" className="mb-3">{formError}</Alert>}
               <Input
                 label="Judul Buku"
                 placeholder="Masukkan judul buku"
@@ -419,6 +420,8 @@ export default function DataBukuPage() {
           </ModalFooter>
         </ModalContent>
       </Modal>
+
+      <DeleteConfirmationModal {...dialogProps} />
     </AdminPageLayout>
   );
 }

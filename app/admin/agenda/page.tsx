@@ -22,6 +22,10 @@ import { Button } from "@heroui/button";
 import { Input, Textarea } from "@heroui/input";
 import { Chip } from "@heroui/chip";
 import { Pagination } from "@heroui/pagination";
+import { Alert } from "@heroui/alert";
+import { notifySuccess, notifyError } from "@/lib/notify";
+import { useDeleteConfirm } from "@/hooks/use-delete-confirm";
+import { DeleteConfirmationModal } from "@/components/delete-confirmation-modal";
 
 interface Agenda {
     id: string;
@@ -50,6 +54,7 @@ export default function AgendaPage() {
     const [saving, setSaving] = useState(false);
     const { isOpen, onOpen, onClose } = useDisclosure();
     const [editingItem, setEditingItem] = useState<Agenda | null>(null);
+    const [formError, setFormError] = useState<string | null>(null);
 
     // Pagination
     const [page, setPage] = useState(1);
@@ -85,6 +90,7 @@ export default function AgendaPage() {
     };
 
     const handleOpenModal = (item?: Agenda) => {
+        setFormError(null);
         if (item) {
             setEditingItem(item);
             setFormData({
@@ -129,8 +135,9 @@ export default function AgendaPage() {
     };
 
     const handleSubmit = async () => {
+        setFormError(null);
         if (!formData.title || !formData.date || !formData.startTime || !formData.endTime || !formData.location) {
-            alert("Judul, Tanggal, Waktu, dan Lokasi harus diisi");
+            setFormError("Judul, Tanggal, Waktu, dan Lokasi harus diisi");
             return;
         }
 
@@ -152,20 +159,18 @@ export default function AgendaPage() {
                 throw new Error("Gagal menyimpan data");
             }
 
-            alert(editingItem ? "Data berhasil diperbarui" : "Data berhasil ditambahkan");
+            notifySuccess(editingItem ? "Data berhasil diperbarui" : "Data berhasil ditambahkan");
             handleCloseModal();
             fetchAgendas();
         } catch (error: any) {
             console.error("Error saving:", error);
-            alert(error.message || "Gagal menyimpan data");
+            notifyError(error?.message || "Gagal menyimpan data");
         } finally {
             setSaving(false);
         }
     };
 
-    const handleDelete = async (id: string) => {
-        if (!confirm("Apakah Anda yakin ingin menghapus agenda ini?")) return;
-
+    const { ask, dialogProps } = useDeleteConfirm(async (id) => {
         try {
             const response = await fetch(`/api/agenda?id=${id}`, {
                 method: "DELETE",
@@ -175,13 +180,13 @@ export default function AgendaPage() {
                 throw new Error("Gagal menghapus data");
             }
 
-            alert("Data berhasil dihapus");
+            notifySuccess("Data berhasil dihapus");
             fetchAgendas();
         } catch (error: any) {
             console.error("Error deleting:", error);
-            alert(error.message || "Gagal menghapus data");
+            notifyError(error?.message || "Gagal menghapus data");
         }
-    };
+    });
 
     const formatDate = (dateString: string) => {
         const date = new Date(dateString);
@@ -304,7 +309,7 @@ export default function AgendaPage() {
                                             size="sm"
                                             variant="flat"
                                             color="danger"
-                                            onPress={() => handleDelete(item.id)}
+                                            onPress={() => ask(item.id, item.title)}
                                         >
                                             Hapus
                                         </Button>
@@ -323,6 +328,11 @@ export default function AgendaPage() {
                         </ModalHeader>
                         <ModalBody>
                             <div className="space-y-4">
+                                {formError && (
+                                    <Alert color="danger" className="mb-3">
+                                        {formError}
+                                    </Alert>
+                                )}
                                 <Input
                                     label="Judul Kegiatan"
                                     placeholder="Masukkan judul kegiatan"
@@ -447,6 +457,8 @@ export default function AgendaPage() {
                         </ModalFooter>
                     </ModalContent>
                 </Modal>
+
+                <DeleteConfirmationModal {...dialogProps} />
             </div>
         </AdminPageLayout>
     );

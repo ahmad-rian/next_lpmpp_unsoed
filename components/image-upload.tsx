@@ -3,6 +3,7 @@
 import React, { useState, useRef } from "react";
 import { Button } from "@heroui/button";
 import Image from "next/image";
+import { notifyError, notifySuccess } from "@/lib/notify";
 
 interface ImageUploadProps {
   label: string;
@@ -47,7 +48,7 @@ export function ImageUpload({ label, value, onChange, description }: ImageUpload
     // Guard: max 20MB to avoid silent 413 from the reverse proxy
     const MAX_BYTES = 20 * 1024 * 1024;
     if (file.size > MAX_BYTES) {
-      alert(
+      notifyError(
         `Ukuran gambar terlalu besar (${(file.size / 1024 / 1024).toFixed(1)}MB). Maksimal 20MB.`
       );
       e.target.value = "";
@@ -88,12 +89,12 @@ export function ImageUpload({ label, value, onChange, description }: ImageUpload
         if (response.status === 413) {
           detail = "File terlalu besar (ditolak server). Kompres gambar lalu coba lagi.";
         }
-        alert(`Upload gagal (${response.status})${detail ? `: ${detail}` : ""}`);
+        notifyError(`Upload gagal (${response.status})${detail ? `: ${detail}` : ""}`);
         setPreview(value);
       }
     } catch (error) {
       console.error("Upload error:", error);
-      alert("Gagal upload gambar (koneksi/server).");
+      notifyError("Gagal upload gambar (koneksi/server).");
       setPreview(value);
     } finally {
       setUploading(false);

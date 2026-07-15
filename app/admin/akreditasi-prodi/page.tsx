@@ -16,9 +16,13 @@ import { Select, SelectItem } from "@heroui/select";
 import { Card, CardBody } from "@heroui/card";
 import { Chip } from "@heroui/chip";
 import { Pagination } from "@heroui/pagination";
+import { Alert } from "@heroui/alert";
 import { AdminPageLayout } from "@/components/admin-page-layout";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell } from "recharts";
 import { calculateAccreditationStatus, formatDateID } from "@/lib/accreditation-utils";
+import { notifySuccess, notifyError } from "@/lib/notify";
+import { useDeleteConfirm } from "@/hooks/use-delete-confirm";
+import { DeleteConfirmationModal } from "@/components/delete-confirmation-modal";
 
 // Heroicons
 const AcademicCapIcon = () => (
@@ -117,6 +121,7 @@ export default function AkreditasiProdiPage() {
   const [editingItem, setEditingItem] = useState<StudyProgramAccreditation | null>(null);
   const [lastUpdate, setLastUpdate] = useState<string>("");
   const [certificateFile, setCertificateFile] = useState<File | null>(null);
+  const [formError, setFormError] = useState<string | null>(null);
 
   // Pagination & Filter states
   const [page, setPage] = useState(1);
@@ -155,7 +160,7 @@ export default function AkreditasiProdiPage() {
       }));
     } catch (error) {
       console.error("Error fetching accreditations:", error);
-      alert("Gagal memuat data akreditasi");
+      notifyError("Gagal memuat data akreditasi");
     } finally {
       setLoading(false);
     }
@@ -196,6 +201,7 @@ export default function AkreditasiProdiPage() {
   );
 
   const handleOpenModal = (item?: StudyProgramAccreditation) => {
+    setFormError(null);
     if (item) {
       setEditingItem(item);
       setFormData({
@@ -233,6 +239,7 @@ export default function AkreditasiProdiPage() {
   const handleCloseModal = () => {
     setEditingItem(null);
     setCertificateFile(null);
+    setFormError(null);
     setFormData({
       studyProgram: "",
       faculty: "",
@@ -250,8 +257,9 @@ export default function AkreditasiProdiPage() {
   };
 
   const handleSubmit = async () => {
+    setFormError(null);
     if (!formData.studyProgram || !formData.level || !formData.rank) {
-      alert("Program Studi, Strata, dan Peringkat harus diisi");
+      setFormError("Program Studi, Strata, dan Peringkat harus diisi");
       return;
     }
 
@@ -322,24 +330,20 @@ export default function AkreditasiProdiPage() {
         throw new Error(data.error || "Gagal menyimpan data");
       }
 
-      alert(editingItem ? "Data berhasil diperbarui" : "Data berhasil ditambahkan");
+      notifySuccess(editingItem ? "Data berhasil diperbarui" : "Data berhasil ditambahkan");
       handleCloseModal();
       fetchAccreditations();
       fetchChartData();
     } catch (error: any) {
       console.error("Error saving:", error);
-      alert(error.message || "Gagal menyimpan data");
+      notifyError(error?.message || "Gagal menyimpan data");
     } finally {
       setSaving(false);
       setUploading(false);
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Apakah Anda yakin ingin menghapus data ini?")) {
-      return;
-    }
-
+  const { ask: askDelete, dialogProps: deleteDialogProps } = useDeleteConfirm(async (id: string) => {
     try {
       const response = await fetch(`/api/study-program-accreditations?id=${id}`, {
         method: "DELETE",
@@ -351,14 +355,14 @@ export default function AkreditasiProdiPage() {
         throw new Error(data.error || "Gagal menghapus data");
       }
 
-      alert("Data berhasil dihapus");
+      notifySuccess("Data berhasil dihapus");
       fetchAccreditations();
       fetchChartData();
     } catch (error: any) {
       console.error("Error deleting:", error);
-      alert(error.message || "Gagal menghapus data");
+      notifyError(error?.message || "Gagal menghapus data");
     }
-  };
+  });
 
   const handleExport = () => {
     // Simple CSV export
@@ -613,7 +617,7 @@ export default function AkreditasiProdiPage() {
                         variant="flat"
                         color="danger"
                         isIconOnly
-                        onPress={() => handleDelete(item.id)}
+                        onPress={() => askDelete(item.id, item.studyProgram)}
                       >
                         <TrashIcon className="w-4 h-4" />
                       </Button>
@@ -650,6 +654,7 @@ export default function AkreditasiProdiPage() {
             </ModalHeader>
             <ModalBody>
               <div className="space-y-4">
+                {formError && <Alert color="danger" className="mb-3">{formError}</Alert>}
                 <Input
                   label="Program Studi"
                   placeholder="Masukkan nama program studi"
@@ -761,7 +766,7 @@ export default function AkreditasiProdiPage() {
                       if (file) {
                         // Validate file size (max 10MB)
                         if (file.size > 10 * 1024 * 1024) {
-                          alert("Ukuran file maksimal 10MB");
+                          setFormError("Ukuran file maksimal 10MB");
                           e.target.value = "";
                           return;
                         }
@@ -806,6 +811,8 @@ export default function AkreditasiProdiPage() {
             </ModalFooter>
           </ModalContent>
         </Modal>
+
+        <DeleteConfirmationModal {...deleteDialogProps} />
       </div>
     </AdminPageLayout>
   );

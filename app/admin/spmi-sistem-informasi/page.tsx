@@ -8,12 +8,12 @@ import { Input, Textarea } from "@heroui/input";
 import { Select, SelectItem } from "@heroui/select";
 import { Card, CardBody, CardHeader } from "@heroui/card";
 import { Chip } from "@heroui/chip";
+import { Alert } from "@heroui/alert";
 import { AdminPageLayout } from "@/components/admin-page-layout";
+import { notifySuccess, notifyError } from "@/lib/notify";
+import { useDeleteConfirm } from "@/hooks/use-delete-confirm";
+import { DeleteConfirmationModal } from "@/components/delete-confirmation-modal";
 import Image from "next/image";
-
-const showNotification = (message: string, type: 'success' | 'error' = 'success') => {
-  alert(message);
-};
 
 // Icons
 const PencilIcon = ({ className }: { className?: string }) => (
@@ -76,6 +76,7 @@ export default function SpmiInformationSystemsPage() {
 
   // Modal state
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const [formError, setFormError] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     id: "",
     name: "",
@@ -87,13 +88,19 @@ export default function SpmiInformationSystemsPage() {
     order: 0,
   });
 
-  // Delete modal
-  const {
-    isOpen: isDeleteOpen,
-    onOpen: onDeleteOpen,
-    onClose: onDeleteClose,
-  } = useDisclosure();
-  const [systemToDelete, setSystemToDelete] = useState<SpmiInformationSystem | null>(null);
+  // Delete confirmation
+  const { ask, dialogProps } = useDeleteConfirm(async (id) => {
+    const response = await fetch(`/api/spmi-information-systems?id=${id}`, {
+      method: "DELETE",
+    });
+
+    if (response.ok) {
+      notifySuccess("Sistem informasi berhasil dihapus");
+      fetchSystems();
+    } else {
+      notifyError("Gagal menghapus sistem informasi");
+    }
+  });
 
   useEffect(() => {
     fetchSystems();
@@ -113,6 +120,7 @@ export default function SpmiInformationSystemsPage() {
   };
 
   const handleAdd = () => {
+    setFormError(null);
     setFormData({
       id: "",
       name: "",
@@ -127,6 +135,7 @@ export default function SpmiInformationSystemsPage() {
   };
 
   const handleEdit = (system: SpmiInformationSystem) => {
+    setFormError(null);
     setFormData({
       id: system.id,
       name: system.name,
@@ -146,13 +155,13 @@ export default function SpmiInformationSystemsPage() {
 
     // Validate file size (max 2MB)
     if (file.size > 2 * 1024 * 1024) {
-      showNotification("Ukuran file maksimal 2MB", "error");
+      notifyError("Ukuran file maksimal 2MB");
       return;
     }
 
     // Validate file type
     if (!file.type.startsWith("image/")) {
-      showNotification("Hanya file gambar yang diperbolehkan", "error");
+      notifyError("Hanya file gambar yang diperbolehkan");
       return;
     }
 
@@ -170,18 +179,19 @@ export default function SpmiInformationSystemsPage() {
 
       const data = await response.json();
       setFormData({ ...formData, logoUrl: data.url });
-      showNotification("Logo berhasil diupload", "success");
+      notifySuccess("Logo berhasil diupload");
     } catch (error) {
       console.error("Error uploading logo:", error);
-      showNotification("Gagal mengupload logo", "error");
+      notifyError("Gagal mengupload logo");
     } finally {
       setUploading(false);
     }
   };
 
   const handleSave = async () => {
+    setFormError(null);
     if (!formData.name) {
-      showNotification("Nama sistem informasi harus diisi", "error");
+      setFormError("Nama sistem informasi harus diisi");
       return;
     }
 
@@ -196,41 +206,15 @@ export default function SpmiInformationSystemsPage() {
       });
 
       if (response.ok) {
-        showNotification(formData.id ? "Sistem informasi berhasil diperbarui" : "Sistem informasi berhasil ditambahkan", "success");
+        notifySuccess(formData.id ? "Sistem informasi berhasil diperbarui" : "Sistem informasi berhasil ditambahkan");
         onClose();
         fetchSystems();
       } else {
-        showNotification("Gagal menyimpan sistem informasi", "error");
+        notifyError("Gagal menyimpan sistem informasi");
       }
     } catch (error) {
       console.error("Error saving system:", error);
-      showNotification("Terjadi kesalahan saat menyimpan sistem informasi", "error");
-    }
-  };
-
-  const handleDelete = (system: SpmiInformationSystem) => {
-    setSystemToDelete(system);
-    onDeleteOpen();
-  };
-
-  const confirmDelete = async () => {
-    if (!systemToDelete) return;
-
-    try {
-      const response = await fetch(`/api/spmi-information-systems?id=${systemToDelete.id}`, {
-        method: "DELETE",
-      });
-
-      if (response.ok) {
-        showNotification("Sistem informasi berhasil dihapus", "success");
-        onDeleteClose();
-        fetchSystems();
-      } else {
-        showNotification("Gagal menghapus sistem informasi", "error");
-      }
-    } catch (error) {
-      console.error("Error deleting system:", error);
-      showNotification("Terjadi kesalahan saat menghapus sistem informasi", "error");
+      notifyError("Terjadi kesalahan saat menyimpan sistem informasi");
     }
   };
 
@@ -351,7 +335,7 @@ export default function SpmiInformationSystemsPage() {
                         color="danger"
                         variant="flat"
                         startContent={<TrashIcon className="w-3 h-3" />}
-                        onPress={() => handleDelete(system)}
+                        onPress={() => ask(system.id, system.name)}
                       >
                         Hapus
                       </Button>
@@ -372,6 +356,7 @@ export default function SpmiInformationSystemsPage() {
           </ModalHeader>
           <ModalBody>
             <div className="space-y-4">
+              {formError && <Alert color="danger" className="mb-3">{formError}</Alert>}
               <div className="grid grid-cols-2 gap-4">
                 <Input
                   label="Nama Sistem"
@@ -493,26 +478,8 @@ export default function SpmiInformationSystemsPage() {
         </ModalContent>
       </Modal>
 
-      {/* Delete Modal */}
-      <Modal isOpen={isDeleteOpen} onClose={onDeleteClose}>
-        <ModalContent>
-          <ModalHeader>Hapus Sistem Informasi</ModalHeader>
-          <ModalBody>
-            <p>
-              Apakah Anda yakin ingin menghapus sistem informasi{" "}
-              <strong>{systemToDelete?.name}</strong>?
-            </p>
-          </ModalBody>
-          <ModalFooter>
-            <Button variant="flat" onPress={onDeleteClose}>
-              Batal
-            </Button>
-            <Button color="danger" onPress={confirmDelete}>
-              Hapus
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+      {/* Delete Confirmation */}
+      <DeleteConfirmationModal {...dialogProps} />
     </AdminPageLayout>
   );
 }
