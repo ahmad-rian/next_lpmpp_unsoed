@@ -73,13 +73,19 @@ export async function PUT(request: NextRequest) {
     }
 
     const data = await request.json();
-    const { id, ...updateData } = data;
+    const { id } = data;
 
     if (!id) {
       return NextResponse.json(
         { error: "Member ID required" },
         { status: 400 }
       );
+    }
+
+    // Whitelist updatable fields (no mass-assignment from raw body)
+    const updateData: Record<string, unknown> = {};
+    for (const field of ["centerId", "role", "name", "title", "photo", "order"]) {
+      if (data[field] !== undefined) updateData[field] = data[field];
     }
 
     const member = await prisma.centerMember.update({

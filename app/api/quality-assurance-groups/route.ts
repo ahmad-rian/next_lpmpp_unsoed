@@ -66,10 +66,16 @@ export async function PUT(request: NextRequest) {
     }
 
     const data = await request.json();
-    const { id, ...updateData } = data;
+    const { id } = data;
 
     if (!id) {
       return NextResponse.json({ error: "Group ID required" }, { status: 400 });
+    }
+
+    // Whitelist updatable fields (no mass-assignment from raw body)
+    const updateData: Record<string, unknown> = {};
+    for (const field of ["facultyId", "ketuaGpm", "description", "contactInfo", "order", "isActive"]) {
+      if (data[field] !== undefined) updateData[field] = data[field];
     }
 
     const group = await prisma.qualityAssuranceGroup.update({

@@ -1,7 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { compare } from "bcryptjs";
-import { createHmac } from "crypto";
+import { createHmac, timingSafeEqual } from "crypto";
+
+// Access tokens expire after 7 days so a captured cookie can't unlock forever.
+const TOKEN_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000;
+
+// Fail closed: never sign with a guessable fallback key.
+function getSecret(): string {
+  const secret = process.env.NEXTAUTH_SECRET;
+  if (!secret) throw new Error("NEXTAUTH_SECRET is required");
+  return secret;
+}
 
 function signToken(secret: string): string {
   const timestamp = Date.now().toString();
@@ -12,8 +22,16 @@ function signToken(secret: string): string {
 function verifyToken(token: string, secret: string): boolean {
   const [timestamp, hmac] = token.split(".");
   if (!timestamp || !hmac) return false;
+
+  // Reject expired / malformed timestamps
+  const issued = Number(timestamp);
+  if (!Number.isFinite(issued) || Date.now() - issued > TOKEN_MAX_AGE_MS) return false;
+
   const expected = createHmac("sha256", secret).update(timestamp).digest("hex");
-  return hmac === expected;
+  const a = Uint8Array.from(Buffer.from(hmac, "hex"));
+  const b = Uint8Array.from(Buffer.from(expected, "hex"));
+  if (a.length !== b.length) return false;
+  return timingSafeEqual(a, b);
 }
 
 // GET - Check if SPMI is password-protected + whether user has valid cookie
@@ -31,7 +49,7 @@ export async function GET(request: NextRequest) {
 
     // Check cookie
     const cookie = request.cookies.get("spmi_access")?.value;
-    const secret = process.env.NEXTAUTH_SECRET || "fallback-secret";
+    const secret = getSecret();
     const unlocked = cookie ? verifyToken(cookie, secret) : false;
 
     return NextResponse.json({ protected: true, unlocked });
@@ -77,7 +95,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Password correct - set signed cookie
-    const secret = process.env.NEXTAUTH_SECRET || "fallback-secret";
+    const secret = getSecret();
     const token = signToken(secret);
 
     const response = NextResponse.json({ success: true });
@@ -86,6 +104,7 @@ export async function POST(request: NextRequest) {
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
       path: "/",
+      maxAge: TOKEN_MAX_AGE_MS / 1000,
     });
 
     return response;

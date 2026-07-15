@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { requireAdmin } from "@/lib/auth-helpers";
 
 // GET - Fetch all downloads or single download by id
 export async function GET(request: NextRequest) {
@@ -97,6 +98,9 @@ export async function GET(request: NextRequest) {
 // POST - Create new download
 export async function POST(request: NextRequest) {
   try {
+    const guard = await requireAdmin();
+    if (guard instanceof NextResponse) return guard;
+
     const body = await request.json();
     const { name, description, fileUrl, fileType, fileSize } = body;
 
@@ -130,6 +134,9 @@ export async function POST(request: NextRequest) {
 // PUT - Update download
 export async function PUT(request: NextRequest) {
   try {
+    const guard = await requireAdmin();
+    if (guard instanceof NextResponse) return guard;
+
     const body = await request.json();
     const { id, name, description, fileUrl, fileType, fileSize } = body;
 
@@ -164,6 +171,9 @@ export async function PUT(request: NextRequest) {
 // DELETE - Delete download
 export async function DELETE(request: NextRequest) {
   try {
+    const guard = await requireAdmin();
+    if (guard instanceof NextResponse) return guard;
+
     const searchParams = request.nextUrl.searchParams;
     const id = searchParams.get("id");
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { SafeHtml } from "@/components/safe-html";
 import {
   Table,
   TableHeader,
@@ -299,11 +300,9 @@ export default function ProgramUnggulanPage() {
                 <div>
                   <p className="font-medium">{program.title}</p>
                   {program.description && (
-                    <div
+                    <SafeHtml
                       className="text-sm text-default-400 line-clamp-2"
-                      dangerouslySetInnerHTML={{
-                        __html: program.description.replace(/<[^>]*>/g, '').substring(0, 100) + '...'
-                      }}
+                      html={program.description.replace(/<[^>]*>/g, '').substring(0, 100) + '...'}
                     />
                   )}
                 </div>

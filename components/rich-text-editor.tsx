@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { SafeHtml } from "@/components/safe-html";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import TextAlign from "@tiptap/extension-text-align";
@@ -772,9 +773,9 @@ export const RichTextViewer: React.FC<RichTextViewerProps> = ({
   className = "",
 }) => {
   return (
-    <div
+    <SafeHtml
       className={`rich-text-viewer prose prose-sm max-w-none ${className}`}
-      dangerouslySetInnerHTML={{ __html: content }}
+      html={content}
     />
   );
 };

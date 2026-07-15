@@ -18,7 +18,11 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const slug = searchParams.get("slug");
     const published = searchParams.get("published");
-    const admin = searchParams.get("admin") === "true";
+    // Admin view (drafts + all fields) is gated on a real session, NOT a
+    // client-supplied query flag. Anonymous callers only ever see published news.
+    const session = await auth();
+    const isAdminReq =
+      searchParams.get("admin") === "true" && session?.user?.role === "ADMIN";
     const pageParam = searchParams.get("page");
     const pageSizeParam = searchParams.get("pageSize");
     const limitParam = searchParams.get("limit");
@@ -45,15 +49,19 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // Get all news
-    const where = published === "true" ? { isPublished: true } : {};
+    // Get all news — non-admins are always restricted to published records
+    const where = isAdminReq
+      ? published === "true"
+        ? { isPublished: true }
+        : {}
+      : { isPublished: true };
 
     const newsList = await prisma.news.findMany({
       where,
       orderBy: { publishedAt: "desc" },
       skip: (page - 1) * pageSize,
       take: pageSize,
-      ...(admin
+      ...(isAdminReq
         ? {}
         : {
             select: {

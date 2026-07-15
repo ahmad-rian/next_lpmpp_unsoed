@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import DOMPurify from "isomorphic-dompurify";
 import { Card, CardBody } from "@heroui/card";
 import { motion, AnimatePresence } from "framer-motion";
 import clsx from "clsx";
@@ -210,7 +211,7 @@ export default function ProgramUnggulanPage() {
                               prose-strong:text-default-900 dark:prose-strong:text-default-100
                               prose-ul:text-default-700 dark:prose-ul:text-default-300
                               prose-ol:text-default-700 dark:prose-ol:text-default-300"
-                            dangerouslySetInnerHTML={{ __html: activeProgram.description }}
+                            dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(activeProgram.description || "") }}
                           />
                         ) : (
                           <div className="text-center py-12">

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { SafeHtml } from "@/components/safe-html";
 import { Card, CardBody } from "@heroui/card";
 import { Image } from "@heroui/image";
 import { Button } from "@heroui/button";
@@ -132,9 +133,9 @@ export default function AkreditasiPerguruanTinggiPage() {
 
                   {/* Description */}
                   {accreditation.description && (
-                    <div
+                    <SafeHtml
                       className="prose prose-sm md:prose-base max-w-none text-default-600 dark:text-default-400"
-                      dangerouslySetInnerHTML={{ __html: accreditation.description }}
+                      html={accreditation.description}
                     />
                   )}
                 </CardBody>

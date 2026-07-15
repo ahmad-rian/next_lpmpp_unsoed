@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { SafeHtml } from "@/components/safe-html";
 import { useParams } from "next/navigation";
 import { Card, CardBody } from "@heroui/card";
 import { Breadcrumbs, BreadcrumbItem } from "@heroui/breadcrumbs";
@@ -198,8 +199,8 @@ export default function NewsDetailPage() {
       {/* Content */}
       <Card>
         <CardBody className="p-4 md:p-6">
-          <div 
-            className="prose prose-sm md:prose-base lg:prose-lg max-w-none 
+          <SafeHtml
+            className="prose prose-sm md:prose-base lg:prose-lg max-w-none
               prose-headings:text-default-900 dark:prose-headings:text-default-100
               prose-p:text-default-700 dark:prose-p:text-default-300
               prose-a:text-primary hover:prose-a:text-primary-600
@@ -207,7 +208,7 @@ export default function NewsDetailPage() {
               prose-ul:text-default-700 dark:prose-ul:text-default-300
               prose-ol:text-default-700 dark:prose-ol:text-default-300
               prose-img:rounded-lg"
-            dangerouslySetInnerHTML={{ __html: news.content }} 
+            html={news.content}
           />
         </CardBody>
       </Card>

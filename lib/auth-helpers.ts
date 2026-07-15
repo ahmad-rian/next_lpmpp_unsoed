@@ -32,8 +32,10 @@ export async function requireAdmin(): Promise<{ session: any } | NextResponse> {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    if (!hasAnyRoleSync(session.user.roles)) {
-        return NextResponse.json({ error: "Forbidden - No role assigned" }, { status: 403 });
+    // Require an admin-tier role, not merely "any role" — a read-only role
+    // (e.g. viewer) must not pass an admin guard.
+    if (!isAdmin(session.user.roles)) {
+        return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
     return { session };

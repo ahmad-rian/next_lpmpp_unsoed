@@ -4,13 +4,12 @@ import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "@/lib/prisma";
 
 export const authConfig: NextAuthConfig = {
-  debug: true,
+  debug: process.env.NODE_ENV !== "production",
   adapter: PrismaAdapter(prisma) as any,
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-      allowDangerousEmailAccountLinking: true,
     }),
   ],
   trustHost: true,
@@ -85,13 +84,16 @@ export const authConfig: NextAuthConfig = {
         session.user.isActive = token.isActive as boolean;
         session.user.roles = (token.roles as string[]) || [];
         session.user.permissions = (token.permissions as string[]) || [];
-        session.user.role = session.user.roles.length > 0 ? "ADMIN" : "USER";
+        // ADMIN only for real admin-tier roles, not any role (prevents privilege escalation)
+        const ADMIN_ROLES = ["super-admin", "admin", "editor"];
+        session.user.role = session.user.roles.some((r) => ADMIN_ROLES.includes(r))
+          ? "ADMIN"
+          : "USER";
       }
       return session;
     },
     async jwt({ token, user }) {
       if (user) {
-        console.log("🔑 JWT callback for user:", user.email);
         try {
           const dbUser = await prisma.user.findUnique({
             where: { email: user.email! },
@@ -124,7 +126,6 @@ export const authConfig: NextAuthConfig = {
               });
             });
             token.permissions = Array.from(permissions);
-            console.log("✅ JWT token created for:", user.email);
           }
         } catch (error) {
           console.error("❌ JWT callback error:", error);
@@ -141,14 +142,10 @@ export const authConfig: NextAuthConfig = {
     strategy: "jwt",
   },
   logger: {
-    error(code, ...message) {
-      console.error("🔴 AUTH ERROR:", code, message);
-    },
-    warn(code, ...message) {
-      console.warn("🟡 AUTH WARN:", code, message);
-    },
-    debug(code, ...message) {
-      console.log("🔵 AUTH DEBUG:", code, message);
+    // Log only the error code — never the message payload, which can contain
+    // tokens/secrets/session data.
+    error(code) {
+      console.error("AUTH ERROR:", code);
     },
   },
 };
