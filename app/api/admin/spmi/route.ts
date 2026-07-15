@@ -1,16 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/auth";
 import { requirePermission } from "@/lib/auth-helpers";
 import { prisma } from "@/lib/prisma";
 
 // GET - Ambil data SPMI About
 export async function GET() {
   try {
-    const session = await auth();
-
-    if (!session || session.user.role !== "ADMIN") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const guard = await requirePermission("spmi.view");
+    if (guard instanceof NextResponse) return guard;
 
     // Ambil data pertama (harusnya hanya ada 1 record)
     const spmiAbout = await prisma.spmiAbout.findFirst();

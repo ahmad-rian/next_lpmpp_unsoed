@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/auth";
+import { requireAdmin } from "@/lib/auth-helpers";
 import { prisma } from "@/lib/prisma";
 
 // GET - Fetch safety briefing (single record, public)
@@ -29,11 +29,8 @@ export async function GET() {
 // PUT - Update safety briefing (admin only)
 export async function PUT(request: NextRequest) {
   try {
-    const session = await auth();
-
-    if (!session || session.user?.role !== "ADMIN") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const guard = await requireAdmin();
+    if (guard instanceof NextResponse) return guard;
 
     const data = await request.json();
 

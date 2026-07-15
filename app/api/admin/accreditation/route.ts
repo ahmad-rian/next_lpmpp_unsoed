@@ -1,15 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/auth";
 import { requirePermission } from "@/lib/auth-helpers";
 import { prisma } from "@/lib/prisma";
 
 export async function GET() {
   try {
-    const session = await auth();
-
-    if (!session || session.user?.role !== "ADMIN") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const guard = await requirePermission("accreditation.view");
+    if (guard instanceof NextResponse) return guard;
 
     const [internationalAccreditations, studyProgramAccreditations] = await Promise.all([
       prisma.internationalAccreditation.findMany({

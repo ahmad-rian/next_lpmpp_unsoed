@@ -2,19 +2,13 @@ import { NextRequest, NextResponse } from "next/server";
 import { writeFile, mkdir } from "fs/promises";
 import { join } from "path";
 import sharp from "sharp";
-import { auth } from "@/auth";
+import { requireAdmin } from "@/lib/auth-helpers";
 
 export async function POST(request: NextRequest) {
   try {
     // Check authentication
-    const session = await auth();
-    
-    if (!session || session.user?.role !== "ADMIN") {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
-    }
+    const guard = await requireAdmin();
+    if (guard instanceof NextResponse) return guard;
 
     const formData = await request.formData();
     const file = formData.get("file") as File;
